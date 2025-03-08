@@ -20,7 +20,7 @@ st.markdown(
         margin: 0 auto;">
         <h3>Meu Box no Streamlit</h3>
         <p>Este é um exemplo de box estilizado com HTML e CSS!</p>
-        <p><strong>Cotação da Petrobras:</strong> R$ {cotacao_atual:.2f}</p>
+        <p><strong>Cotação da {ticker}:</strong> R$ {cotacao_atual:.2f}</p>
     </div>
     """,
     unsafe_allow_html=True
