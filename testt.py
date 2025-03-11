@@ -51,7 +51,9 @@ with tab3:
 
     # Entrada do usuário para o ticker da ação
     ticker = st.text_input("Digite o código da ação (ex: AAPL, MSFT, PETR4.SA):", value="AAPL")
-
+    
+    # Seleção do tipo de gráfico
+    chart_type = st.selectbox("Tipo de gráfico diário:", ["Candlestick", "Linha"], key="daily_chart_type")
     # Função para obter dados da ação
     def get_stock_data(ticker, period, interval):
         stock = yf.Ticker(ticker)
