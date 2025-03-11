@@ -343,74 +343,7 @@ with col2:
                 fechamento_mes_passado = monthly_data['Close'].iloc[0]
                 variacao_mensal = ((preco_atual - fechamento_mes_passado) / fechamento_mes_passado) * 100
 
-                # Cartão HTML único para Fechamento Anterior e Preço Atual com número no final
-                st.markdown(
-                    f"""
-                    <div style="
-                        background-color: #ffffff; 
-                        padding: 12px; 
-                        border-radius: 8px; 
-                        margin: 8px 0; 
-                        box-shadow: 2px 2px 4px rgba(0,0,0,0.1);">
-                        <div style="
-                            display: flex; 
-                            justify-content: space-between; 
-                            align-items: center; 
-                            margin-bottom: 8px;">
-                            <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Fechamento Anterior</span>
-                            <span style="font-size: 12px; color: black; font-weight: bold; flex: 1; text-align: right;">{fechamento_anterior:.2f}</span>
-                        </div>
-                        <div style="
-                            display: flex; 
-                            justify-content: space-between; 
-                            align-items: center;">
-                            <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Preço Atual</span>
-                            <span style="font-size: 12px; color: black; font-weight: bold; flex: 1; text-align: right;">{preco_atual:.2f}</span>
-                        </div>
-                    </div>
-                    """, 
-                    unsafe_allow_html=True
-                )
 
-                # Todas as variações em um único cartão (mantido como estava)
-                st.markdown(
-                    f"""
-                    <div style="
-                        background-color: #ffffff; 
-                        padding: 12px; 
-                        border-radius: 8px; 
-                        margin: 8px 0; 
-                        box-shadow: 2px 2px 4px rgba(0,0,0,0.1);">
-                        <div style="
-                            display: flex; 
-                            justify-content: space-between; 
-                            align-items: center; 
-                            margin-bottom: 8px;">
-                            <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Var. do Dia</span>
-                            <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
-                            <span style="font-size: 14px; color: {'#155724' if variacao_dia >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_dia >= 0 else '↓'} {abs(variacao_dia):.2f}%</span>
-                        </div>
-                        <div style="
-                            display: flex; 
-                            justify-content: space-between; 
-                            align-items: center; 
-                            margin-bottom: 8px;">
-                            <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Var. Semanal</span>
-                            <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
-                            <span style="font-size: 14px; color: {'#155724' if variacao_semanal >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_semanal >= 0 else '↓'} {abs(variacao_semanal):.2f}%</span>
-                        </div>
-                        <div style="
-                            display: flex; 
-                            justify-content: space-between; 
-                            align-items: center;">
-                            <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Var. Mensal</span>
-                            <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
-                            <span style="font-size: 14px; color: {'#155724' if variacao_mensal >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_mensal >= 0 else '↓'} {abs(variacao_mensal):.2f}%</span>
-                        </div>
-                    </div>
-                    """, 
-                    unsafe_allow_html=True
-                )
                 # Definindo a cor da linha do gráfico com base na variação do dia
                 cor_linha = '#32CD32' if variacao_dia >= 0 else '#FF4500'  # Verde mais claro e vermelho mais vibrante
 
@@ -424,6 +357,24 @@ with col2:
                     line=dict(color=cor_linha, width=1.5),  # Linha um pouco mais grossa
                     hovertemplate='%{x|%H:%M}<br>Fechamento: %{y:.2f}<extra></extra>'  # Tooltip personalizado
                 ))
+
+                # Adicionar anotação com o preço atual no eixo Y
+                fig_intraday.add_annotation(
+                    x=1,  # Posição no extremo direito (relativo ao eixo X)
+                    y=preco_atual,  # Posição no valor do preço atual (eixo Y)
+                    xref="paper",  # Referência relativa ao papel (0 a 1)
+                    yref="y",  # Referência ao eixo Y em valores absolutos
+                    text=f"{preco_atual:.2f}",  # Texto com o preço atual formatado
+                    showarrow=True,
+                    arrowhead=2,
+                    ax=-30,  # Deslocamento horizontal da seta
+                    ay=0,  # Sem deslocamento vertical
+                    font=dict(size=12, color='#FFFFFF'),
+                    bgcolor='rgba(0, 0, 0, 0.5)',  # Fundo semi-transparente para legibilidade
+                    bordercolor='#FFFFFF',
+                    borderwidth=1
+                )
+
                 fig_intraday.update_layout(
                     title={
                         'text': "IBOV - Variação Intraday",
@@ -459,8 +410,10 @@ with col2:
                         font=dict(color='#FFFFFF')
                     )
                 )
+
                 st.plotly_chart(fig_intraday, use_container_width=True)
-                # Cartão HTML único para Fechamento Anterior e Preço Atual com número no final
+
+                # Todas as variações em um único cartão (mantido como estava)
                 st.markdown(
                     f"""
                     <div style="
@@ -474,15 +427,26 @@ with col2:
                             justify-content: space-between; 
                             align-items: center; 
                             margin-bottom: 8px;">
-                            <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Fechamento Anterior</span>
-                            <span style="font-size: 12px; color: black; font-weight: bold; flex: 1; text-align: right;">{fechamento_anterior:.2f}</span>
+                            <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Var. do Dia</span>
+                            <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
+                            <span style="font-size: 14px; color: {'#155724' if variacao_dia >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_dia >= 0 else '↓'} {abs(variacao_dia):.2f}%</span>
+                        </div>
+                        <div style="
+                            display: flex; 
+                            justify-content: space-between; 
+                            align-items: center; 
+                            margin-bottom: 8px;">
+                            <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Var. Semanal</span>
+                            <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
+                            <span style="font-size: 14px; color: {'#155724' if variacao_semanal >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_semanal >= 0 else '↓'} {abs(variacao_semanal):.2f}%</span>
                         </div>
                         <div style="
                             display: flex; 
                             justify-content: space-between; 
                             align-items: center;">
-                            <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Preço Atual</span>
-                            <span style="font-size: 12px; color: black; font-weight: bold; flex: 1; text-align: right;">{preco_atual:.2f}</span>
+                            <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Var. Mensal</span>
+                            <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
+                            <span style="font-size: 14px; color: {'#155724' if variacao_mensal >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_mensal >= 0 else '↓'} {abs(variacao_mensal):.2f}%</span>
                         </div>
                     </div>
                     """, 
