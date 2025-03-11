@@ -314,18 +314,6 @@ with col1:
 
 
 with col2:
-    # Adicionar CSS para reduzir o tamanho da fonte do subheader e das métricas
-    st.markdown("""
-        <style>
-        .metric-text {
-            font-size: 8px !important;  /* Reduzido de 12px para 10px */
-        }
-        div[data-testid="stHorizontalBlock"] > div > h2 {
-            font-size: 14px !important;  /* Reduzindo o subheader "IBOV" */
-        }
-        </style>
-        """, unsafe_allow_html=True)
-
     st.subheader("IBOV")
 
     try:
@@ -353,34 +341,97 @@ with col2:
             fechamento_mes_passado = monthly_data['Close'].iloc[0]
             variacao_mensal = ((preco_atual - fechamento_mes_passado) / fechamento_mes_passado) * 100
 
-            # Preço atual e fechamento anterior
-            col_metrics1, col_metrics2 = st.columns([1, 1])
-            with col_metrics1:
-                st.markdown('<div class="metric-text">', unsafe_allow_html=True)
-                st.metric("Fechamento Anterior", f"{fechamento_anterior:.2f}")
-                st.markdown('</div>', unsafe_allow_html=True)
-            with col_metrics2:
-                st.markdown('<div class="metric-text">', unsafe_allow_html=True)
-                st.metric("Preço Atual", f"{preco_atual:.2f}")
-                st.markdown('</div>', unsafe_allow_html=True)
-
-            # Variação diária, semanal e mensal
-            col_metrics3, col_metrics4, col_metrics5 = st.columns([1, 1, 1])
-            with col_metrics3:
-                seta_dia = "↑" if variacao_dia >= 0 else "↓"
-                st.markdown('<div class="metric-text">', unsafe_allow_html=True)
-                st.metric("Variação do Dia", f"{seta_dia} {abs(variacao_dia):.2f}%", delta_color="normal")
-                st.markdown('</div>', unsafe_allow_html=True)
-            with col_metrics4:
-                seta_semanal = "↑" if variacao_semanal >= 0 else "↓"
-                st.markdown('<div class="metric-text">', unsafe_allow_html=True)
-                st.metric("Variação Semanal", f"{seta_semanal} {abs(variacao_semanal):.2f}%", delta_color="normal")
-                st.markdown('</div>', unsafe_allow_html=True)
-            with col_metrics5:
-                seta_mensal = "↑" if variacao_mensal >= 0 else "↓"
-                st.markdown('<div class="metric-text">', unsafe_allow_html=True)
-                st.metric("Variação Mensal", f"{seta_mensal} {abs(variacao_mensal):.2f}%", delta_color="normal")
-                st.markdown('</div>', unsafe_allow_html=True)
+            # Cartões HTML substituindo st.metric
+            st.markdown(
+                f"""
+                <div style="
+                    background-color: #d4edda; 
+                    padding: 12px; 
+                    border-radius: 8px; 
+                    margin: 8px 0; 
+                    box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
+                    display: flex; 
+                    justify-content: space-between; 
+                    align-items: center;">
+                    <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Fechamento Anterior</span>
+                    <span style="font-size: 12px; color: black; flex: 1; text-align: center;">{fechamento_anterior:.2f}</span>
+                    <span style="font-size: 14px; color: #155724; font-weight: bold; flex: 1; text-align: right;"></span>
+                </div>
+                """, 
+                unsafe_allow_html=True
+            )
+            st.markdown(
+                f"""
+                <div style="
+                    background-color: #d4edda; 
+                    padding: 12px; 
+                    border-radius: 8px; 
+                    margin: 8px 0; 
+                    box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
+                    display: flex; 
+                    justify-content: space-between; 
+                    align-items: center;">
+                    <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Preço Atual</span>
+                    <span style="font-size: 12px; color: black; flex: 1; text-align: center;">{preco_atual:.2f}</span>
+                    <span style="font-size: 14px; color: #155724; font-weight: bold; flex: 1; text-align: right;"></span>
+                </div>
+                """, 
+                unsafe_allow_html=True
+            )
+            st.markdown(
+                f"""
+                <div style="
+                    background-color: {'#d4edda' if variacao_dia >= 0 else '#f8d7da'}; 
+                    padding: 12px; 
+                    border-radius: 8px; 
+                    margin: 8px 0; 
+                    box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
+                    display: flex; 
+                    justify-content: space-between; 
+                    align-items: center;">
+                    <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Variação do Dia</span>
+                    <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
+                    <span style="font-size: 14px; color: {'#155724' if variacao_dia >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_dia >= 0 else '↓'} {abs(variacao_dia):.2f}%</span>
+                </div>
+                """, 
+                unsafe_allow_html=True
+            )
+            st.markdown(
+                f"""
+                <div style="
+                    background-color: {'#d4edda' if variacao_semanal >= 0 else '#f8d7da'}; 
+                    padding: 12px; 
+                    border-radius: 8px; 
+                    margin: 8px 0; 
+                    box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
+                    display: flex; 
+                    justify-content: space-between; 
+                    align-items: center;">
+                    <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Variação Semanal</span>
+                    <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
+                    <span style="font-size: 14px; color: {'#155724' if variacao_semanal >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_semanal >= 0 else '↓'} {abs(variacao_semanal):.2f}%</span>
+                </div>
+                """, 
+                unsafe_allow_html=True
+            )
+            st.markdown(
+                f"""
+                <div style="
+                    background-color: {'#d4edda' if variacao_mensal >= 0 else '#f8d7da'}; 
+                    padding: 12px; 
+                    border-radius: 8px; 
+                    margin: 8px 0; 
+                    box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
+                    display: flex; 
+                    justify-content: space-between; 
+                    align-items: center;">
+                    <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Variação Mensal</span>
+                    <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
+                    <span style="font-size: 14px; color: {'#155724' if variacao_mensal >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_mensal >= 0 else '↓'} {abs(variacao_mensal):.2f}%</span>
+                </div>
+                """, 
+                unsafe_allow_html=True
+            )
 
             # Definindo a cor da linha do gráfico com base na variação do dia
             cor_linha = 'green' if variacao_dia >= 0 else 'red'
@@ -405,6 +456,8 @@ with col2:
             st.warning("Nenhum dado disponível para o IBOV.")
     except Exception as e:
         st.error(f"Erro ao carregar dados intraday: {e}")
+
+
 
     # Dados das ações
     try:
