@@ -23,7 +23,7 @@ def get_stock_data(ticker, period, interval):
 
 
 # Divisão em duas colunas para os gráficos semanal e anual
-col1, col2 = st.columns([4,1])
+col1, col2 = st.columns([4,2])
 
 # Gráfico Semanal
 with col1:
@@ -47,7 +47,7 @@ with col1:
                 yaxis_side="right",
                 xaxis_title="Horário",
                 template="plotly_dark",
-                height=700,
+                height=750,
             )
             st.plotly_chart(fig_intraday, use_container_width=True)
         else:
@@ -74,7 +74,7 @@ with col2:
                 title_x=0.4,  
                 yaxis_side="right",  
                 template="plotly_dark",
-                height=450,
+                height=300,
                 xaxis=dict(
                     rangeslider=dict(
                         visible=True,  
@@ -118,7 +118,7 @@ with col2:
                 title_x=0.4,                
                 yaxis_side="right",               
                 template="plotly_dark",
-                height=450,
+                height=300,
                 xaxis=dict(
                     range=[last_5_years[0], last_5_years[-1]],  # Aplica o zoom inicial de 5 anos
                     rangeslider=dict(
