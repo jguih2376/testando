@@ -117,7 +117,7 @@ with col2:
                 yaxis_side="right",
                 #xaxis_title="Data",
                 template="plotly_dark",
-                height=450
+                height=450,
                 xaxis=dict(
                     rangeslider=dict(
                         visible=True,  # Exibe o seletor de intervalo
