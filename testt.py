@@ -187,14 +187,8 @@ def get_commodities():
 
 @st.cache_data(ttl=30)
 def get_stocks():
-    symbols = {
-        "Apple": "AAPL",
-        "Ibovespa": "^BVSP",
-        "Tesla": "TSLA",
-        "S&P 500": "^GSPC",
-        "Dow Jones": "^DJI",
-        "NASDAQ": "^IXIC"
-    }
+    symbols =  {'IBOV': '^BVSP','EWZ':'EWZ', 'S&P500': '^GSPC', 'NASDAQ': '^IXIC', 'FTSE100': '^FTSE', 'DAX': '^GDAXI',
+                'CAC40': '^FCHI', 'SSE Composite': '000001.SS', 'Nikkei225': '^N225', 'Merval': '^MERV'}
     data = {}
     for name, symbol in symbols.items():
         try:
