@@ -364,7 +364,7 @@ with col2:
                     text=f"{preco_atual:.2f}",  # Texto com o preço atual formatado
                     showarrow=True,
                     arrowhead=2,
-                    ax=-30,  # Deslocamento horizontal da seta
+                    ax=50,  # Deslocamento horizontal da seta
                     ay=0,  # Sem deslocamento vertical
                     font=dict(size=12, color='#FFFFFF'),
                     bgcolor='rgba(0, 0, 0, 0.5)',  # Fundo semi-transparente para legibilidade
