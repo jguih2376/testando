@@ -52,64 +52,47 @@ with tab3:
     # Entrada do usuário para o ticker da ação
     ticker = st.text_input("Digite o código da ação (ex: AAPL, MSFT, PETR4.SA):", value="AAPL")
 
-    # Definição das opções de intervalo
-    interval_options = {"5min": "5m", "15min": "15m", "30min": "30m", "1h": "1h"}
-
     # Função para obter dados da ação
     def get_stock_data(ticker, period, interval):
         stock = yf.Ticker(ticker)
         data = stock.history(period=period, interval=interval)
         return data
 
-    # Divisão em colunas para o gráfico intraday e o seletor
-    col1, col2 = st.columns([6, 1])  # 6 partes para o gráfico, 1 parte para o seletor
-
-    with col1:
-        try:
-            # Usamos session_state para manter o valor do intervalo entre renderizações
-            interval_label = st.session_state.get("interval_label", "5min")  # Default inicial
-            interval = interval_options[interval_label]
-            intraday_data = get_stock_data(ticker, period="1d", interval=interval)  # Ajustado para 1d com intervalo intraday
-            if not intraday_data.empty:
-                fig_intraday = go.Figure()
-                fig_intraday.add_trace(go.Candlestick(
-                    x=intraday_data.index,
-                    open=intraday_data['Open'],
-                    high=intraday_data['High'],
-                    low=intraday_data['Low'],
-                    close=intraday_data['Close'],
-                    name="OHLC"
-                ))
-                fig_intraday.update_layout(
-                    title=f"Intraday ({interval_label})",
-                    yaxis_title="Preço",
-                    yaxis_side="right",
-                    xaxis_title="Horário",
-                    template="plotly_dark",
-                    height=700,
-                    xaxis=dict(
-                        rangeslider=dict(visible=True, thickness=0.03),
-                    )
+    # Gráfico Diário (substitui o Intraday anterior)
+    try:
+        daily_data = get_stock_data(ticker, period="1y", interval="1d")
+        if not daily_data.empty:
+            fig_daily = go.Figure()
+            fig_daily.add_trace(go.Candlestick(
+                x=daily_data.index,
+                open=daily_data['Open'],
+                high=daily_data['High'],
+                low=daily_data['Low'],
+                close=daily_data['Close'],
+                name="OHLC"
+            ))
+            fig_daily.update_layout(
+                title="Diário",
+                yaxis_title="Preço",
+                yaxis_side="right",
+                xaxis_title="Data",
+                template="plotly_dark",
+                height=700,
+                xaxis=dict(
+                    rangeslider=dict(visible=True, thickness=0.03),
                 )
-                st.plotly_chart(fig_intraday, use_container_width=True)
-            else:
-                st.warning("Nenhum dado intraday disponível para este ticker.")
-        except Exception as e:
-            st.error(f"Erro ao carregar dados intraday: {e}")
-
-    with col2:
-        # Seletor de intervalo ao lado do gráfico
-        interval_label = st.selectbox(
-            "Intervalo intraday:",
-            list(interval_options.keys()),
-            key="interval_label"  # Chave para manter o estado
-        )
+            )
+            st.plotly_chart(fig_daily, use_container_width=True)
+        else:
+            st.warning("Nenhum dado diário disponível para este ticker.")
+    except Exception as e:
+        st.error(f"Erro ao carregar dados diários: {e}")
 
     # Divisão para gráficos semanal e anual
-    col3, col4 = st.columns(2)
+    col1, col2 = st.columns(2)
 
     # Gráfico Semanal
-    with col3:
+    with col1:
         try:
             weekly_data = get_stock_data(ticker, period="1y", interval="1wk")
             if not weekly_data.empty:
@@ -148,7 +131,7 @@ with tab3:
             st.error(f"Erro ao carregar dados semanais: {e}")
 
     # Gráfico Anual
-    with col4:
+    with col2:
         try:
             yearly_data = get_stock_data(ticker, period="10y", interval="1mo")
             if not yearly_data.empty:
