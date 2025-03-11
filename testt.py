@@ -75,7 +75,7 @@ try:
                     display: flex; 
                     justify-content: space-between; 
                     align-items: center;">
-                    <span style="font-weight: bold; font-size: 16px;">{row['Ação']}</span>
+                    <span style="font-weight: bold; font-size: 16px; color: black;">{row['Ação']}</span>
                     <span style="color: #155724; font-size: 16px; font-weight: bold;">{row['Variação (%)']:.2f}%</span>
                 </div>
                 """, 
@@ -109,7 +109,7 @@ try:
                     display: flex; 
                     justify-content: space-between; 
                     align-items: center;">
-                    <span style="font-weight: bold; font-size: 16px;">{row['Ação']}</span>
+                    <span style="font-weight: bold; font-size: 16px; color: black;">{row['Ação']}</span>
                     <span style="color: #721c24; font-size: 16px; font-weight: bold;">{row['Variação (%)']:.2f}%</span>
                 </div>
                 """, 
