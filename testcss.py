@@ -28,7 +28,7 @@ col1, col2 = st.columns([4,2])
 # Gráfico Semanal
 with col1:
     # Gráfico Intraday
-    st.subheader(f"Gráfico Intraday ({interval_label})")
+    #st.subheader(f"Gráfico Intraday ({interval_label})")
     try:
         intraday_data = get_stock_data(ticker, period="1d", interval=interval)
         if not intraday_data.empty:
@@ -74,7 +74,7 @@ with col2:
                 title_x=0.4,  
                 yaxis_side="right",  
                 template="plotly_dark",
-                height=300,
+                height=350,
                 xaxis=dict(
                     rangeslider=dict(
                         visible=True,  
@@ -118,7 +118,7 @@ with col2:
                 title_x=0.4,                
                 yaxis_side="right",               
                 template="plotly_dark",
-                height=300,
+                height=350,
                 xaxis=dict(
                     range=[last_5_years[0], last_5_years[-1]],  # Aplica o zoom inicial de 5 anos
                     rangeslider=dict(
