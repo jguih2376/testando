@@ -31,16 +31,11 @@ def get_ibov_data():
         "Variação (%)": variacao.values
     })
 
-# Função para aplicar cores condicionais
-def color_variation(val):
-    color = 'green' if val > 0 else 'red' if val < 0 else 'black'
-    return f'color: {color}'
-
 # Interface com Streamlit
 st.set_page_config(page_title="Ibovespa Hoje", layout="wide")
+st.title("📊 Maiores Altas e Baixas do Ibovespa")
 
-# Título e informações
-st.title("📈 Maiores Altas e Baixas do Ibovespa")
+# Horário atual em BRT
 brt = pytz.timezone('America/Sao_Paulo')
 data_atual = datetime.now(brt).strftime("%d/%m/%Y %H:%M:%S")
 st.write(f"**Data:** 11 de Março de 2025 (atualizado até {data_atual} BRT)")
@@ -54,36 +49,56 @@ try:
     col1, col2 = st.columns(2)
 
     with col1:
-        st.subheader("🚀 5 Maiores Altas do Dia")
-        st.dataframe(
-            maiores_altas.style.format({"Variação (%)": "{:.2f}%"})
-                              .applymap(color_variation, subset=["Variação (%)"]),
-            height=200
-        )
-        # Gráfico de barras para altas
+        st.subheader("🚀 Maiores Altas do Dia")
+        # Gráfico de barras horizontais
         fig_altas = px.bar(
-            maiores_altas, x="Ação", y="Variação (%)", 
-            color="Variação (%)", color_continuous_scale="RdYlGn",
-            title="Maiores Altas"
+            maiores_altas, y="Ação", x="Variação (%)", 
+            orientation="h", 
+            color="Variação (%)", color_continuous_scale="Greens",
+            text=maiores_altas["Variação (%)"].round(2).astype(str) + "%",
+            height=300
         )
+        fig_altas.update_traces(textposition="auto")
+        fig_altas.update_layout(showlegend=False)
         st.plotly_chart(fig_altas, use_container_width=True)
 
+        # Cartões estilizados para cada ação
+        for _, row in maiores_altas.iterrows():
+            st.markdown(
+                f"""
+                <div style="background-color: #e6ffe6; padding: 10px; border-radius: 5px; margin: 5px 0;">
+                    <strong>{row['Ação']}</strong>: <span style="color: green;">{row['Variação (%)']:.2f}%</span>
+                </div>
+                """, 
+                unsafe_allow_html=True
+            )
+
     with col2:
-        st.subheader("📉 5 Maiores Baixas do Dia")
-        st.dataframe(
-            maiores_baixas.style.format({"Variação (%)": "{:.2f}%"})
-                               .applymap(color_variation, subset=["Variação (%)"]),
-            height=200
-        )
-        # Gráfico de barras para baixas
+        st.subheader("📉 Maiores Baixas do Dia")
+        # Gráfico de barras horizontais
         fig_baixas = px.bar(
-            maiores_baixas, x="Ação", y="Variação (%)", 
-            color="Variação (%)", color_continuous_scale="RdYlGn",
-            title="Maiores Baixas"
+            maiores_baixas, y="Ação", x="Variação (%)", 
+            orientation="h", 
+            color="Variação (%)", color_continuous_scale="Reds",
+            text=maiores_baixas["Variação (%)"].round(2).astype(str) + "%",
+            height=300
         )
+        fig_baixas.update_traces(textposition="auto")
+        fig_baixas.update_layout(showlegend=False)
         st.plotly_chart(fig_baixas, use_container_width=True)
 
-    # Botão para atualizar manualmente
+        # Cartões estilizados para cada ação
+        for _, row in maiores_baixas.iterrows():
+            st.markdown(
+                f"""
+                <div style="background-color: #ffe6e6; padding: 10px; border-radius: 5px; margin: 5px 0;">
+                    <strong>{row['Ação']}</strong>: <span style="color: red;">{row['Variação (%)']:.2f}%</span>
+                </div>
+                """, 
+                unsafe_allow_html=True
+            )
+
+    # Botão para atualizar
     if st.button("🔄 Atualizar Dados"):
         st.experimental_rerun()
 
@@ -93,4 +108,3 @@ except Exception as e:
 # Rodapé
 st.markdown("---")
 st.write("**Fonte:** Yahoo Finance via yfinance. Dados refletem o pregão até o momento mais recente.")
-st.write("**Nota:** Atualize após às 10:00 BRT para dados do dia corrente.")
