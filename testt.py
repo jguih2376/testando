@@ -66,16 +66,19 @@ try:
         variacao_dia = ((preco_atual - abertura_hoje) / abertura_hoje) * 100
         
         # Exibindo métricas
-        col_metrics1, col_metrics2, col_metrics3, col_metrics4 = st.columns(4)
+        col_metrics1, col_metrics2, col_metrics3 = st.columns(3)
         with col_metrics1:
             st.metric("Preço Atual", f"{preco_atual:.2f}")
         with col_metrics2:
-            st.metric("Variação do Dia", f"{variacao_dia:.2f}%", delta_color="normal")
+            # Adicionando seta baseada na variação
+            seta = "↑" if variacao_dia >= 0 else "↓"
+            st.metric("Variação do Dia", f"{seta} {abs(variacao_dia):.2f}%", delta_color="normal")
         with col_metrics3:
             st.metric("Fechamento Anterior", f"{fechamento_anterior:.2f}")
-        with col_metrics4:
-            st.metric("Abertura Hoje", f"{abertura_hoje:.2f}")
-        
+
+        # Definindo a cor da linha do gráfico com base na variação
+        cor_linha = 'green' if variacao_dia >= 0 else 'red'
+
         # Gráfico de linha
         fig_intraday = go.Figure()
         fig_intraday.add_trace(go.Scatter(
@@ -83,7 +86,7 @@ try:
             y=intraday_data['Close'],
             mode='lines',
             name="Fechamento",
-            line=dict(color='royalblue', width=1)
+            line=dict(color=cor_linha, width=1)
         ))
         fig_intraday.update_layout(
             title="Intraday IBOV (5min)",
