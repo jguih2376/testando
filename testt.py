@@ -73,9 +73,9 @@ with tab3:
             ))
             fig_daily.update_layout(
                 title="Diário",
-                yaxis_title="Preço",
+                #yaxis_title="Preço",
                 yaxis_side="right",
-                xaxis_title="Data",
+                #xaxis_title="Data",
                 template="plotly_dark",
                 height=700,
                 xaxis=dict(
