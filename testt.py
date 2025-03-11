@@ -341,7 +341,7 @@ with col2:
             fechamento_mes_passado = monthly_data['Close'].iloc[0]
             variacao_mensal = ((preco_atual - fechamento_mes_passado) / fechamento_mes_passado) * 100
 
-            # Cartões HTML substituindo st.metric
+            # Cartões HTML para Fechamento Anterior e Preço Atual
             st.markdown(
                 f"""
                 <div style="
@@ -378,56 +378,42 @@ with col2:
                 """, 
                 unsafe_allow_html=True
             )
+
+            # Todas as variações em um único cartão
             st.markdown(
                 f"""
                 <div style="
-                    background-color: {'#d4edda' if variacao_dia >= 0 else '#f8d7da'}; 
+                    background-color: #ffffff; 
                     padding: 12px; 
                     border-radius: 8px; 
                     margin: 8px 0; 
-                    box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
-                    display: flex; 
-                    justify-content: space-between; 
-                    align-items: center;">
-                    <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Variação do Dia</span>
-                    <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
-                    <span style="font-size: 14px; color: {'#155724' if variacao_dia >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_dia >= 0 else '↓'} {abs(variacao_dia):.2f}%</span>
-                </div>
-                """, 
-                unsafe_allow_html=True
-            )
-            st.markdown(
-                f"""
-                <div style="
-                    background-color: {'#d4edda' if variacao_semanal >= 0 else '#f8d7da'}; 
-                    padding: 12px; 
-                    border-radius: 8px; 
-                    margin: 8px 0; 
-                    box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
-                    display: flex; 
-                    justify-content: space-between; 
-                    align-items: center;">
-                    <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Variação Semanal</span>
-                    <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
-                    <span style="font-size: 14px; color: {'#155724' if variacao_semanal >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_semanal >= 0 else '↓'} {abs(variacao_semanal):.2f}%</span>
-                </div>
-                """, 
-                unsafe_allow_html=True
-            )
-            st.markdown(
-                f"""
-                <div style="
-                    background-color: {'#d4edda' if variacao_mensal >= 0 else '#f8d7da'}; 
-                    padding: 12px; 
-                    border-radius: 8px; 
-                    margin: 8px 0; 
-                    box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
-                    display: flex; 
-                    justify-content: space-between; 
-                    align-items: center;">
-                    <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Variação Mensal</span>
-                    <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
-                    <span style="font-size: 14px; color: {'#155724' if variacao_mensal >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_mensal >= 0 else '↓'} {abs(variacao_mensal):.2f}%</span>
+                    box-shadow: 2px 2px 4px rgba(0,0,0,0.1);">
+                    <div style="
+                        display: flex; 
+                        justify-content: space-between; 
+                        align-items: center; 
+                        margin-bottom: 8px;">
+                        <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Variação do Dia</span>
+                        <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
+                        <span style="font-size: 14px; color: {'#155724' if variacao_dia >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_dia >= 0 else '↓'} {abs(variacao_dia):.2f}%</span>
+                    </div>
+                    <div style="
+                        display: flex; 
+                        justify-content: space-between; 
+                        align-items: center; 
+                        margin-bottom: 8px;">
+                        <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Variação Semanal</span>
+                        <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
+                        <span style="font-size: 14px; color: {'#155724' if variacao_semanal >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_semanal >= 0 else '↓'} {abs(variacao_semanal):.2f}%</span>
+                    </div>
+                    <div style="
+                        display: flex; 
+                        justify-content: space-between; 
+                        align-items: center;">
+                        <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Variação Mensal</span>
+                        <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
+                        <span style="font-size: 14px; color: {'#155724' if variacao_mensal >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_mensal >= 0 else '↓'} {abs(variacao_mensal):.2f}%</span>
+                    </div>
                 </div>
                 """, 
                 unsafe_allow_html=True
