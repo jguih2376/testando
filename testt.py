@@ -58,7 +58,7 @@ with tab3:
         data = stock.history(period=period, interval=interval)
         return data
 
-    # Gráfico Diário
+    # Gráfico Diário (substitui o Intraday anterior)
     try:
         daily_data = get_stock_data(ticker, period="1y", interval="1d")
         if not daily_data.empty:
@@ -73,15 +73,24 @@ with tab3:
             ))
             fig_daily.update_layout(
                 title="Diário",
-                yaxis_title="Preço",
+                #yaxis_title="Preço",
                 yaxis_side="right",
-                xaxis_title="Data",
+                #xaxis_title="Data",
                 template="plotly_dark",
                 height=700,
                 xaxis=dict(
-                    rangeslider=dict(visible=True, thickness=0.03),
+                    rangeslider=dict(visible=True, thickness=0.01),
+                    rangeselector=dict(
+                            buttons=list([
+                                dict(count=1, label="1m", step="month", stepmode="backward"),
+                                dict(count=3, label="3m", step="month", stepmode="backward"),
+                                dict(count=6, label="6m", step="month", stepmode="backward"),
+                                dict(count=1, label="YTD", step="year", stepmode="todate"),
+                                dict(step="all")
+                            ])
+                        )
+                    )
                 )
-            )
             st.plotly_chart(fig_daily, use_container_width=True)
         else:
             st.warning("Nenhum dado diário disponível para este ticker.")
@@ -91,32 +100,20 @@ with tab3:
     # Divisão para gráficos semanal e anual
     col1, col2 = st.columns(2)
 
-    # Gráfico Semanal (com seleção de tipo)
+    # Gráfico Semanal
     with col1:
-        # Seleção do tipo de gráfico
-        chart_type = st.selectbox("Tipo de gráfico semanal:", ["Candlestick", "Linha"], key="weekly_chart_type")
-        
         try:
             weekly_data = get_stock_data(ticker, period="1y", interval="1wk")
             if not weekly_data.empty:
                 fig_weekly = go.Figure()
-                if chart_type == "Candlestick":
-                    fig_weekly.add_trace(go.Candlestick(
-                        x=weekly_data.index,
-                        open=weekly_data['Open'],
-                        high=weekly_data['High'],
-                        low=weekly_data['Low'],
-                        close=weekly_data['Close'],
-                        name="OHLC"
-                    ))
-                else:  # Linha
-                    fig_weekly.add_trace(go.Scatter(
-                        x=weekly_data.index,
-                        y=weekly_data['Close'],
-                        mode='lines',
-                        name="Fechamento",
-                        line=dict(color='royalblue', width=2)
-                    ))
+                fig_weekly.add_trace(go.Candlestick(
+                    x=weekly_data.index,
+                    open=weekly_data['Open'],
+                    high=weekly_data['High'],
+                    low=weekly_data['Low'],
+                    close=weekly_data['Close'],
+                    name="OHLC"
+                ))
                 fig_weekly.update_layout(
                     title="Semanal",
                     title_x=0.4,
