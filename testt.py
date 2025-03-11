@@ -49,19 +49,7 @@ try:
     col1, col2 = st.columns(2)
 
     with col1:
-        st.subheader("🚀 Maiores Altas do Dia")
-        # Gráfico de barras horizontais
-        fig_altas = px.bar(
-            maiores_altas, y="Ação", x="Variação (%)", 
-            orientation="h", 
-            color="Variação (%)", color_continuous_scale="Greens",
-            text=maiores_altas["Variação (%)"].round(2).astype(str) + "%",
-            height=300
-        )
-        fig_altas.update_traces(textposition="auto")
-        fig_altas.update_layout(showlegend=False)
-        st.plotly_chart(fig_altas, use_container_width=True)
-
+        st.subheader("↑ Maiores Altas do Dia")
         # Cartões estilizados para altas
         for _, row in maiores_altas.iterrows():
             st.markdown(
@@ -83,19 +71,7 @@ try:
             )
 
     with col2:
-        st.subheader("📉 Maiores Baixas do Dia")
-        # Gráfico de barras horizontais
-        fig_baixas = px.bar(
-            maiores_baixas, y="Ação", x="Variação (%)", 
-            orientation="h", 
-            color="Variação (%)", color_continuous_scale="Reds",
-            text=maiores_baixas["Variação (%)"].round(2).astype(str) + "%",
-            height=300
-        )
-        fig_baixas.update_traces(textposition="auto")
-        fig_baixas.update_layout(showlegend=False)
-        st.plotly_chart(fig_baixas, use_container_width=True)
-
+        st.subheader("↓ Maiores Baixas do Dia")
         # Cartões estilizados para baixas
         for _, row in maiores_baixas.iterrows():
             st.markdown(
