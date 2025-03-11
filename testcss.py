@@ -36,20 +36,31 @@ with tab1:
     dados_intraday = carregar_dados(ticker, "1d", intervalo_intraday)
     
     if dados_intraday is not None:
+        # Criar figura com apenas o candlestick
         fig_intraday = go.Figure(data=[go.Candlestick(x=dados_intraday.index,
                                                     open=dados_intraday['Open'],
                                                     high=dados_intraday['High'],
                                                     low=dados_intraday['Low'],
                                                     close=dados_intraday['Close'])])
+        
+        # Configurar layout para remover elementos indesejados
         fig_intraday.update_layout(
             title=f'Intraday - {ticker} ({intervalo_intraday})',
             yaxis_title='Preço',
             xaxis_title='Hora',
-            template='plotly_white'
+            template='plotly_white',
+            # Remover grade e outros elementos que possam confundir
+            yaxis=dict(showgrid=False),
+            xaxis=dict(showgrid=False),
+            # Garantir que não haja múltiplos eixos y
+            yaxis2=None
         )
+        
+        # Exibir o gráfico
         st.plotly_chart(fig_intraday, use_container_width=True)
     else:
         st.warning("Nenhum dado Intraday disponível.")
+    
 
 # --- Diário ---
 with tab2:
