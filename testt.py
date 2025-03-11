@@ -47,30 +47,23 @@ brt = pytz.timezone('America/Sao_Paulo')
 data_atual = datetime.now(brt).strftime("%d/%m/%Y %H:%M:%S")
 st.write(f"**Data:** 11 de Março de 2025 (atualizado até {data_atual} BRT)")
 
-# Seleção do intervalo intraday
-interval_options = {"5min": "5m", "15min": "15m", "30min": "30m", "1h": "1h"}
-interval_label = st.selectbox("Selecione o intervalo intraday:", list(interval_options.keys()))
-interval = interval_options[interval_label]
-
 # Gráfico Intraday do IBOV
-st.subheader(f"Gráfico Intraday do IBOV ({interval_label})")
+st.subheader(f"IBOV")
 try:
-    intraday_data = get_stock_data('^BVSP', period="1d", interval=interval)  # Usando '^BVSP' diretamente
+    intraday_data = get_stock_data('^BVSP', period="1d", interval=5)  # Usando '^BVSP' diretamente
     if not intraday_data.empty:
         fig_intraday = go.Figure()
-        fig_intraday.add_trace(go.Candlestick(
-            x=intraday_data.index,
-            open=intraday_data['Open'],
-            high=intraday_data['High'],
-            low=intraday_data['Low'],
-            close=intraday_data['Close'],
-            name="OHLC"
-        ))
+
+        fig_intraday.add_trace(go.Scatter(
+        x=fig_intraday.index,
+        y=fig_intraday['Close'],
+        mode='lines',
+        name="Fechamento",
+        line=dict(color='royalblue', width=1)
+    ))
         fig_intraday.update_layout(
-            title=f"Intraday IBOV ({interval_label})",
-            yaxis_title="Preço",
+            title=f"Intraday IBOV",
             yaxis_side="right",
-            xaxis_title="Horário",
             template="plotly_dark",
             height=700,
         )
