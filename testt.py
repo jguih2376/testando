@@ -63,23 +63,30 @@ with tab3:
         daily_data = get_stock_data(ticker, period="1y", interval="1d")
         if not daily_data.empty:
             fig_daily = go.Figure()
-            fig_daily.add_trace(go.Candlestick(
-                x=daily_data.index,
-                open=daily_data['Open'],
-                high=daily_data['High'],
-                low=daily_data['Low'],
-                close=daily_data['Close'],
-                name="OHLC"
-            ))
+            if chart_type == "Candlestick":
+                fig_daily.add_trace(go.Candlestick(
+                    x=daily_data.index,
+                    open=daily_data['Open'],
+                    high=daily_data['High'],
+                    low=daily_data['Low'],
+                    close=daily_data['Close'],
+                    name="OHLC"
+                ))
+            else:  # Linha
+                fig_daily.add_trace(go.Scatter(
+                    x=daily_data.index,
+                    y=daily_data['Close'],
+                    mode='lines',
+                    name="Fechamento",
+                    line=dict(color='royalblue', width=2)
+                ))
             fig_daily.update_layout(
                 title="Diário",
-                yaxis_title="Preço",
                 yaxis_side="right",
-                xaxis_title="Data",
                 template="plotly_dark",
                 height=700,
                 xaxis=dict(
-                    rangeslider=dict(visible=True, thickness=0.01),
+                    rangeslider=dict(visible=True, thickness=0.015),
                     rangeselector=dict(
                             buttons=list([
                                 dict(count=1, label="1m", step="month", stepmode="backward"),
