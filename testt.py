@@ -327,7 +327,7 @@ with col2:
             
             if not intraday_data.empty and not previous_day_data.empty and not weekly_data.empty and not monthly_data.empty:
                 # Preço atual (último fechamento intraday)
-                preco_atual = intraday_data['Close'].iloc[-1]
+                preco_atual = intraday_data['Adj Close'].iloc[-1]
                 # Abertura de hoje (primeiro valor do dia)
                 abertura_hoje = intraday_data['Open'].iloc[0]
                 # Fechamento do dia anterior
