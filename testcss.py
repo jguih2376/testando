@@ -55,7 +55,11 @@ with col1:
 with col2:
     # Coloca o radio button na coluna da direita
     interval_label = st.radio(
-        "Selecione o intervalo intraday:",
+        "
+        
+        
+        
+        ",
         list(interval_options.keys()),
         key="interval_label"  # Usamos uma chave para manter o estado
     )
