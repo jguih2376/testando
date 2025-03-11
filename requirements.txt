@@ -6,3 +6,4 @@ seaborn
 plotly
 fundamentus
 python-bcb
+streamlit-autorefresh
