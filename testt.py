@@ -79,7 +79,7 @@ with tab3:
                 template="plotly_dark",
                 height=700,
                 xaxis=dict(
-                    rangeslider=dict(visible=True, thickness=0.02),
+                    rangeslider=dict(visible=True, thickness=0.01),
                     rangeselector=dict(
                             buttons=list([
                                 dict(count=1, label="1m", step="month", stepmode="backward"),
