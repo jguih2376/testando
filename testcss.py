@@ -11,6 +11,11 @@ ticker = st.text_input("Digite o código da ação (ex: AAPL, MSFT, PETR4.SA):",
 
 # Definição das opções de intervalo
 interval_options = {"5min": "5m", "15min": "15m", "30min": "30m", "1h": "1h"}
+interval_label = st.select_slider(
+    "",
+    list(interval_options.keys()),
+    key="interval_label"  # Usamos uma chave para manter o estado
+)
 
 # Função para obter dados da ação
 def get_stock_data(ticker, period, interval):
@@ -20,49 +25,43 @@ def get_stock_data(ticker, period, interval):
 
 # Gráfico Intraday
 st.subheader(f"Gráfico Intraday")
-col1, col2 = st.columns([6, 1])  # Define as colunas: 6 partes para o gráfico, 1 parte para os controles
 
-with col1:
-    try:
-        # O intervalo será definido fora do bloco try para ser acessível
-        interval_label = st.session_state.get("interval_label", "5min")  # Default inicial
-        interval = interval_options[interval_label]
-        intraday_data = get_stock_data(ticker, period="1d", interval=interval)
-        if not intraday_data.empty:
-            fig_intraday = go.Figure()
-            fig_intraday.add_trace(go.Candlestick(
-                x=intraday_data.index,
-                open=intraday_data['Open'],
-                high=intraday_data['High'],
-                low=intraday_data['Low'],
-                close=intraday_data['Close'],
-                name="OHLC"
-            ))
-            fig_intraday.update_layout(
-                title=f"Intraday ({interval_label})",
-                yaxis_side="right",
-                template="plotly_dark",
-                height=700,
-                xaxis=dict(
-                    rangeslider=dict(
-                        visible=True,  
-                        thickness=0.03),
-            ))
-            st.plotly_chart(fig_intraday, use_container_width=True)
-        else:
-            st.warning("Nenhum dado intraday disponível para este ticker.")
-    except Exception as e:
-        st.error(f"Erro ao carregar dados intraday: {e}")
+try:
+    # O intervalo será definido fora do bloco try para ser acessível
+    interval_label = st.session_state.get("interval_label", "5min")  # Default inicial
+    interval = interval_options[interval_label]
+    intraday_data = get_stock_data(ticker, period="1d", interval=interval)
+    if not intraday_data.empty:
+        fig_intraday = go.Figure()
+        fig_intraday.add_trace(go.Candlestick(
+            x=intraday_data.index,
+            open=intraday_data['Open'],
+            high=intraday_data['High'],
+            low=intraday_data['Low'],
+            close=intraday_data['Close'],
+            name="OHLC"
+        ))
+        fig_intraday.update_layout(
+            title=f"Intraday ({interval_label})",
+            yaxis_side="right",
+            template="plotly_dark",
+            height=700,
+            xaxis=dict(
+                rangeslider=dict(
+                    visible=True,  
+                    thickness=0.02),
+        ))
+        st.plotly_chart(fig_intraday, use_container_width=True)
+    else:
+        st.warning("Nenhum dado intraday disponível para este ticker.")
+except Exception as e:
+    st.error(f"Erro ao carregar dados intraday: {e}")
 
-with col2:
-    st.write(" ")
-    st.write(" ")
-
-    interval_label = st.select_slider(
-        "",
-        list(interval_options.keys()),
-        key="interval_label"  # Usamos uma chave para manter o estado
-    )
+interval_label = st.select_slider(
+    "",
+    list(interval_options.keys()),
+    key="interval_label"  # Usamos uma chave para manter o estado
+)
 
 
 # Divisão em duas colunas para os gráficos semanal e anual
