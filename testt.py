@@ -412,11 +412,11 @@ with col2:
 
         with col1:
             st.markdown(
-                """
-                <h3 style="text-align: center;">↑ Maiores Altas do Dia ↑</h3>
-                """, 
-                unsafe_allow_html=True
-            )
+            """
+            <h3 style="text-align: center; font-size: 16px;">↑ Maiores Altas do Dia ↑</h3>
+            """, 
+            unsafe_allow_html=True
+        )
             for _, row in maiores_altas.iterrows():
                 st.markdown(
                     f"""
@@ -440,7 +440,7 @@ with col2:
         with col2:
             st.markdown(
                 """
-                <h3 style="text-align: center;">↓ Maiores Baixas do Dia ↓</h3>
+                <h3 style="text-align: center; font-size: 16px;">↓ Maiores Baixas do Dia ↓</h3>
                 """, 
                 unsafe_allow_html=True
             )
