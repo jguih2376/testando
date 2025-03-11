@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import yfinance as yf
 import plotly.express as px
+import plotly.graph_objects as go  # Import necessário para Candlestick
 from datetime import datetime
 import pytz
 
@@ -31,6 +32,12 @@ def get_ibov_data():
         "Variação (%)": variacao.values
     })
 
+# Função para obter dados intraday do IBOV
+def get_stock_data(ticker, period, interval):
+    stock = yf.Ticker(ticker)
+    data = stock.history(period=period, interval=interval)
+    return data
+
 # Interface com Streamlit
 st.set_page_config(page_title="Ibovespa Hoje", layout="wide")
 st.title("📊 Maiores Altas e Baixas do Ibovespa")
@@ -40,6 +47,40 @@ brt = pytz.timezone('America/Sao_Paulo')
 data_atual = datetime.now(brt).strftime("%d/%m/%Y %H:%M:%S")
 st.write(f"**Data:** 11 de Março de 2025 (atualizado até {data_atual} BRT)")
 
+# Seleção do intervalo intraday
+interval_options = {"5min": "5m", "15min": "15m", "30min": "30m", "1h": "1h"}
+interval_label = st.selectbox("Selecione o intervalo intraday:", list(interval_options.keys()))
+interval = interval_options[interval_label]
+
+# Gráfico Intraday do IBOV
+st.subheader(f"Gráfico Intraday do IBOV ({interval_label})")
+try:
+    intraday_data = get_stock_data('^BVSP', period="1d", interval=interval)  # Usando '^BVSP' diretamente
+    if not intraday_data.empty:
+        fig_intraday = go.Figure()
+        fig_intraday.add_trace(go.Candlestick(
+            x=intraday_data.index,
+            open=intraday_data['Open'],
+            high=intraday_data['High'],
+            low=intraday_data['Low'],
+            close=intraday_data['Close'],
+            name="OHLC"
+        ))
+        fig_intraday.update_layout(
+            title=f"Intraday IBOV ({interval_label})",
+            yaxis_title="Preço",
+            yaxis_side="right",
+            xaxis_title="Horário",
+            template="plotly_dark",
+            height=700,
+        )
+        st.plotly_chart(fig_intraday, use_container_width=True)
+    else:
+        st.warning("Nenhum dado intraday disponível para o IBOV.")
+except Exception as e:
+    st.error(f"Erro ao carregar dados intraday: {e}")
+
+# Dados das ações
 try:
     df = get_ibov_data().dropna()
     maiores_altas = df.nlargest(5, "Variação (%)")
@@ -50,11 +91,11 @@ try:
 
     with col1:
         st.markdown(
-        """
-        <h3 style="text-align: center;">↑ Maiores Altas do Dia ↑</h3>
-        """, 
-        unsafe_allow_html=True
-    )
+            """
+            <h3 style="text-align: center;">↑ Maiores Altas do Dia ↑</h3>
+            """, 
+            unsafe_allow_html=True
+        )
         # Cartões estilizados para altas
         for _, row in maiores_altas.iterrows():
             st.markdown(
@@ -77,12 +118,11 @@ try:
 
     with col2:
         st.markdown(
-        """
-        <h3 style="text-align: center;">↓ Maiores Baixas do Dia ↓</h3>
-        """, 
-        unsafe_allow_html=True
-    )
-        st.subheader("↓ Maiores Baixas do Dia")
+            """
+            <h3 style="text-align: center;">↓ Maiores Baixas do Dia ↓</h3>
+            """, 
+            unsafe_allow_html=True
+        )
         # Cartões estilizados para baixas
         for _, row in maiores_baixas.iterrows():
             st.markdown(
