@@ -538,11 +538,11 @@ with col2:
 
 
 
-    # Rodapé
-    st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)
-    st.markdown("""
-    <div style="text-align: center; font-size: 12px; color: #A9A9A9; margin-top: 20px;">
-        <strong>Fonte:</strong> Moedas: AwesomeAPI | Commodities, Índices e Ações: Yahoo Finance<br>
-        <strong>Nota:</strong> Moedas atualizadas a cada 10 segundos; demais cotações a cada 20 minutos.
-    </div>
-    """, unsafe_allow_html=True)
+# Rodapé
+st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)
+st.markdown("""
+<div style="text-align: center; font-size: 12px; color: #A9A9A9; margin-top: 20px;">
+    <strong>Fonte:</strong> Moedas: AwesomeAPI | Commodities, Índices e Ações: Yahoo Finance<br>
+    <strong>Nota:</strong> Moedas atualizadas a cada 10 segundos; demais cotações a cada 20 minutos.
+</div>
+""", unsafe_allow_html=True)
