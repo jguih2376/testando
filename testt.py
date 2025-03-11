@@ -362,7 +362,7 @@ with col2:
                     xref="paper",  # Referência relativa ao papel (0 a 1)
                     yref="y",  # Referência ao eixo Y em valores absolutos
                     text=f"{preco_atual:.2f}",  # Texto com o preço atual formatado
-                    showarrow=True,
+                    showarrow=False,
                     arrowhead=2,
                     ax=-30,  # Deslocamento horizontal da seta
                     ay=0,  # Sem deslocamento vertical
@@ -370,11 +370,13 @@ with col2:
                     bgcolor='rgba(0, 0, 0, 0.5)',  # Fundo semi-transparente para legibilidade
                     bordercolor='#FFFFFF',
                     borderwidth=1
-                )
+                    xanchor="left",  # Ancorar o texto à esquerda para não invadir o gráfico
+                    yanchor="middle"  # Centralizar verticalmente no preço atual
+                    )
 
                 fig_intraday.update_layout(
                     title={
-                        'text': "IBOV - Variação Intraday",
+                        'text': "IBOV - Intraday",
                         'y': 0.95,
                         'x': 0.5,
                         'xanchor': 'center',
