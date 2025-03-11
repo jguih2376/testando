@@ -434,14 +434,12 @@ with col2:
                         'font': dict(size=16, color='#FFFFFF')
                     },
                     xaxis=dict(
-                        title="Horário",
                         tickformat="%H:%M",  # Formato de hora
                         gridcolor='rgba(255, 255, 255, 0.1)',  # Gridlines sutis
                         zeroline=False,
                         color='#FFFFFF'
                     ),
                     yaxis=dict(
-                        title="Pontos",
                         side="right",
                         gridcolor='rgba(255, 255, 255, 0.1)',  # Gridlines sutis
                         zeroline=False,
@@ -453,7 +451,7 @@ with col2:
                     plot_bgcolor='#1E1E1E',  # Fundo do gráfico alinhado ao tema
                     paper_bgcolor='#1E1E1E',  # Fundo externo alinhado ao tema
                     font=dict(color='#FFFFFF'),  # Cor da fonte geral
-                    showlegend=True,
+                    showlegend=False,
                     legend=dict(
                         x=0.01,
                         y=0.99,
