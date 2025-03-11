@@ -10,17 +10,14 @@ from datetime import datetime, timedelta
 st.title("🌎 Panorama do Mercado")
 st.write("Visão geral do mercado atual.")
 
+st.set_page_config(page_title="Painel de Cotações", layout="wide")
 # Criando as abas
 tab1, tab2, tab3 = st.tabs(['Panorama', 'TradingView', 'Triple Screen'])
 
 # Aba 1: Panorama
 with tab1:
+
     st.write('Aqui está o panorama geral do mercado.')
-
-    # Configuração básica do Streamlit
-    st.set_page_config(page_title="Painel de Cotações", layout="wide")
-
-    # Título do painel
     st.title("Painel de Cotações de Ações")
 
     # Sidebar para inputs do usuário
@@ -118,7 +115,7 @@ with tab1:
 
 
 
-    
+
 #"_____________________________________________________________________________________________________________"
 # Aba 2: TradingView
 with tab2:
