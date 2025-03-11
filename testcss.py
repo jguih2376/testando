@@ -9,10 +9,8 @@ st.title("Sistema de Cotação de Ações")
 # Entrada do usuário para o ticker da ação
 ticker = st.text_input("Digite o código da ação (ex: AAPL, MSFT, PETR4.SA):", value="AAPL")
 
-# Seleção do intervalo intraday
+# Definição das opções de intervalo
 interval_options = {"5min": "5m", "15min": "15m", "30min": "30m", "1h": "1h"}
-interval_label = st.selectbox("Selecione o intervalo intraday:", list(interval_options.keys()))
-interval = interval_options[interval_label]
 
 # Função para obter dados da ação
 def get_stock_data(ticker, period, interval):
@@ -20,16 +18,15 @@ def get_stock_data(ticker, period, interval):
     data = stock.history(period=period, interval=interval)
     return data
 
+# Gráfico Intraday
+st.subheader(f"Gráfico Intraday")
+col1, col2 = st.columns([6, 1])  # Define as colunas: 6 partes para o gráfico, 1 parte para os controles
 
-
-# Divisão em duas colunas para os gráficos semanal e anual
-col1, col2 = st.columns([4,2])
-
-# Gráfico Semanal
 with col1:
-    # Gráfico Intraday
-    #st.subheader(f"Gráfico Intraday ({interval_label})")
     try:
+        # O intervalo será definido fora do bloco try para ser acessível
+        interval_label = st.session_state.get("interval_label", "5min")  # Default inicial
+        interval = interval_options[interval_label]
         intraday_data = get_stock_data(ticker, period="1d", interval=interval)
         if not intraday_data.empty:
             fig_intraday = go.Figure()
@@ -47,7 +44,7 @@ with col1:
                 yaxis_side="right",
                 xaxis_title="Horário",
                 template="plotly_dark",
-                height=750,
+                height=700,
             )
             st.plotly_chart(fig_intraday, use_container_width=True)
         else:
@@ -55,8 +52,20 @@ with col1:
     except Exception as e:
         st.error(f"Erro ao carregar dados intraday: {e}")
 
-# Gráfico Anual
 with col2:
+    # Coloca o radio button na coluna da direita
+    interval_label = st.radio(
+        "Selecione o intervalo intraday:",
+        list(interval_options.keys()),
+        key="interval_label"  # Usamos uma chave para manter o estado
+    )
+
+
+# Divisão em duas colunas para os gráficos semanal e anual
+col1, col2 = st.columns(2)
+
+# Gráfico Semanal
+with col1:
     try:
         weekly_data = get_stock_data(ticker, period="1y", interval="1wk")
         if not weekly_data.empty:
@@ -74,7 +83,7 @@ with col2:
                 title_x=0.4,  
                 yaxis_side="right",  
                 template="plotly_dark",
-                height=350,
+                height=450,
                 xaxis=dict(
                     rangeslider=dict(
                         visible=True,  
@@ -96,7 +105,10 @@ with col2:
             st.warning("Nenhum dado semanal disponível para este ticker.")
 
     except Exception as e:
-        st.error(f"Erro ao carregar dados semanais: {e}")    
+        st.error(f"Erro ao carregar dados semanais: {e}")
+
+# Gráfico Anual
+with col2:
     try:
         yearly_data = get_stock_data(ticker, period="10y", interval="1mo")
         if not yearly_data.empty:
@@ -118,7 +130,7 @@ with col2:
                 title_x=0.4,                
                 yaxis_side="right",               
                 template="plotly_dark",
-                height=350,
+                height=450,
                 xaxis=dict(
                     range=[last_5_years[0], last_5_years[-1]],  # Aplica o zoom inicial de 5 anos
                     rangeslider=dict(
