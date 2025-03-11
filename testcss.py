@@ -83,7 +83,7 @@ with col1:
                             dict(count=3, label="3m", step="month", stepmode="backward"),
                             dict(count=6, label="6m", step="month", stepmode="backward"),
                             dict(count=1, label="YTD", step="year", stepmode="todate"),
-                            dict(count=1, label="1y", step="year", stepmode="backward"),
+                            dict(count=2, label="2y", step="year", stepmode="backward"),
                             dict(step="all")  # Exibe todos os dados
                         ])
                     )
