@@ -1,12 +1,13 @@
 import streamlit as st
 import yfinance as yf
+import pandas as pd
+import requests
 import plotly.graph_objects as go
 import streamlit.components.v1 as components
-import streamlit as st
-import yfinance as yf
-import pandas as pd
-import plotly.graph_objects as go
 from datetime import datetime
+
+
+
 
 st.set_page_config(page_title="Painel de Cotações", layout="wide")
 
@@ -20,105 +21,99 @@ tab1, tab2, tab3 = st.tabs(['Panorama', 'TradingView', 'Triple Screen'])
 # Aba 1: Panorama
 with tab1:
 
-    st.write('Aqui está o panorama geral do mercado.')
-    st.title("Painel de Cotações de Ações")
 
-    # Sidebar para inputs do usuário
-    st.sidebar.header("Configurações")
-    ticker = st.sidebar.text_input("Digite o símbolo da ação (ex: PETR4.SA, AAPL)", value="PETR4.SA")
-    periodo = st.sidebar.selectbox("Período", ["1d", "5d", "1mo", "3mo", "6mo", "1y"], index=2)
-    intervalo = st.sidebar.selectbox("Intervalo", ["1m", "5m", "15m", "1h", "1d"], index=4)
 
-    # Função para carregar os dados
-    @st.cache_data
-    def carregar_dados(ticker, periodo, intervalo):
+    # Configuração inicial do Streamlit
+    st.set_page_config(page_title="Panorama de Mercado", layout="wide")
+    st.title("Panorama de Mercado - Cotações em Tempo Real")
+    st.write(f"Atualizado em: {datetime.now().strftime('%d/%m/%Y %H:%M')}")
+
+    # Função para obter cotação de moedas (usando API gratuita)
+    def get_currency_rates():
         try:
-            # Baixar dados usando yfinance
-            stock = yf.Ticker(ticker)
-            df = stock.history(period=periodo, interval=intervalo)
-            
-            if df.empty:
-                return None, stock.info
-            return df, stock.info
-        except Exception as e:
-            st.error(f"Erro ao carregar dados: {str(e)}")
-            return None, None
+            url = "https://api.exchangerate-api.com/v4/latest/USD"
+            response = requests.get(url)
+            data = response.json()
+            rates = {
+                "USD/BRL": data["rates"]["BRL"],
+                "EUR/USD": 1 / data["rates"]["EUR"],
+                "USD/JPY": data["rates"]["JPY"]
+            }
+            return pd.DataFrame(rates.items(), columns=["Par", "Cotação"])
+        except:
+            st.error("Erro ao carregar cotações de moedas")
+            return pd.DataFrame()
 
-    # Carregar os dados
-    df, info = carregar_dados(ticker, periodo, intervalo)
+    # Função para obter preços de commodities usando yfinance
+    def get_commodities():
+        symbols = {
+            "Petróleo (WTI)": "CL=F",
+            "Ouro": "GC=F",
+            "Prata": "SI=F"
+        }
+        data = {}
+        for name, symbol in symbols.items():
+            try:
+                commodity = yf.Ticker(symbol)
+                price = commodity.history(period="1d")["Close"].iloc[-1]
+                data[name] = round(price, 2)
+            except:
+                data[name] = "N/A"
+        return pd.DataFrame(data.items(), columns=["Commodity", "Preço"])
 
-    # Layout principal
-    if df is not None and info is not None:
-        # Primeira linha: Preço atual e variação
-        col1, col2, col3 = st.columns(3)
-        
-        ultimo_preco = df['Close'].iloc[-1]
-        preco_anterior = df['Close'].iloc[-2]
-        variacao = ((ultimo_preco - preco_anterior) / preco_anterior) * 100
-        
-        with col1:
-            st.metric("Último Preço", f"R$ {ultimo_preco:.2f}")
-        with col2:
-            st.metric("Variação", f"{variacao:.2f}%", 
-                    delta_color="normal" if variacao >= 0 else "inverse")
-        with col3:
-            st.metric("Volume", f"{df['Volume'].iloc[-1]:,}")
+    # Função para obter preços de ações
+    def get_stocks():
+        symbols = {
+            "Apple": "AAPL",
+            "Tesla": "TSLA",
+            "Ibovespa": "^BVSP"
+        }
+        data = {}
+        for name, symbol in symbols.items():
+            try:
+                stock = yf.Ticker(symbol)
+                price = stock.history(period="1d")["Close"].iloc[-1]
+                data[name] = round(price, 2)
+            except:
+                data[name] = "N/A"
+        return pd.DataFrame(data.items(), columns=["Ação", "Preço"])
 
-        # Gráfico de candlestick
-        fig = go.Figure(data=[go.Candlestick(x=df.index,
-                                            open=df['Open'],
-                                            high=df['High'],
-                                            low=df['Low'],
-                                            close=df['Close'])])
-        
-        fig.update_layout(
-            title=f"Gráfico de {ticker}",
-            yaxis_title="Preço",
-            template="plotly_white",
-            height=600
-        )
-        
-        st.plotly_chart(fig, use_container_width=True)
+    # Layout do dashboard usando colunas
+    col1, col2, col3 = st.columns(3)
 
-        # Informações adicionais
-        st.subheader("Informações da Empresa")
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.write(f"**Nome:** {info.get('longName', 'N/A')}")
-            st.write(f"**Setor:** {info.get('sector', 'N/A')}")
-            st.write(f"**Indústria:** {info.get('industry', 'N/A')}")
-        
-        with col2:
-            st.write(f"**Mercado:** {info.get('exchange', 'N/A')}")
-            st.write(f"**Moeda:** {info.get('currency', 'N/A')}")
-            st.write(f"**Capitalização:** {info.get('marketCap', 'N/A'):,}")
+    # Moedas
+    with col1:
+        st.subheader("Cotações de Moedas")
+        currency_data = get_currency_rates()
+        if not currency_data.empty:
+            st.dataframe(currency_data.style.format({"Cotação": "{:.4f}"}))
 
-        # Tabela com últimos dados
-        st.subheader("Últimos Dados")
-        st.dataframe(df.tail().style.format({
-            'Open': 'R${:.2f}',
-            'High': 'R${:.2f}',
-            'Low': 'R${:.2f}',
-            'Close': 'R${:.2f}',
-            'Volume': '{:,}'
-        }))
+    # Commodities
+    with col2:
+        st.subheader("Commodities")
+        commodities_data = get_commodities()
+        if not commodities_data.empty:
+            st.dataframe(commodities_data)
 
-    else:
-        st.warning("Não foi possível carregar os dados. Verifique o símbolo da ação.")
+    # Ações
+    with col3:
+        st.subheader("Ações")
+        stocks_data = get_stocks()
+        if not stocks_data.empty:
+            st.dataframe(stocks_data)
 
     # Botão de atualização
     if st.button("Atualizar Dados"):
-        st.cache_data.clear()
-        st.rerun()
+        st.experimental_rerun()
 
-    # Rodapé
-    st.sidebar.markdown("---")
-    st.sidebar.write(f"Última atualização: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-
-
-
-
+    # Notas de rodapé
+    st.markdown("""
+    ---
+    *Fonte:* 
+    - Moedas: ExchangeRate-API
+    - Commodities e Ações: Yahoo Finance
+    *Nota:* Os dados são para fins informativos e podem ter atraso.
+    """)
 #"_____________________________________________________________________________________________________________"
 # Aba 2: TradingView
 with tab2:
