@@ -108,12 +108,13 @@ st.markdown(f'<p class="timestamp">Última atualização: {datetime.now().strfti
 @st.cache_data(ttl=30)
 def get_currency_rates():
     try:
+        # Substitua YOUR_API_KEY pela sua chave da ExchangeRate-API
         url = "https://api.exchangerate-api.com/v4/latest/USD"
         response = requests.get(url)
         data = response.json()
         rates = {
             "USD/BRL": data["rates"]["BRL"],
-            "EUR/USD": 1 / data["rates"]["EUR"],
+            "EUR/USD": 1 / data["rates"]["EUR"],  # Invertido para EUR/USD
             "USD/JPY": data["rates"]["JPY"],
             "USD/GBP": data["rates"]["GBP"],
             "USD/CAD": data["rates"]["CAD"],
