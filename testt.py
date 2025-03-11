@@ -112,85 +112,85 @@ with tab3:
         # Divisão para gráficos semanal e anual
         col1, col2 = st.columns(2)
 
-    # Gráfico Semanal
-    with col1:
-        try:
-            weekly_data = get_stock_data(ticker, period="1y", interval="1wk")
-            if not weekly_data.empty:
-                fig_weekly = go.Figure()
-                fig_weekly.add_trace(go.Candlestick(
-                    x=weekly_data.index,
-                    open=weekly_data['Open'],
-                    high=weekly_data['High'],
-                    low=weekly_data['Low'],
-                    close=weekly_data['Close'],
-                    name="OHLC"
-                ))
-                fig_weekly.update_layout(
-                    title="Semanal",
-                    title_x=0.4,
-                    yaxis_side="right",
-                    template="plotly_dark",
-                    height=450,
-                    xaxis=dict(
-                        rangeslider=dict(visible=True, thickness=0.03),
-                        rangeselector=dict(
-                            buttons=list([
-                                dict(count=1, label="1m", step="month", stepmode="backward"),
-                                dict(count=3, label="3m", step="month", stepmode="backward"),
-                                dict(count=6, label="6m", step="month", stepmode="backward"),
-                                dict(count=1, label="YTD", step="year", stepmode="todate"),
-                                dict(step="all")
-                            ])
+        # Gráfico Semanal
+        with col1:
+            try:
+                weekly_data = get_stock_data(ticker, period="1y", interval="1wk")
+                if not weekly_data.empty:
+                    fig_weekly = go.Figure()
+                    fig_weekly.add_trace(go.Candlestick(
+                        x=weekly_data.index,
+                        open=weekly_data['Open'],
+                        high=weekly_data['High'],
+                        low=weekly_data['Low'],
+                        close=weekly_data['Close'],
+                        name="OHLC"
+                    ))
+                    fig_weekly.update_layout(
+                        title="Semanal",
+                        title_x=0.4,
+                        yaxis_side="right",
+                        template="plotly_dark",
+                        height=450,
+                        xaxis=dict(
+                            rangeslider=dict(visible=True, thickness=0.03),
+                            rangeselector=dict(
+                                buttons=list([
+                                    dict(count=1, label="1m", step="month", stepmode="backward"),
+                                    dict(count=3, label="3m", step="month", stepmode="backward"),
+                                    dict(count=6, label="6m", step="month", stepmode="backward"),
+                                    dict(count=1, label="YTD", step="year", stepmode="todate"),
+                                    dict(step="all")
+                                ])
+                            )
                         )
                     )
-                )
-                st.plotly_chart(fig_weekly, use_container_width=True)
-            else:
-                st.warning("Nenhum dado semanal disponível para este ticker.")
-        except Exception as e:
-            st.error(f"Erro ao carregar dados semanais: {e}")
+                    st.plotly_chart(fig_weekly, use_container_width=True)
+                else:
+                    st.warning("Nenhum dado semanal disponível para este ticker.")
+            except Exception as e:
+                st.error(f"Erro ao carregar dados semanais: {e}")
 
-    # Gráfico Anual
-    with col2:
-        try:
-            yearly_data = get_stock_data(ticker, period="10y", interval="1mo")
-            if not yearly_data.empty:
-                fig_yearly = go.Figure()
-                fig_yearly.add_trace(go.Candlestick(
-                    x=yearly_data.index,
-                    open=yearly_data['Open'],
-                    high=yearly_data['High'],
-                    low=yearly_data['Low'],
-                    close=yearly_data['Close'],
-                    name="OHLC"
-                ))
-                last_5_years = yearly_data.index[-60:]  # 5 anos * 12 meses
-                fig_yearly.update_layout(
-                    title="Mensal",
-                    title_x=0.4,
-                    yaxis_side="right",
-                    template="plotly_dark",
-                    height=450,
-                    xaxis=dict(
-                        range=[last_5_years[0], last_5_years[-1]],
-                        rangeslider=dict(visible=True, thickness=0.03),
-                        rangeselector=dict(
-                            buttons=list([
-                                dict(count=1, label="1a", step="year", stepmode="backward"),
-                                dict(count=3, label="3a", step="year", stepmode="backward"),
-                                dict(count=5, label="5a", step="year", stepmode="backward"),
-                                dict(count=10, label="10a", step="year", stepmode="backward"),
-                                dict(step="all")
-                            ])
+        # Gráfico Anual
+        with col2:
+            try:
+                yearly_data = get_stock_data(ticker, period="10y", interval="1mo")
+                if not yearly_data.empty:
+                    fig_yearly = go.Figure()
+                    fig_yearly.add_trace(go.Candlestick(
+                        x=yearly_data.index,
+                        open=yearly_data['Open'],
+                        high=yearly_data['High'],
+                        low=yearly_data['Low'],
+                        close=yearly_data['Close'],
+                        name="OHLC"
+                    ))
+                    last_5_years = yearly_data.index[-60:]  # 5 anos * 12 meses
+                    fig_yearly.update_layout(
+                        title="Mensal",
+                        title_x=0.4,
+                        yaxis_side="right",
+                        template="plotly_dark",
+                        height=450,
+                        xaxis=dict(
+                            range=[last_5_years[0], last_5_years[-1]],
+                            rangeslider=dict(visible=True, thickness=0.03),
+                            rangeselector=dict(
+                                buttons=list([
+                                    dict(count=1, label="1a", step="year", stepmode="backward"),
+                                    dict(count=3, label="3a", step="year", stepmode="backward"),
+                                    dict(count=5, label="5a", step="year", stepmode="backward"),
+                                    dict(count=10, label="10a", step="year", stepmode="backward"),
+                                    dict(step="all")
+                                ])
+                            )
                         )
                     )
-                )
-                st.plotly_chart(fig_yearly, use_container_width=True)
-            else:
-                st.warning("Nenhum dado anual disponível para este ticker.")
-        except Exception as e:
-            st.error(f"Erro ao carregar dados anuais: {e}")
+                    st.plotly_chart(fig_yearly, use_container_width=True)
+                else:
+                    st.warning("Nenhum dado anual disponível para este ticker.")
+            except Exception as e:
+                st.error(f"Erro ao carregar dados anuais: {e}")
 
-    # Rodapé
-    st.write("Dados fornecidos por Yahoo Finance via yfinance.")
+        # Rodapé
+        st.write("Dados fornecidos por Yahoo Finance via yfinance.")
