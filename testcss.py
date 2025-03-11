@@ -53,11 +53,10 @@ with col1:
         st.error(f"Erro ao carregar dados intraday: {e}")
 
 with col2:
-    st.write("---")
-    st.write("---")
-    st.write("---")
-    st.write("---")
-    interval_label = st.selectbox(
+    st.write("")
+    st.write("")
+
+    interval_label = st.radio(
         "",
         list(interval_options.keys()),
         key="interval_label"  # Usamos uma chave para manter o estado
