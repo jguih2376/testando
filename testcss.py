@@ -13,7 +13,11 @@ with col1:
 with col2:
     # Definição das opções de intervalo
     interval_options = {"5min": "5m", "15min": "15m", "30min": "30m", "1h": "1h"}
-
+    interval_label = st.radio(
+    "",
+    list(interval_options.keys()),
+    key="interval_label"  # Usamos uma chave para manter o estado
+)
 # Função para obter dados da ação
 def get_stock_data(ticker, period, interval):
     stock = yf.Ticker(ticker)
@@ -22,11 +26,7 @@ def get_stock_data(ticker, period, interval):
 
 # Gráfico Intraday
 
-interval_label = st.radio(
-    "",
-    list(interval_options.keys()),
-    key="interval_label"  # Usamos uma chave para manter o estado
-)
+
 try:
     # O intervalo será definido fora do bloco try para ser acessível
     interval_label = st.session_state.get("interval_label", "5min")  # Default inicial
