@@ -311,13 +311,14 @@ with col1:
 
 # Dentro do bloco `with col2:` (substitua apenas essa parte no código completo)
 
+
 with col2:
     st.subheader("IBOV")
     # Adicionar CSS para reduzir o tamanho da fonte dos st.metric
     st.markdown("""
         <style>
         .metric-text {
-            font-size: 10px !important;  /* Reduzindo fonte dos st.metric */
+            font-size: 12px !important;  /* Reduzido de 14px para 12px */
         }
         </style>
         """, unsafe_allow_html=True)
@@ -359,7 +360,7 @@ with col2:
                 st.markdown('</div>', unsafe_allow_html=True)
 
             # Variação diária, semanal e mensal
-            col_metrics3, col_metrics4, col_metrics5= st.columns([1, 1, 1])
+            col_metrics3, col_metrics4, col_metrics5 = st.columns([1, 1, 1])
             with col_metrics3:
                 seta_dia = "↑" if variacao_dia >= 0 else "↓"
                 st.markdown('<div class="metric-text">', unsafe_allow_html=True)
@@ -391,7 +392,7 @@ with col2:
             fig_intraday.update_layout(
                 yaxis_side="right",
                 template="plotly_dark",
-                height=400,
+                height=350,
             )
             st.plotly_chart(fig_intraday, use_container_width=True)
 
