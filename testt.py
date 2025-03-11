@@ -76,20 +76,22 @@ try:
         with col_metrics3:
             st.metric("Fechamento Anterior", f"{fechamento_anterior:.2f}")
 
-        # Definindo a cor da linha do gráfico com base na variação
-        cor_linha = 'green' if variacao_dia >= 0 else 'red'
+        # Definindo a cor da linha e área com base na variação
+        cor_montanha = 'green' if variacao_dia >= 0 else 'red'
 
-        # Gráfico de linha
+        # Gráfico de montanha (área preenchida)
         fig_intraday = go.Figure()
         fig_intraday.add_trace(go.Scatter(
             x=intraday_data.index,
             y=intraday_data['Close'],
             mode='lines',
             name="Fechamento",
-            line=dict(color=cor_linha, width=1)
+            line=dict(color=cor_montanha, width=1),
+            fill='tozeroy',  # Preenche a área até o eixo y=0, criando o efeito de montanha
+            fillcolor=f"rgba({','.join(['0, 255, 0' if variacao_dia >= 0 else '255, 0, 0'])}, 0.2)"  # Cor da área com transparência
         ))
         fig_intraday.update_layout(
-            title="Intraday IBOV (5min)",
+            title="Intraday IBOV (5min) - Gráfico de Montanha",
             yaxis_side="right",
             template="plotly_dark",
             height=700,
