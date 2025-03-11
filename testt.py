@@ -363,8 +363,8 @@ with col2:
                     yref="y",  # Referência ao eixo Y em valores absolutos
                     text=f"{preco_atual:.2f}",  # Texto com o preço atual formatado
                     showarrow=True,
-                    arrowhead=2,
-                    ax=50,  # Deslocamento horizontal da seta
+                    arrowhead=1,
+                    ax=5,  # Deslocamento horizontal da seta
                     ay=0,  # Sem deslocamento vertical
                     font=dict(size=12, color='#FFFFFF'),
                     bgcolor='rgba(0, 0, 0, 0.5)',  # Fundo semi-transparente para legibilidade
