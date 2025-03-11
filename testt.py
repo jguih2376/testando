@@ -369,7 +369,7 @@ with col2:
                     font=dict(size=12, color='#FFFFFF'),
                     bgcolor='rgba(0, 0, 0, 0.5)',  # Fundo semi-transparente para legibilidade
                     bordercolor='#FFFFFF',
-                    borderwidth=,
+                    borderwidth=1,
                     xanchor="left",  # Ancorar o texto à esquerda para não invadir o gráfico
                     yanchor="middle"  # Centralizar verticalmente no preço atual
                     )
