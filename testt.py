@@ -65,31 +65,30 @@ try:
         # Abertura de hoje (primeiro valor do dia)
         abertura_hoje = intraday_data['Open'].iloc[0]
         # Fechamento do dia anterior
-        fechamento_anterior = previous_day_data['Close'].iloc[-2]
-        # Variação percentual do dia
+        fechamento_anterior = previous_day_data['Close'].iloc[-2]   
+
+
+         # Variações
         variacao_dia = ((preco_atual - abertura_hoje) / abertura_hoje) * 100
-        
-        # Variação semanal (fechamento atual vs fechamento há 5 dias)
+
         fechamento_semana_passada = weekly_data['Close'].iloc[0]
         variacao_semanal = ((preco_atual - fechamento_semana_passada) / fechamento_semana_passada) * 100
         
-        # Variação mensal (fechamento atual vs fechamento há 1 mês)
         fechamento_mes_passado = monthly_data['Close'].iloc[0]
         variacao_mensal = ((preco_atual - fechamento_mes_passado) / fechamento_mes_passado) * 100
 
-        # Exibindo métricas
-        col_metrics1, col_metrics2, col_metrics3 = st.columns(3)
+        # Preço atual e fechamento anterior
+        col_metrics1, col_metrics2 = st.columns(2)
         with col_metrics1:
             st.metric("Preço Atual", f"{preco_atual:.2f}")
         with col_metrics2:
-            # Adicionando seta baseada na variação do dia
-            seta_dia = "↑" if variacao_dia >= 0 else "↓"
-            st.metric("Variação do Dia", f"{seta_dia} {abs(variacao_dia):.2f}%", delta_color="normal")
-        with col_metrics3:
             st.metric("Fechamento Anterior", f"{fechamento_anterior:.2f}")
 
-        # Métricas adicionais para variação semanal e mensal
-        col_metrics4, col_metrics5 = st.columns(2)
+        # Variação diario, semanal e mensal
+        col_metrics3, col_metrics4, col_metrics5 = st.columns(3)
+        with col_metrics3:
+            seta_dia = "↑" if variacao_dia >= 0 else "↓"
+            st.metric("Variação do Dia", f"{seta_dia} {abs(variacao_dia):.2f}%", delta_color="normal")
         with col_metrics4:
             seta_semanal = "↑" if variacao_semanal >= 0 else "↓"
             st.metric("Variação Semanal", f"{seta_semanal} {abs(variacao_semanal):.2f}%", delta_color="normal")
