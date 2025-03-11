@@ -96,10 +96,8 @@ with col1:
 
 # Gráfico Anual
 with col2:
-    #st.subheader("Gráfico Anual")
-
     try:
-        yearly_data = get_stock_data(ticker, period="5y", interval="1mo")  # Agora busca os últimos 5 anos
+        yearly_data = get_stock_data(ticker, period="10y", interval="1mo")
         if not yearly_data.empty:
             fig_yearly = go.Figure()
             fig_yearly.add_trace(go.Candlestick(
@@ -110,13 +108,18 @@ with col2:
                 close=yearly_data['Close'],
                 name="OHLC"
             ))
+
+            # Define o range inicial para os últimos 5 anos
+            last_5_years = yearly_data.index[-60:]  # 5 anos * 12 meses = 60 pontos
+
             fig_yearly.update_layout(
                 title="Anual",
-                title_x=0.4,  # Centraliza um pouco mais o título                
-                yaxis_side="right",  # Move a escala de preço para a direita
+                title_x=0.4,                
+                yaxis_side="right",               
                 template="plotly_dark",
                 height=450,
                 xaxis=dict(
+                    range=[last_5_years[0], last_5_years[-1]],  # Aplica o zoom inicial de 5 anos
                     rangeslider=dict(
                         visible=True,  
                         thickness=0.03  
@@ -137,7 +140,6 @@ with col2:
             st.warning("Nenhum dado anual disponível para este ticker.")
     except Exception as e:
         st.error(f"Erro ao carregar dados anuais: {e}")
-
 
 
 # Rodapé
