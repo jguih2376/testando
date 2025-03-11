@@ -5,12 +5,14 @@ from datetime import datetime, timedelta
 
 # Configuração básica do Streamlit
 st.title("Sistema de Cotação de Ações")
+col1, col2 = st.columns(2)
+with col1:
+    # Entrada do usuário para o ticker da ação
+    ticker = st.text_input("Digite o código da ação (ex: AAPL, MSFT, PETR4.SA):", value="AAPL")
 
-# Entrada do usuário para o ticker da ação
-ticker = st.text_input("Digite o código da ação (ex: AAPL, MSFT, PETR4.SA):", value="AAPL")
-
-# Definição das opções de intervalo
-interval_options = {"5min": "5m", "15min": "15m", "30min": "30m", "1h": "1h"}
+with col2:
+    # Definição das opções de intervalo
+    interval_options = {"5min": "5m", "15min": "15m", "30min": "30m", "1h": "1h"}
 
 # Função para obter dados da ação
 def get_stock_data(ticker, period, interval):
@@ -19,7 +21,7 @@ def get_stock_data(ticker, period, interval):
     return data
 
 # Gráfico Intraday
-st.subheader(f"Gráfico Intraday")
+
 interval_label = st.radio(
     "",
     list(interval_options.keys()),
