@@ -147,7 +147,6 @@ with tab3:
                             buttons=list([
                                 dict(count=1, label="1m", step="month", stepmode="backward"),
                                 dict(count=3, label="3m", step="month", stepmode="backward"),
-                                dict(count=6, label="6m", step="month", stepmode="backward"),
                                 dict(count=1, label="YTD", step="year", stepmode="todate"),
                                 dict(step="all")
                             ])
