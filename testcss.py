@@ -134,7 +134,7 @@ with col2:
                     )
                 )
             )
-            st.plotly_chart(fig_yearly, use_container_width=False)
+            st.plotly_chart(fig_yearly, use_container_width=True)
         else:
             st.warning("Nenhum dado anual disponível para este ticker.")
     except Exception as e:
