@@ -318,10 +318,10 @@ with col2:
     st.markdown("""
         <style>
         .metric-text {
-            font-size: 10px !important;  /* Reduzido de 12px para 10px */
+            font-size: 8px !important;  /* Reduzido de 12px para 10px */
         }
         div[data-testid="stHorizontalBlock"] > div > h2 {
-            font-size: 18px !important;  /* Reduzindo o subheader "IBOV" */
+            font-size: 14px !important;  /* Reduzindo o subheader "IBOV" */
         }
         </style>
         """, unsafe_allow_html=True)
