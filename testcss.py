@@ -20,7 +20,7 @@ def get_stock_data(ticker, period, interval):
 
 # Gráfico Intraday
 st.subheader(f"Gráfico Intraday")
-interval_label = st.select_slider(
+interval_label = st.radio(
     "",
     list(interval_options.keys()),
     key="interval_label"  # Usamos uma chave para manter o estado
@@ -56,10 +56,10 @@ except Exception as e:
     st.error(f"Erro ao carregar dados intraday: {e}")
 
 
-# Divisão em duas colunas para os gráficos semanal e anual
-col1, col2 = st.columns(2)
 
-# Gráfico Semanal
+# Divisão em duas colunas para os gráficos semanal e anual
+st.markdown('---')
+col1, col2 = st.columns(2)
 with col1:
     try:
         weekly_data = get_stock_data(ticker, period="1y", interval="1wk")
