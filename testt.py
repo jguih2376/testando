@@ -47,7 +47,7 @@ with tab2:
 
 # Aba 3: Triple Screen
 with tab3:
-    st.title("Sistema de Cotação de Ações")
+    st.title("Triple Screen")
 
     # Variável para armazenar o ticker selecionado
     ticker = None
@@ -139,6 +139,7 @@ with tab3:
                     yaxis_side="right",
                     template="plotly_dark",
                     height=700,
+                    dragmode='pan',
                     xaxis=dict(
                         rangeslider=dict(visible=True, thickness=0.015),
                         rangeselector=dict(
@@ -190,6 +191,7 @@ with tab3:
                         yaxis_side="right",
                         template="plotly_dark",
                         height=450,
+                        dragmode='pan',
                         xaxis=dict(
                             rangeslider=dict(visible=True, thickness=0.03),
                             rangeselector=dict(
@@ -239,6 +241,7 @@ with tab3:
                         yaxis_side="right",
                         template="plotly_dark",
                         height=450,
+                        dragmode='pan',
                         xaxis=dict(
                             range=[last_5_years[0], last_5_years[-1]],
                             rangeslider=dict(visible=True, thickness=0.03),
