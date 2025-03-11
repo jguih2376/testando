@@ -52,15 +52,16 @@ with tab3:
     # Entrada do usuário para o ticker da ação
     ticker = st.text_input("Digite o código da ação (ex: AAPL, MSFT, PETR4.SA):", value="AAPL")
 
-    # Seleção do tipo de gráfico
-    chart_type = st.selectbox("Tipo de gráfico diário:", ["Candlestick", "Linha"], key="daily_chart_type")
+    # Seleção do tipo de gráfico (aplica-se a todos os gráficos)
+    chart_type = st.selectbox("Tipo de gráfico:", ["Candlestick", "Linha"], key="chart_type")
+
     # Função para obter dados da ação
     def get_stock_data(ticker, period, interval):
         stock = yf.Ticker(ticker)
         data = stock.history(period=period, interval=interval)
         return data
 
-    # Gráfico Diário (substitui o Intraday anterior)
+    # Gráfico Diário
     try:
         daily_data = get_stock_data(ticker, period="1y", interval="1d")
         if not daily_data.empty:
@@ -90,16 +91,16 @@ with tab3:
                 xaxis=dict(
                     rangeslider=dict(visible=True, thickness=0.015),
                     rangeselector=dict(
-                            buttons=list([
-                                dict(count=1, label="1m", step="month", stepmode="backward"),
-                                dict(count=3, label="3m", step="month", stepmode="backward"),
-                                dict(count=6, label="6m", step="month", stepmode="backward"),
-                                dict(count=1, label="YTD", step="year", stepmode="todate"),
-                                dict(step="all")
-                            ])
-                        )
+                        buttons=list([
+                            dict(count=1, label="1m", step="month", stepmode="backward"),
+                            dict(count=3, label="3m", step="month", stepmode="backward"),
+                            dict(count=6, label="6m", step="month", stepmode="backward"),
+                            dict(count=1, label="YTD", step="year", stepmode="todate"),
+                            dict(step="all")
+                        ])
                     )
                 )
+            )
             st.plotly_chart(fig_daily, use_container_width=True)
         else:
             st.warning("Nenhum dado diário disponível para este ticker.")
@@ -126,12 +127,12 @@ with tab3:
                     ))
                 else:  # Linha
                     fig_weekly.add_trace(go.Scatter(
-                        x=fig_weekly.index,
-                        y=fig_weekly['Close'],
+                        x=weekly_data.index,
+                        y=weekly_data['Close'],
                         mode='lines',
                         name="Fechamento",
                         line=dict(color='royalblue', width=1)
-                        ))
+                    ))
                 fig_weekly.update_layout(
                     title="Semanal",
                     title_x=0.4,
@@ -163,7 +164,7 @@ with tab3:
             yearly_data = get_stock_data(ticker, period="10y", interval="1mo")
             if not yearly_data.empty:
                 fig_yearly = go.Figure()
-                if chart_type == "Candlestick":                
+                if chart_type == "Candlestick":
                     fig_yearly.add_trace(go.Candlestick(
                         x=yearly_data.index,
                         open=yearly_data['Open'],
@@ -174,12 +175,12 @@ with tab3:
                     ))
                 else:  # Linha
                     fig_yearly.add_trace(go.Scatter(
-                        x=fig_yearly.index,
-                        y=fig_yearly['Close'],
+                        x=yearly_data.index,
+                        y=yearly_data['Close'],
                         mode='lines',
                         name="Fechamento",
                         line=dict(color='royalblue', width=1)
-                        )) 
+                    ))
                 last_5_years = yearly_data.index[-60:]  # 5 anos * 12 meses
                 fig_yearly.update_layout(
                     title="Mensal",
