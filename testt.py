@@ -174,7 +174,7 @@ def get_stocks():
                         columns=["Ação", "Preço", "Variação (%)"])
 
 # Layout em colunas
-col1, col2, col3 = st.columns(3)
+col1, col2, col3 = st.columns([1,1,3])
 
 # Moedas
 with col1:
