@@ -127,8 +127,8 @@ with col2:
                         buttons=list([
                             dict(count=1, label="1a", step="year", stepmode="backward"),
                             dict(count=3, label="3a", step="year", stepmode="backward"),
-                            dict(count=5, label="5a", step="yaer", stepmode="backward"),
-                            dict(count=10, label="10a", step="yaer", stepmode="backward"),
+                            dict(count=5, label="5a", step="year", stepmode="backward"),
+                            dict(count=10, label="10a", step="year", stepmode="backward"),
                             dict(step="all")  # Exibe todos os dados
                         ])
                     )
