@@ -22,36 +22,47 @@ tab1, tab2, tab3 = st.tabs(['Panorama', 'TradingView', 'Triple Screen'])
 with tab1:
 
 
-# Configuração da página
     st.markdown("""
         <style>
         .main-title {
             font-size: 36px;
-            color: #1E90FF;
+            color: #FFFFFF;
             text-align: center;
             margin-bottom: 10px;
         }
         .subheader {
-            color: #4682B4;
+            color: #FFFFFF;
             font-size: 24px;
         }
-        .metric-box {
-            background-color: #F0F8FF;
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
+        .timestamp {
+            color: #A9A9A9;
+            font-size: 14px;
+            text-align: right;
         }
         </style>
         """, unsafe_allow_html=True)
 
-    # Título estilizado
-    st.markdown('<p class="main-title">Panorama de Mercado em Tempo Real</p>', unsafe_allow_html=True)
+    # Forçar tema escuro
+    st.markdown("""
+        <style>
+        body {
+            background-color: #1E1E1E;
+            color: #FFFFFF;
+        }
+        .stApp {
+            background-color: #1E1E1E;
+        }
+        </style>
+        """, unsafe_allow_html=True)
 
-    # Atualização automática (a cada 30 segundos)
+    # Título
+    st.markdown('<p class="main-title">Panorama de Mercado</p>', unsafe_allow_html=True)
+
+    # Atualização automática a cada 30 segundos
     st_autorefresh(interval=30000, key="marketrefresh")
 
     # Timestamp
-    st.markdown(f"<small>Última atualização: {datetime.now().strftime('%d/%m/%Y %H:%M')}</small>", unsafe_allow_html=True)
+    st.markdown(f'<p class="timestamp">Última atualização: {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}</p>', unsafe_allow_html=True)
 
     # Funções de dados (com cache)
     @st.cache_data(ttl=30)
@@ -61,8 +72,8 @@ with tab1:
             response = requests.get(url)
             data = response.json()
             rates = {
-                "USD/BRL": data["rates"]["BRL"],
                 "EUR/USD": 1 / data["rates"]["EUR"],
+                "USD/BRL": data["rates"]["BRL"],
                 "USD/JPY": data["rates"]["JPY"]
             }
             return pd.DataFrame(rates.items(), columns=["Par", "Cotação"])
@@ -91,8 +102,8 @@ with tab1:
     def get_stocks():
         symbols = {
             "Apple": "AAPL",
-            "Tesla": "TSLA",
-            "Ibovespa": "^BVSP"
+            "Ibovespa": "^BVSP",
+            "Tesla": "TSLA"
         }
         data = {}
         for name, symbol in symbols.items():
@@ -109,54 +120,79 @@ with tab1:
 
     # Moedas
     with col1:
-        st.markdown('<p class="subheader">💱 Moedas</p>', unsafe_allow_html=True)
+        st.markdown('<p class="subheader">Moedas</p>', unsafe_allow_html=True)
         currency_data = get_currency_rates()
         if not currency_data.empty:
-            for index, row in currency_data.iterrows():
-                st.markdown(
-                    f"""
-                    <div class="metric-box">
-                        <strong>{row['Par']}</strong><br>
-                        {row['Cotação']:.4f}
-                    </div>
-                    """, unsafe_allow_html=True)
-            # Mini gráfico simples
-            st.line_chart(currency_data.set_index("Par")["Cotação"], height=150)
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(
+                x=currency_data["Par"],
+                y=currency_data["Cotação"],
+                mode="lines+markers",
+                line=dict(color="#00CED1", width=2),
+                marker=dict(size=8)
+            ))
+            fig.update_layout(
+                plot_bgcolor="#2E2E2E",
+                paper_bgcolor="#2E2E2E",
+                font=dict(color="#FFFFFF"),
+                xaxis=dict(show=False, title=""),
+                yaxis=dict(title="", gridcolor="#555555"),
+                height=300,
+                margin=dict(l=50, r=50, t=30, b=30)
+            )
+            st.plotly_chart(fig, use_container_width=True)
 
     # Commodities
     with col2:
-        st.markdown('<p class="subheader">⛽ Commodities</p>', unsafe_allow_html=True)
+        st.markdown('<p class="subheader">Commodities</p>', unsafe_allow_html=True)
         commodities_data = get_commodities()
         if not commodities_data.empty:
-            for index, row in commodities_data.iterrows():
-                st.markdown(
-                    f"""
-                    <div class="metric-box">
-                        <strong>{row['Commodity']}</strong><br>
-                        {row['Preço']}
-                    </div>
-                    """, unsafe_allow_html=True)
-            st.line_chart(commodities_data.set_index("Commodity")["Preço"], height=150)
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(
+                x=commodities_data["Commodity"],
+                y=commodities_data["Preço"],
+                mode="lines+markers",
+                line=dict(color="#FF4500", width=2),
+                marker=dict(size=8)
+            ))
+            fig.update_layout(
+                plot_bgcolor="#2E2E2E",
+                paper_bgcolor="#2E2E2E",
+                font=dict(color="#FFFFFF"),
+                xaxis=dict(show=False, title=""),
+                yaxis=dict(title="", gridcolor="#555555"),
+                height=300,
+                margin=dict(l=50, r=50, t=30, b=30)
+            )
+            st.plotly_chart(fig, use_container_width=True)
 
     # Ações
     with col3:
-        st.markdown('<p class="subheader">📈 Ações</p>', unsafe_allow_html=True)
+        st.markdown('<p class="subheader">Ações</p>', unsafe_allow_html=True)
         stocks_data = get_stocks()
         if not stocks_data.empty:
-            for index, row in stocks_data.iterrows():
-                st.markdown(
-                    f"""
-                    <div class="metric-box">
-                        <strong>{row['Ação']}</strong><br>
-                        {row['Preço']}
-                    </div>
-                    """, unsafe_allow_html=True)
-            st.line_chart(stocks_data.set_index("Ação")["Preço"], height=150)
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(
+                x=stocks_data["Ação"],
+                y=stocks_data["Preço"],
+                mode="lines+markers",
+                line=dict(color="#FFFFFF", width=2),
+                marker=dict(size=8)
+            ))
+            fig.update_layout(
+                plot_bgcolor="#2E2E2E",
+                paper_bgcolor="#2E2E2E",
+                font=dict(color="#FFFFFF"),
+                xaxis=dict(show=False, title=""),
+                yaxis=dict(title="", gridcolor="#555555"),
+                height=300,
+                margin=dict(l=50, r=50, t=30, b=30)
+            )
+            st.plotly_chart(fig, use_container_width=True)
 
     # Rodapé
     st.markdown("""
-    ---
-    <div style="text-align: center; font-size: 12px;">
+    <div style="text-align: center; font-size: 12px; color: #A9A9A9;">
         <strong>Fonte:</strong> Moedas: ExchangeRate-API | Commodities e Ações: Yahoo Finance<br>
         <strong>Nota:</strong> Atualização automática a cada 30 segundos. Dados para fins informativos.
     </div>
