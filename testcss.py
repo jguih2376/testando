@@ -39,7 +39,7 @@ try:
             yaxis_title="Preço",
             xaxis_title="Horário",
             template="plotly_dark",
-            height=400
+            height=700
         )
         st.plotly_chart(fig_intraday, use_container_width=True)
     else:
@@ -71,7 +71,7 @@ with col1:
                 yaxis_title="Preço",
                 xaxis_title="Data",
                 template="plotly_dark",
-                height=400
+                height=550
             )
             st.plotly_chart(fig_weekly, use_container_width=True)
         else:
@@ -100,7 +100,7 @@ with col2:
                 yaxis_title="Preço",
                 xaxis_title="Data",
                 template="plotly_dark",
-                height=500
+                height=550
             )
             st.plotly_chart(fig_yearly, use_container_width=False)
         else:
