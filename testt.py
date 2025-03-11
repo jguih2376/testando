@@ -136,7 +136,7 @@ with tab3:
                     ))
                 fig_daily.update_layout(
                     title="Diário",
-                    title_x=0.4,
+                    title_x=0.5,
                     yaxis_side="right",
                     template="plotly_dark",
                     height=700,
