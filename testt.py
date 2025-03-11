@@ -313,11 +313,9 @@ with col1:
     # Dentro do bloco `with col2:` (substitua apenas essa parte no código completo)
 
 
-
+st.markdown('')
 with col2:
     with st.expander('...', expanded=True):
-        st.markdown('<p class="subheader">IBOV</p>', unsafe_allow_html=True)
-
         try:
             # Dados intraday (5 minutos)
             intraday_data = get_stock_data('^BVSP', period="1d", interval="5m")
