@@ -5,8 +5,9 @@ import pandas as pd
 import pytz
 from datetime import datetime
 from streamlit_autorefresh import st_autorefresh
+import plotly.graph_objects as go
 
-# Configuração da página com tema escuro
+# Configuração da página com tema escuro (apenas uma vez)
 st.set_page_config(page_title="Panorama de Mercado", layout="wide", initial_sidebar_state="collapsed")
 st.markdown("""
     <style>
@@ -117,11 +118,11 @@ st.markdown("""
 # Título principal
 st.markdown('<p class="main-title">Panorama de Mercado</p>', unsafe_allow_html=True)
 
-# Atualização automática a cada 30 segundos
+# Atualização automática a cada 10 segundos (ajustado de 10000ms conforme o original)
 st_autorefresh(interval=10000, key="marketrefresh")
 
 # Ajustar para o fuso horário UTC-3
-br_tz = pytz.timezone('America/Sao_Paulo')  # Fuso horário do Brasil (UTC-3)
+br_tz = pytz.timezone('America/Sao_Paulo')
 br_time = datetime.now(br_tz)
 # Timestamp
 st.markdown(f'<p class="timestamp">Última atualização: {br_time.strftime("%d/%m/%Y %H:%M:%S")}</p>', unsafe_allow_html=True)
@@ -130,10 +131,7 @@ st.markdown(f'<p class="timestamp">Última atualização: {br_time.strftime("%d/
 @st.cache_data(ttl=10)
 def get_currency_rates():
     try:
-        pairs = [
-            "USD-BRL", "EUR-USD", "USD-JPY", "USD-GBP",
-            "USD-CAD", "USD-SEK", "USD-CHF"
-        ]
+        pairs = ["USD-BRL", "EUR-USD", "USD-JPY", "USD-GBP", "USD-CAD", "USD-SEK", "USD-CHF"]
         url = "https://economia.awesomeapi.com.br/json/last/" + ",".join(pairs)
         response = requests.get(url)
         data = response.json()
@@ -141,13 +139,13 @@ def get_currency_rates():
         for pair in pairs:
             pair_data = data[f"{pair.replace('-', '')}"]
             base, quote = pair.split("-")
-            if pair == "USD-BRL":  # Mantém USD/BRL no formato original
+            if pair == "USD-BRL":
                 rates[f"{base}/{quote}"] = float(pair_data["bid"])
                 rates[f"{base}/{quote}_pct"] = float(pair_data["pctChange"])
-            elif base == "USD":  # Para USD/JPY, USD/GBP, etc., inverte para JPY/USD, GBP/USD
+            elif base == "USD":
                 rates[f"{quote}/{base}"] = 1 / float(pair_data["bid"])
                 rates[f"{quote}/{base}_pct"] = -float(pair_data["pctChange"])
-            else:  # Para EUR-USD, já está no formato correto
+            else:
                 rates[f"{base}/{quote}"] = float(pair_data["bid"])
                 rates[f"{base}/{quote}_pct"] = float(pair_data["pctChange"])
         return pd.DataFrame([
@@ -161,15 +159,9 @@ def get_currency_rates():
 @st.cache_data(ttl=30)
 def get_commodities():
     symbols = {
-        "Metais": {
-            'Ouro': 'GC=F', 'Prata': 'SI=F', 'Platinum': 'PL=F', 'Cobre': 'HG=F'
-        },
-        "Energia": {
-            'WTI Oil': 'CL=F', 'Brent Oil': 'BZ=F', 'Gasolina': 'RB=F', 'Gás Natural': 'NG=F'
-        },
-        "Agrícolas": {
-            'Gado Vivo': 'LE=F', 'Porcos Magros': 'HE=F', 'Milho': 'ZC=F', 'Soja': 'ZS=F', 'Cacau': 'CC=F', 'Café': 'KC=F'
-        }
+        "Metais": {'Ouro': 'GC=F', 'Prata': 'SI=F', 'Platinum': 'PL=F', 'Cobre': 'HG=F'},
+        "Energia": {'WTI Oil': 'CL=F', 'Brent Oil': 'BZ=F', 'Gasolina': 'RB=F', 'Gás Natural': 'NG=F'},
+        "Agrícolas": {'Gado Vivo': 'LE=F', 'Porcos Magros': 'HE=F', 'Milho': 'ZC=F', 'Soja': 'ZS=F', 'Cacau': 'CC=F', 'Café': 'KC=F'}
     }
     data = {}
     for category, items in symbols.items():
@@ -185,14 +177,14 @@ def get_commodities():
                 else:
                     data[f"{name} ({category})"] = {"Preço": "N/A", "Variação (%)": "N/A"}
             except Exception as e:
-                data[f"{name} ({category})"] = {"Preço": f"N/A (Erro: {e})", "Variação (%)": "N/A"}
+                data[f"{name} ({category})"] = {"Preço": "N/A", "Variação (%)": "N/A"}
     return pd.DataFrame([(k, v["Preço"], v["Variação (%)"]) for k, v in data.items()],
                         columns=["Commodity", "Preço", "Variação (%)"])
 
 @st.cache_data(ttl=30)
 def get_stocks():
-    symbols =  {'IBOV': '^BVSP','EWZ':'EWZ', 'S&P500': '^GSPC', 'NASDAQ': '^IXIC', 'FTSE100': '^FTSE', 'DAX': '^GDAXI',
-                'CAC40': '^FCHI', 'SSE Composite': '000001.SS', 'Nikkei225': '^N225', 'Merval': '^MERV'}
+    symbols = {'IBOV': '^BVSP', 'EWZ': 'EWZ', 'S&P500': '^GSPC', 'NASDAQ': '^IXIC', 'FTSE100': '^FTSE', 
+               'DAX': '^GDAXI', 'CAC40': '^FCHI', 'SSE Composite': '000001.SS', 'Nikkei225': '^N225', 'Merval': '^MERV'}
     data = {}
     for name, symbol in symbols.items():
         try:
@@ -206,18 +198,52 @@ def get_stocks():
             else:
                 data[name] = {"Preço": "N/A", "Variação (%)": "N/A"}
         except Exception as e:
-            data[name] = {"Preço": f"N/A (Erro: {e})", "Variação (%)": "N/A"}
+            data[name] = {"Preço": "N/A", "Variação (%)": "N/A"}
     return pd.DataFrame([(k, v["Preço"], v["Variação (%)"]) for k, v in data.items()],
                         columns=["Índice", "Preço", "Variação (%)"])
 
+# Função para pegar dados do Ibovespa do dia atual (ações individuais)
+def get_ibov_data():
+    acoes = [
+        'ALOS3', 'ABEV3', 'ASAI3', 'AURE3', 'AMOB3', 'AZUL4', 'AZZA3', 'B3SA3', 'BBSE3', 'BBDC3', 'BBDC4', 
+        'BRAP4', 'BBAS3', 'BRKM5', 'BRAV3', 'BRFS3', 'BPAC11', 'CXSE3', 'CRFB3', 'CCRO3', 'CMIG4', 'COGN3', 
+        'CPLE6', 'CSAN3', 'CPFE3', 'CMIN3', 'CVCB3', 'CYRE3', 'ELET3', 'ELET6', 'EMBR3', 'ENGI11', 'ENEV3', 
+        'EGIE3', 'EQTL3', 'FLRY3', 'GGBR4', 'GOAU4', 'NTCO3', 'HAPV3', 'HYPE3', 'IGTI11', 'IRBR3', 'ISAE4', 
+        'ITSA4', 'ITUB4', 'JBSS3', 'KLBN11', 'RENT3', 'LREN3', 'LWSA3', 'MGLU3', 'POMO4', 'MRFG3', 'BEEF3', 
+        'MRVE3', 'MULT3', 'PCAR3', 'PETR3', 'PETR4', 'RECV3', 'PRIO3', 'PETZ3', 'PSSA3', 'RADL3', 'RAIZ4', 
+        'RDOR3', 'RAIL3', 'SBSP3', 'SANB11', 'STBP3', 'SMTO3', 'CSNA3', 'SLCE3', 'SUZB3', 'TAEE11', 'VIVT3', 
+        'TIMS3', 'TOTS3', 'UGPA3', 'USIM5', 'VALE3', 'VAMO3', 'VBBR3', 'VIVA3', 'WEGE3', 'YDUQ3'
+    ]
+    
+    tickers = [acao + '.SA' for acao in acoes]
+    data = yf.download(tickers, period="1d", interval="1d")["Close"]
+    open_data = yf.download(tickers, period="1d", interval="1d")["Open"]
+    
+    if data.empty or open_data.empty:
+        raise ValueError("Dados insuficientes para calcular a variação do dia.")
+    
+    variacao = ((data.iloc[-1] - open_data.iloc[-1]) / open_data.iloc[-1]) * 100
+    return pd.DataFrame({
+        "Ação": [ticker[:-3] for ticker in tickers], 
+        "Variação (%)": variacao.values,
+        "Último Preço": data.iloc[-1].values
+    })
+
+# Função para obter dados do IBOV
+def get_stock_data(ticker, period, interval):
+    stock = yf.Ticker(ticker)
+    data = stock.history(period=period, interval=interval)
+    return data
+
+# Layout principal
 col1, col2 = st.columns([3, 2])
+
 with col1:
-    # Layout com categorias empilhadas verticalmente
     # Moedas
     st.markdown('<p class="subheader">💱 Moedas</p>', unsafe_allow_html=True)
     currency_data = get_currency_rates()
     if not currency_data.empty:
-        cols = st.columns(min(4, len(currency_data)))  # Máximo de 4 colunas para moedas
+        cols = st.columns(min(4, len(currency_data)))
         for idx, (index, row) in enumerate(currency_data.iterrows()):
             with cols[idx % len(cols)]:
                 var_class = "positive" if float(row["Variação (%)"]) >= 0 else "negative"
@@ -234,14 +260,13 @@ with col1:
                     </div>
                     """, unsafe_allow_html=True)
 
-    st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)  # Espaço entre seções
-
+    st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)
 
     # Índices
     st.markdown('<p class="subheader">📈 Índices</p>', unsafe_allow_html=True)
     stocks_data = get_stocks()
     if not stocks_data.empty:
-        cols = st.columns(min(4, len(stocks_data)))  # Máximo de 4 colunas para índices
+        cols = st.columns(min(4, len(stocks_data)))
         for idx, (index, row) in enumerate(stocks_data.iterrows()):
             with cols[idx % len(cols)]:
                 var_class = "positive" if float(str(row["Variação (%)"]).replace("N/A", "0")) >= 0 else "negative"
@@ -258,14 +283,13 @@ with col1:
                     </div>
                     """, unsafe_allow_html=True)
 
-    st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)  # Espaço entre seções
-
+    st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)
 
     # Commodities
     st.markdown('<p class="subheader">⛽ Commodities</p>', unsafe_allow_html=True)
     commodities_data = get_commodities()
     if not commodities_data.empty:
-        cols = st.columns(min(4, len(commodities_data) // 2 + 1))  # Máximo de 4 colunas para commodities
+        cols = st.columns(min(4, len(commodities_data) // 2 + 1))
         for idx, (index, row) in enumerate(commodities_data.iterrows()):
             with cols[idx % len(cols)]:
                 var_class = "positive" if float(str(row["Variação (%)"]).replace("N/A", "0")) >= 0 else "negative"
@@ -283,7 +307,6 @@ with col1:
                         <div class="card-variation {var_class}">{row['Variação (%)']}% {arrow}</div>
                     </div>
                     """, unsafe_allow_html=True)
-
 
 with col2:
     st.subheader("IBOV")
@@ -361,7 +384,7 @@ with col2:
         maiores_altas = df.nlargest(5, "Variação (%)")
         maiores_baixas = df.nsmallest(5, "Variação (%)")
 
-        # Layout em colunas
+        # Layout em colunas para ações
         col1, col2 = st.columns(2)
 
         with col1:
@@ -418,20 +441,14 @@ with col2:
                     unsafe_allow_html=True
                 )
 
+    except Exception as e:
+        st.error(f"Erro ao carregar os dados das ações: {e}")
 
-
-
-
-
-
-
-
-    
-        # Rodapé
-    st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)  # Espaço antes do rodapé
+    # Rodapé (dentro da coluna col2)
+    st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)
     st.markdown("""
     <div style="text-align: center; font-size: 12px; color: #A9A9A9; margin-top: 20px;">
-        <strong>Fonte:</strong> Moedas: AwesomeAPI | Commodities e Índices: Yahoo Finance<br>
-        <strong>Nota:</strong> Atualização automática a cada 30 segundos. Dados para fins informativos.
+        <strong>Fonte:</strong> Moedas: AwesomeAPI | Commodities, Índices e Ações: Yahoo Finance<br>
+        <strong>Nota:</strong> Atualização automática a cada 10 segundos. Dados para fins informativos.
     </div>
     """, unsafe_allow_html=True)
