@@ -52,10 +52,14 @@ st.subheader("IBOV")
 try:
     # Dados intraday (5 minutos)
     intraday_data = get_stock_data('^BVSP', period="1d", interval="5m")
-    # Dados do dia anterior para fechamento
+    # Dados do dia anterior para fechamento e diário
     previous_day_data = get_stock_data('^BVSP', period="2d", interval="1d")
+    # Dados semanal (5 dias úteis)
+    weekly_data = get_stock_data('^BVSP', period="5d", interval="1d")
+    # Dados mensal (1 mês)
+    monthly_data = get_stock_data('^BVSP', period="1mo", interval="1d")
     
-    if not intraday_data.empty and not previous_day_data.empty:
+    if not intraday_data.empty and not previous_day_data.empty and not weekly_data.empty and not monthly_data.empty:
         # Preço atual (último fechamento intraday)
         preco_atual = intraday_data['Close'].iloc[-1]
         # Abertura de hoje (primeiro valor do dia)
@@ -65,21 +69,38 @@ try:
         # Variação percentual do dia
         variacao_dia = ((preco_atual - abertura_hoje) / abertura_hoje) * 100
         
+        # Variação semanal (fechamento atual vs fechamento há 5 dias)
+        fechamento_semana_passada = weekly_data['Close'].iloc[0]
+        variacao_semanal = ((preco_atual - fechamento_semana_passada) / fechamento_semana_passada) * 100
+        
+        # Variação mensal (fechamento atual vs fechamento há 1 mês)
+        fechamento_mes_passado = monthly_data['Close'].iloc[0]
+        variacao_mensal = ((preco_atual - fechamento_mes_passado) / fechamento_mes_passado) * 100
+
         # Exibindo métricas
         col_metrics1, col_metrics2, col_metrics3 = st.columns(3)
         with col_metrics1:
             st.metric("Preço Atual", f"{preco_atual:.2f}")
         with col_metrics2:
-            # Adicionando seta baseada na variação
-            seta = "↑" if variacao_dia >= 0 else "↓"
-            st.metric("Variação do Dia", f"{seta} {abs(variacao_dia):.2f}%", delta_color="normal")
+            # Adicionando seta baseada na variação do dia
+            seta_dia = "↑" if variacao_dia >= 0 else "↓"
+            st.metric("Variação do Dia", f"{seta_dia} {abs(variacao_dia):.2f}%", delta_color="normal")
         with col_metrics3:
             st.metric("Fechamento Anterior", f"{fechamento_anterior:.2f}")
 
-        # Definindo a cor da linha do gráfico com base na variação
+        # Métricas adicionais para variação semanal e mensal
+        col_metrics4, col_metrics5 = st.columns(2)
+        with col_metrics4:
+            seta_semanal = "↑" if variacao_semanal >= 0 else "↓"
+            st.metric("Variação Semanal", f"{seta_semanal} {abs(variacao_semanal):.2f}%", delta_color="normal")
+        with col_metrics5:
+            seta_mensal = "↑" if variacao_mensal >= 0 else "↓"
+            st.metric("Variação Mensal", f"{seta_mensal} {abs(variacao_mensal):.2f}%", delta_color="normal")
+
+        # Definindo a cor da linha do gráfico com base na variação do dia
         cor_linha = 'green' if variacao_dia >= 0 else 'red'
 
-        # Gráfico de linha
+        # Gráfico de linha (intraday)
         fig_intraday = go.Figure()
         fig_intraday.add_trace(go.Scatter(
             x=intraday_data.index,
@@ -95,6 +116,7 @@ try:
             height=700,
         )
         st.plotly_chart(fig_intraday, use_container_width=True)
+
     else:
         st.warning("Nenhum dado disponível para o IBOV.")
 except Exception as e:
