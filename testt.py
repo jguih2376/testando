@@ -176,14 +176,8 @@ def get_commodities():
 
 @st.cache_data(ttl=30)
 def get_stocks():
-    symbols = {
-        "Apple": "AAPL",
-        "Ibovespa": "^BVSP",
-        "Tesla": "TSLA",
-        "S&P 500": "^GSPC",
-        "Dow Jones": "^DJI",
-        "NASDAQ": "^IXIC"
-    }
+    symbols =  {'IBOV': '^BVSP','EWZ':'EWZ', 'S&P500': '^GSPC', 'NASDAQ': '^IXIC', 'FTSE100': '^FTSE', 'DAX': '^GDAXI',
+                'CAC40': '^FCHI', 'SSE Composite': '000001.SS', 'Nikkei225': '^N225', 'Merval': '^MERV'}
     data = {}
     for name, symbol in symbols.items():
         try:
@@ -228,6 +222,27 @@ with col1:
 
     st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)  # Espaço maior entre seções
 
+    # Índices
+    st.markdown('<p class="subheader">📈 Índices</p>', unsafe_allow_html=True)
+    stocks_data = get_stocks()
+    if not stocks_data.empty:
+        cols = st.columns(min(4, len(stocks_data)))  # Máximo de 4 colunas para índices
+        for idx, (index, row) in enumerate(stocks_data.iterrows()):
+            with cols[idx % len(cols)]:
+                var_class = "positive" if float(str(row["Variação (%)"]).replace("N/A", "0")) >= 0 else "negative"
+                arrow = "↑" if float(str(row["Variação (%)"]).replace("N/A", "0")) >= 0 else "↓"
+                st.markdown(
+                    f"""
+                    <div class="card">
+                        <div class="tooltip">
+                            <div class="card-title">{row['Índice']}</div>
+                            <span class="tooltiptext">Índice de Mercado</span>
+                        </div>
+                        <div class="card-value">{row['Preço']}</div>
+                        <div class="card-variation {var_class}">{row['Variação (%)']}% {arrow}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
     # Commodities
     st.markdown('<p class="subheader">⛽ Commodities</p>', unsafe_allow_html=True)
     commodities_data = get_commodities()
@@ -253,26 +268,6 @@ with col1:
 
     st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)  # Espaço maior entre seções
 
-    # Índices
-    st.markdown('<p class="subheader">📈 Índices</p>', unsafe_allow_html=True)
-    stocks_data = get_stocks()
-    if not stocks_data.empty:
-        cols = st.columns(min(4, len(stocks_data)))  # Máximo de 4 colunas para índices
-        for idx, (index, row) in enumerate(stocks_data.iterrows()):
-            with cols[idx % len(cols)]:
-                var_class = "positive" if float(str(row["Variação (%)"]).replace("N/A", "0")) >= 0 else "negative"
-                arrow = "↑" if float(str(row["Variação (%)"]).replace("N/A", "0")) >= 0 else "↓"
-                st.markdown(
-                    f"""
-                    <div class="card">
-                        <div class="tooltip">
-                            <div class="card-title">{row['Índice']}</div>
-                            <span class="tooltiptext">Índice de Mercado</span>
-                        </div>
-                        <div class="card-value">{row['Preço']}</div>
-                        <div class="card-variation {var_class}">{row['Variação (%)']}% {arrow}</div>
-                    </div>
-                    """, unsafe_allow_html=True)
 
     # Rodapé
     st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)  # Espaço antes do rodapé
