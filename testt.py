@@ -225,6 +225,7 @@ with col1:
                     </div>
                     """, unsafe_allow_html=True)
 
+    st.markdown('')
     # Commodities
     st.markdown('<p class="subheader">⛽ Commodities</p>', unsafe_allow_html=True)
     commodities_data = get_commodities()
@@ -248,6 +249,7 @@ with col1:
                     </div>
                     """, unsafe_allow_html=True)
 
+    st.markdown('')
     # Índices
     st.markdown('<p class="subheader">📈 Índices</p>', unsafe_allow_html=True)
     stocks_data = get_stocks()
