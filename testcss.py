@@ -102,7 +102,7 @@ with col2:
                 template="plotly_dark",
                 height=400
             )
-            st.plotly_chart(fig_yearly, use_container_width=True)
+            st.plotly_chart(fig_yearly, use_container_width=False)
         else:
             st.warning("Nenhum dado anual disponível para este ticker.")
     except Exception as e:
