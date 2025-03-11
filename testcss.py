@@ -23,7 +23,7 @@ def get_stock_data(ticker, period, interval):
 
 
 # Divisão em duas colunas para os gráficos semanal e anual
-col1, col2 = st.columns(2)
+col1, col2 = st.columns([4,1])
 
 # Gráfico Semanal
 with col1:
