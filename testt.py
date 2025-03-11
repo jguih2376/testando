@@ -9,6 +9,7 @@ import plotly.graph_objects as go
 
 # Configuração da página com tema escuro
 st.set_page_config(page_title="Panorama de Mercado", layout="wide", initial_sidebar_state="collapsed")
+# No CSS geral (substitua a seção correspondente no início do código):
 st.markdown("""
     <style>
     .main-title {
@@ -56,7 +57,7 @@ st.markdown("""
         background-color: #3E3E3E;
     }
     .card-title {
-        font-size: 13px;
+        font-size: 12px;  /* Reduzido de 13px */
         color: #FFFFFF;
         margin-bottom: 4px;
         font-weight: bold;
@@ -65,12 +66,12 @@ st.markdown("""
         text-overflow: ellipsis;
     }
     .card-value {
-        font-size: 15px;
+        font-size: 14px;  /* Reduzido de 15px */
         margin-top: 4px;
         color: #E0E0E0;
     }
     .card-variation {
-        font-size: 12px;
+        font-size: 11px;  /* Reduzido de 12px */
         margin-top: 4px;
         display: flex;
         align-items: center;
@@ -156,7 +157,7 @@ def get_currency_rates():
         st.error(f"Erro ao carregar moedas: {e}")
         return pd.DataFrame()
 
-@st.cache_data(ttl=300)  # Commodities: 5 minutos
+@st.cache_data(ttl=1200)  # Commodities: 20 minutos
 def get_commodities():
     symbols = {
         "Metais": {'Ouro': 'GC=F', 'Prata': 'SI=F', 'Platinum': 'PL=F', 'Cobre': 'HG=F'},
@@ -181,7 +182,7 @@ def get_commodities():
     return pd.DataFrame([(k, v["Preço"], v["Variação (%)"]) for k, v in data.items()],
                         columns=["Commodity", "Preço", "Variação (%)"])
 
-@st.cache_data(ttl=300)  # Índices: 5 minutos
+@st.cache_data(ttl=1200)  # Índices: 20 minutos
 def get_stocks():
     symbols = {'IBOV': '^BVSP', 'EWZ': 'EWZ', 'S&P500': '^GSPC', 'NASDAQ': '^IXIC', 'FTSE100': '^FTSE', 
                'DAX': '^GDAXI', 'CAC40': '^FCHI', 'SSE Composite': '000001.SS', 'Nikkei225': '^N225', 'Merval': '^MERV'}
@@ -202,7 +203,7 @@ def get_stocks():
     return pd.DataFrame([(k, v["Preço"], v["Variação (%)"]) for k, v in data.items()],
                         columns=["Índice", "Preço", "Variação (%)"])
 
-@st.cache_data(ttl=300)  # Ações do IBOV: 5 minutos
+@st.cache_data(ttl=1200)  # Ações do IBOV: 20 minutos
 def get_ibov_data():
     acoes = [
         'ALOS3', 'ABEV3', 'ASAI3', 'AURE3', 'AMOB3', 'AZUL4', 'AZZA3', 'B3SA3', 'BBSE3', 'BBDC3', 'BBDC4', 
@@ -229,7 +230,7 @@ def get_ibov_data():
         "Último Preço": data.iloc[-1].values
     })
 
-@st.cache_data(ttl=300)  # Dados do IBOV: 5 minutos
+@st.cache_data(ttl=1200)  # Dados do IBOV: 20 minutos
 def get_stock_data(ticker, period, interval):
     stock = yf.Ticker(ticker)
     data = stock.history(period=period, interval=interval)
@@ -308,8 +309,19 @@ with col1:
                     </div>
                     """, unsafe_allow_html=True)
 
+# Dentro do bloco `with col2:` (substitua apenas essa parte no código completo)
+
 with col2:
     st.subheader("IBOV")
+    # Adicionar CSS para reduzir o tamanho da fonte dos st.metric
+    st.markdown("""
+        <style>
+        .metric-text {
+            font-size: 14px !important;  /* Reduzindo fonte dos st.metric */
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
     try:
         # Dados intraday (5 minutos)
         intraday_data = get_stock_data('^BVSP', period="1d", interval="5m")
@@ -338,21 +350,31 @@ with col2:
             # Preço atual e fechamento anterior
             col_metrics1, col_metrics2, col1 = st.columns([1, 1, 4])
             with col_metrics1:
+                st.markdown('<div class="metric-text">', unsafe_allow_html=True)
                 st.metric("Fechamento Anterior", f"{fechamento_anterior:.2f}")
+                st.markdown('</div>', unsafe_allow_html=True)
             with col_metrics2:
+                st.markdown('<div class="metric-text">', unsafe_allow_html=True)
                 st.metric("Preço Atual", f"{preco_atual:.2f}")
+                st.markdown('</div>', unsafe_allow_html=True)
 
             # Variação diária, semanal e mensal
             col_metrics3, col_metrics4, col_metrics5, col_s2 = st.columns([1, 1, 1, 3])
             with col_metrics3:
                 seta_dia = "↑" if variacao_dia >= 0 else "↓"
+                st.markdown('<div class="metric-text">', unsafe_allow_html=True)
                 st.metric("Variação do Dia", f"{seta_dia} {abs(variacao_dia):.2f}%", delta_color="normal")
+                st.markdown('</div>', unsafe_allow_html=True)
             with col_metrics4:
                 seta_semanal = "↑" if variacao_semanal >= 0 else "↓"
+                st.markdown('<div class="metric-text">', unsafe_allow_html=True)
                 st.metric("Variação Semanal", f"{seta_semanal} {abs(variacao_semanal):.2f}%", delta_color="normal")
+                st.markdown('</div>', unsafe_allow_html=True)
             with col_metrics5:
                 seta_mensal = "↑" if variacao_mensal >= 0 else "↓"
+                st.markdown('<div class="metric-text">', unsafe_allow_html=True)
                 st.metric("Variação Mensal", f"{seta_mensal} {abs(variacao_mensal):.2f}%", delta_color="normal")
+                st.markdown('</div>', unsafe_allow_html=True)
 
             # Definindo a cor da linha do gráfico com base na variação do dia
             cor_linha = 'green' if variacao_dia >= 0 else 'red'
@@ -406,9 +428,9 @@ with col2:
                         display: flex; 
                         justify-content: space-between; 
                         align-items: center;">
-                        <span style="font-weight: bold; font-size: 16px; color: black; flex: 1; text-align: left;">{row['Ação']}</span>
-                        <span style="font-size: 16px; color: black; flex: 1; text-align: center;">R$ {row['Último Preço']:.2f}</span>
-                        <span style="font-size: 16px; color: #155724; font-weight: bold; flex: 1; text-align: right;">{row['Variação (%)']:.2f}%</span>
+                        <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">{row['Ação']}</span>
+                        <span style="font-size: 14px; color: black; flex: 1; text-align: center;">R$ {row['Último Preço']:.2f}</span>
+                        <span style="font-size: 14px; color: #155724; font-weight: bold; flex: 1; text-align: right;">{row['Variação (%)']:.2f}%</span>
                     </div>
                     """, 
                     unsafe_allow_html=True
@@ -433,9 +455,9 @@ with col2:
                         display: flex; 
                         justify-content: space-between; 
                         align-items: center;">
-                        <span style="font-weight: bold; font-size: 16px; color: black; flex: 1; text-align: left;">{row['Ação']}</span>
-                        <span style="font-size: 16px; color: black; flex: 1; text-align: center;">R$ {row['Último Preço']:.2f}</span>
-                        <span style="font-size: 16px; color: #721c24; font-weight: bold; flex: 1; text-align: right;">{row['Variação (%)']:.2f}%</span>
+                        <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">{row['Ação']}</span>
+                        <span style="font-size: 14px; color: black; flex: 1; text-align: center;">R$ {row['Último Preço']:.2f}</span>
+                        <span style="font-size: 14px; color: #721c24; font-weight: bold; flex: 1; text-align: right;">{row['Variação (%)']:.2f}%</span>
                     </div>
                     """, 
                     unsafe_allow_html=True
@@ -444,11 +466,15 @@ with col2:
     except Exception as e:
         st.error(f"Erro ao carregar os dados das ações: {e}")
 
+
+
+
+
     # Rodapé
     st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)
     st.markdown("""
     <div style="text-align: center; font-size: 12px; color: #A9A9A9; margin-top: 20px;">
         <strong>Fonte:</strong> Moedas: AwesomeAPI | Commodities, Índices e Ações: Yahoo Finance<br>
-        <strong>Nota:</strong> Moedas atualizadas a cada 10 segundos; demais cotações a cada 5 minutos.
+        <strong>Nota:</strong> Moedas atualizadas a cada 10 segundos; demais cotações a cada 20 minutos.
     </div>
     """, unsafe_allow_html=True)
