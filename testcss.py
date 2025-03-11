@@ -100,7 +100,7 @@ with col2:
                 yaxis_title="Preço",
                 xaxis_title="Data",
                 template="plotly_dark",
-                height=400
+                height=500
             )
             st.plotly_chart(fig_yearly, use_container_width=False)
         else:
