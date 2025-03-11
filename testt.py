@@ -237,7 +237,7 @@ def get_stock_data(ticker, period, interval):
     return data
 
 # Layout principal
-col1,s, col2 = st.columns([50,1,25])
+col1,s, col2 = st.columns([55,1,30])
 
 with col1:
     # Moedas
