@@ -317,7 +317,7 @@ with col2:
     st.markdown("""
         <style>
         .metric-text {
-            font-size: 14px !important;  /* Reduzindo fonte dos st.metric */
+            font-size: 10px !important;  /* Reduzindo fonte dos st.metric */
         }
         </style>
         """, unsafe_allow_html=True)
