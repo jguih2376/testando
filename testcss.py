@@ -67,15 +67,14 @@ with col1:
             ))
             fig_weekly.update_layout(
                 title="Semanal",
-                title_x=0.5,  # Centraliza o título
-                #yaxis_title="Preço",
-                yaxis_side="right",  # Move a escala de preço para a direita
+                title_x=0.4,  
+                yaxis_side="right",  
                 template="plotly_dark",
                 height=450,
                 xaxis=dict(
                     rangeslider=dict(
-                        visible=True,  # Exibe o seletor de intervalo
-                        thickness=0.03  # Define a altura do seletor
+                        visible=True,  
+                        thickness=0.03  
                     ),
                     rangeselector=dict(
                         buttons=list([
@@ -83,7 +82,7 @@ with col1:
                             dict(count=3, label="3m", step="month", stepmode="backward"),
                             dict(count=6, label="6m", step="month", stepmode="backward"),
                             dict(count=1, label="YTD", step="year", stepmode="todate"),
-                            dict(step="all")  # Exibe todos os dados
+                            dict(step="all")  
                         ])
                     )
                 )
@@ -98,8 +97,9 @@ with col1:
 # Gráfico Anual
 with col2:
     #st.subheader("Gráfico Anual")
+
     try:
-        yearly_data = get_stock_data(ticker, period="10y", interval="1mo")
+        yearly_data = get_stock_data(ticker, period="5y", interval="1mo")  # Agora busca os últimos 5 anos
         if not yearly_data.empty:
             fig_yearly = go.Figure()
             fig_yearly.add_trace(go.Candlestick(
@@ -111,17 +111,15 @@ with col2:
                 name="OHLC"
             ))
             fig_yearly.update_layout(
-                title=f"Anual",
-                title_x=0.4,
-                #yaxis_title="Preço",
-                yaxis_side="right",
-                #xaxis_title="Data",
+                title="Anual",
+                title_x=0.4,  # Centraliza um pouco mais o título                
+                yaxis_side="right",  # Move a escala de preço para a direita
                 template="plotly_dark",
                 height=450,
                 xaxis=dict(
                     rangeslider=dict(
-                        visible=True,  # Exibe o seletor de intervalo
-                        thickness=0.03  # Define a altura do seletor
+                        visible=True,  
+                        thickness=0.03  
                     ),
                     rangeselector=dict(
                         buttons=list([
@@ -129,7 +127,7 @@ with col2:
                             dict(count=3, label="3a", step="year", stepmode="backward"),
                             dict(count=5, label="5a", step="year", stepmode="backward"),
                             dict(count=10, label="10a", step="year", stepmode="backward"),
-                            dict(step="all")  # Exibe todos os dados
+                            dict(step="all")  
                         ])
                     )
                 )
@@ -139,6 +137,8 @@ with col2:
             st.warning("Nenhum dado anual disponível para este ticker.")
     except Exception as e:
         st.error(f"Erro ao carregar dados anuais: {e}")
+
+
 
 # Rodapé
 st.write("Dados fornecidos por Yahoo Finance via yfinance.")
