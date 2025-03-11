@@ -358,14 +358,14 @@ with col2:
                             align-items: center; 
                             margin-bottom: 8px;">
                             <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Fechamento Anterior</span>
-                            <span style="font-size: 12px; color: black; flex: 1; text-align: right;">{fechamento_anterior:.2f}</span>
+                            <span style="font-size: 12px; color: black; font-weight: bold; flex: 1; text-align: right;">{fechamento_anterior:.2f}</span>
                         </div>
                         <div style="
                             display: flex; 
                             justify-content: space-between; 
                             align-items: center;">
                             <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Preço Atual</span>
-                            <span style="font-size: 12px; color: black;  font-weight: bold; flex: 1; text-align: right;">{preco_atual:.2f}</span>
+                            <span style="font-size: 12px; color: black; font-weight: bold; flex: 1; text-align: right;">{preco_atual:.2f}</span>
                         </div>
                     </div>
                     """, 
@@ -411,23 +411,55 @@ with col2:
                     """, 
                     unsafe_allow_html=True
                 )
-
                 # Definindo a cor da linha do gráfico com base na variação do dia
-                cor_linha = 'green' if variacao_dia >= 0 else 'red'
+                cor_linha = '#32CD32' if variacao_dia >= 0 else '#FF4500'  # Verde mais claro e vermelho mais vibrante
 
-                # Gráfico de linha (intraday)
+                # Gráfico de linha (intraday) com melhorias
                 fig_intraday = go.Figure()
                 fig_intraday.add_trace(go.Scatter(
                     x=intraday_data.index,
                     y=intraday_data['Close'],
                     mode='lines',
-                    name="Fechamento",
-                    line=dict(color=cor_linha, width=1)
+                    name="IBOV Intraday",
+                    line=dict(color=cor_linha, width=1.5),  # Linha um pouco mais grossa
+                    hovertemplate='%{x|%H:%M}<br>Fechamento: %{y:.2f}<extra></extra>'  # Tooltip personalizado
                 ))
                 fig_intraday.update_layout(
-                    yaxis_side="right",
+                    title={
+                        'text': "IBOV - Variação Intraday",
+                        'y': 0.95,
+                        'x': 0.5,
+                        'xanchor': 'center',
+                        'yanchor': 'top',
+                        'font': dict(size=16, color='#FFFFFF')
+                    },
+                    xaxis=dict(
+                        title="Horário",
+                        tickformat="%H:%M",  # Formato de hora
+                        gridcolor='rgba(255, 255, 255, 0.1)',  # Gridlines sutis
+                        zeroline=False,
+                        color='#FFFFFF'
+                    ),
+                    yaxis=dict(
+                        title="Pontos",
+                        side="right",
+                        gridcolor='rgba(255, 255, 255, 0.1)',  # Gridlines sutis
+                        zeroline=False,
+                        color='#FFFFFF'
+                    ),
                     template="plotly_dark",
                     height=350,
+                    margin=dict(l=40, r=40, t=60, b=40),  # Margens ajustadas
+                    plot_bgcolor='#1E1E1E',  # Fundo do gráfico alinhado ao tema
+                    paper_bgcolor='#1E1E1E',  # Fundo externo alinhado ao tema
+                    font=dict(color='#FFFFFF'),  # Cor da fonte geral
+                    showlegend=True,
+                    legend=dict(
+                        x=0.01,
+                        y=0.99,
+                        bgcolor='rgba(0, 0, 0, 0.5)',
+                        font=dict(color='#FFFFFF')
+                    )
                 )
                 st.plotly_chart(fig_intraday, use_container_width=True)
 
