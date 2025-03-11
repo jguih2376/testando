@@ -128,11 +128,9 @@ def get_currency_rates():
 
 @st.cache_data(ttl=30)
 def get_commodities():
-    symbols = {
-        "Petróleo (WTI)": "CL=F",
-        "Ouro": "GC=F",
-        "Prata": "SI=F"
-    }
+    symbols = {'Ouro': 'GC=F', 'Prata': 'SI=F', 'Platinum': 'PL=F', 'Cobre': 'HG=F', 'WTI Oil':'CL=F', 'Brent Oil':'BZ=F',
+                    'Gasolina':'RB=F', 'Gás Natural':'NG=F', 'Gado Vivo':'LE=F', 'Porcos Magros':'LE=F', 'Milho':'ZC=F',
+                    'Soja':'ZS=F', 'Cacau':'CC=F', 'Café':'KC=F'}
     data = {}
     for name, symbol in symbols.items():
         try:
@@ -217,7 +215,7 @@ with col2:
 
 # Ações
 with col3:
-    st.markdown('<p class="subheader">📈 Ações</p>', unsafe_allow_html=True)
+    st.markdown('<p class="subheader">📈 Indices</p>', unsafe_allow_html=True)
     stocks_data = get_stocks()
     if not stocks_data.empty:
         st.markdown('<div class="card-container">', unsafe_allow_html=True)
