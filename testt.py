@@ -19,7 +19,7 @@ st.markdown("""
     .subheader {
         color: #FFFFFF;
         font-size: 22px;
-        margin-bottom: 10px;
+        margin-bottom: 15px; /* Aumentado para mais espaço entre o título da seção e os cartões */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -47,6 +47,7 @@ st.markdown("""
         transition: transform 0.2s;
         flex: 0 0 auto;
         position: relative;
+        margin-bottom: 15px; /* Adicionado espaçamento vertical entre os cartões */
     }
     .card:hover {
         transform: scale(1.03);
@@ -200,10 +201,10 @@ def get_stocks():
     return pd.DataFrame([(k, v["Preço"], v["Variação (%)"]) for k, v in data.items()],
                         columns=["Índice", "Preço", "Variação (%)"])
 
-col1, col2 = st.columns([3,2])
+col1, col2 = st.columns([3, 2])
 with col1:
-# Layout com categorias empilhadas verticalmente
-# Moedas
+    # Layout com categorias empilhadas verticalmente
+    # Moedas
     st.markdown('<p class="subheader">💱 Moedas</p>', unsafe_allow_html=True)
     currency_data = get_currency_rates()
     if not currency_data.empty:
@@ -225,13 +226,13 @@ with col1:
                     </div>
                     """, unsafe_allow_html=True)
 
-    st.markdown('')
-    st.markdown('')
+    st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)  # Espaço maior entre seções
+
     # Commodities
     st.markdown('<p class="subheader">⛽ Commodities</p>', unsafe_allow_html=True)
     commodities_data = get_commodities()
     if not commodities_data.empty:
-        cols = st.columns(min(4, len(commodities_data) // 2 + 1))  # Máximo de 6 colunas para commodities
+        cols = st.columns(min(4, len(commodities_data) // 2 + 1))  # Máximo de 4 colunas para commodities
         for idx, (index, row) in enumerate(commodities_data.iterrows()):
             with cols[idx % len(cols)]:
                 var_class = "positive" if float(str(row["Variação (%)"]).replace("N/A", "0")) >= 0 else "negative"
@@ -250,8 +251,8 @@ with col1:
                     </div>
                     """, unsafe_allow_html=True)
 
-    st.markdown('')
-    st.markdown('')
+    st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)  # Espaço maior entre seções
+
     # Índices
     st.markdown('<p class="subheader">📈 Índices</p>', unsafe_allow_html=True)
     stocks_data = get_stocks()
@@ -274,6 +275,7 @@ with col1:
                     """, unsafe_allow_html=True)
 
     # Rodapé
+    st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)  # Espaço antes do rodapé
     st.markdown("""
     <div style="text-align: center; font-size: 12px; color: #A9A9A9; margin-top: 20px;">
         <strong>Fonte:</strong> Moedas: ExchangeRate-API | Commodities e Índices: Yahoo Finance<br>
