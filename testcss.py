@@ -55,12 +55,6 @@ try:
 except Exception as e:
     st.error(f"Erro ao carregar dados intraday: {e}")
 
-interval_label = st.select_slider(
-    "",
-    list(interval_options.keys()),
-    key="interval_label"  # Usamos uma chave para manter o estado
-)
-
 
 # Divisão em duas colunas para os gráficos semanal e anual
 col1, col2 = st.columns(2)
