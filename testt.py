@@ -2,11 +2,11 @@ import streamlit as st
 import pandas as pd
 import yfinance as yf
 import plotly.express as px
-import plotly.graph_objects as go  # Import necessário para Candlestick
+import plotly.graph_objects as go
 from datetime import datetime
 import pytz
 
-# Função para pegar dados do Ibovespa do dia atual
+# Função para pegar dados do Ibovespa do dia atual (ações individuais)
 def get_ibov_data():
     acoes = [
         'ALOS3', 'ABEV3', 'ASAI3', 'AURE3', 'AMOB3', 'AZUL4', 'AZZA3', 'B3SA3', 'BBSE3', 'BBDC3', 'BBDC4', 
@@ -47,29 +47,53 @@ brt = pytz.timezone('America/Sao_Paulo')
 data_atual = datetime.now(brt).strftime("%d/%m/%Y %H:%M:%S")
 st.write(f"**Data:** 11 de Março de 2025 (atualizado até {data_atual} BRT)")
 
-# Gráfico Intraday do IBOV
-st.subheader(f"IBOV")
+# Dados do IBOV
+st.subheader("IBOV")
 try:
-    intraday_data = get_stock_data('^BVSP', period="1d", interval=5)  # Usando '^BVSP' diretamente
-    if not intraday_data.empty:
+    # Dados intraday (5 minutos)
+    intraday_data = get_stock_data('^BVSP', period="1d", interval="5m")
+    # Dados do dia anterior para fechamento
+    previous_day_data = get_stock_data('^BVSP', period="2d", interval="1d")
+    
+    if not intraday_data.empty and not previous_day_data.empty:
+        # Preço atual (último fechamento intraday)
+        preco_atual = intraday_data['Close'].iloc[-1]
+        # Abertura de hoje (primeiro valor do dia)
+        abertura_hoje = intraday_data['Open'].iloc[0]
+        # Fechamento do dia anterior
+        fechamento_anterior = previous_day_data['Close'].iloc[-2]
+        # Variação percentual do dia
+        variacao_dia = ((preco_atual - abertura_hoje) / abertura_hoje) * 100
+        
+        # Exibindo métricas
+        col_metrics1, col_metrics2, col_metrics3, col_metrics4 = st.columns(4)
+        with col_metrics1:
+            st.metric("Preço Atual", f"{preco_atual:.2f}")
+        with col_metrics2:
+            st.metric("Variação do Dia", f"{variacao_dia:.2f}%", delta_color="normal")
+        with col_metrics3:
+            st.metric("Fechamento Anterior", f"{fechamento_anterior:.2f}")
+        with col_metrics4:
+            st.metric("Abertura Hoje", f"{abertura_hoje:.2f}")
+        
+        # Gráfico de linha
         fig_intraday = go.Figure()
-
         fig_intraday.add_trace(go.Scatter(
-        x=fig_intraday.index,
-        y=fig_intraday['Close'],
-        mode='lines',
-        name="Fechamento",
-        line=dict(color='royalblue', width=1)
-    ))
+            x=intraday_data.index,
+            y=intraday_data['Close'],
+            mode='lines',
+            name="Fechamento",
+            line=dict(color='royalblue', width=1)
+        ))
         fig_intraday.update_layout(
-            title=f"Intraday IBOV",
+            title="Intraday IBOV (5min)",
             yaxis_side="right",
             template="plotly_dark",
             height=700,
         )
         st.plotly_chart(fig_intraday, use_container_width=True)
     else:
-        st.warning("Nenhum dado intraday disponível para o IBOV.")
+        st.warning("Nenhum dado disponível para o IBOV.")
 except Exception as e:
     st.error(f"Erro ao carregar dados intraday: {e}")
 
@@ -89,7 +113,6 @@ try:
             """, 
             unsafe_allow_html=True
         )
-        # Cartões estilizados para altas
         for _, row in maiores_altas.iterrows():
             st.markdown(
                 f"""
@@ -116,7 +139,6 @@ try:
             """, 
             unsafe_allow_html=True
         )
-        # Cartões estilizados para baixas
         for _, row in maiores_baixas.iterrows():
             st.markdown(
                 f"""
