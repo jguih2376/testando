@@ -313,7 +313,6 @@ with col1:
     # Dentro do bloco `with col2:` (substitua apenas essa parte no código completo)
 
 
-st.markdown('')
 with col2:
     with st.expander('...', expanded=True):
         try:
@@ -450,6 +449,7 @@ with col2:
                     """, 
                     unsafe_allow_html=True
                 )
+                st.markdown('')     
             else:
                 st.warning("Nenhum dado disponível para o IBOV.")
         except Exception as e:
