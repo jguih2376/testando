@@ -128,9 +128,11 @@ def get_currency_rates():
 
 @st.cache_data(ttl=30)
 def get_commodities():
-    symbols = {'Ouro': 'GC=F', 'Prata': 'SI=F', 'Platinum': 'PL=F', 'Cobre': 'HG=F', 'WTI Oil':'CL=F', 'Brent Oil':'BZ=F',
-                    'Gasolina':'RB=F', 'Gás Natural':'NG=F', 'Gado Vivo':'LE=F', 'Porcos Magros':'LE=F', 'Milho':'ZC=F',
-                    'Soja':'ZS=F', 'Cacau':'CC=F', 'Café':'KC=F'}
+    symbols = {
+        'Ouro': 'GC=F', 'Prata': 'SI=F', 'Platinum': 'PL=F', 'Cobre': 'HG=F', 'WTI Oil': 'CL=F', 'Brent Oil': 'BZ=F',
+        'Gasolina': 'RB=F', 'Gás Natural': 'NG=F', 'Gado Vivo': 'LE=F', 'Porcos Magros': 'HE=F', 'Milho': 'ZC=F',
+        'Soja': 'ZS=F', 'Cacau': 'CC=F', 'Café': 'KC=F'
+    }
     data = {}
     for name, symbol in symbols.items():
         try:
@@ -153,7 +155,10 @@ def get_stocks():
     symbols = {
         "Apple": "AAPL",
         "Ibovespa": "^BVSP",
-        "Tesla": "TSLA"
+        "Tesla": "TSLA",
+        "S&P 500": "^GSPC",
+        "Dow Jones": "^DJI",
+        "NASDAQ": "^IXIC"
     }
     data = {}
     for name, symbol in symbols.items():
@@ -170,10 +175,10 @@ def get_stocks():
         except Exception as e:
             data[name] = {"Preço": f"N/A (Erro: {e})", "Variação (%)": "N/A"}
     return pd.DataFrame([(k, v["Preço"], v["Variação (%)"]) for k, v in data.items()],
-                        columns=["Ação", "Preço", "Variação (%)"])
+                        columns=["Índice", "Preço", "Variação (%)"])
 
-# Layout em colunas
-col1, col2, col3,col4 = st.columns([1,1,1,2])
+# Layout em colunas com proporções ajustadas
+col1, col2, col3 = st.columns([1, 1, 1])  # Três colunas com proporções iguais
 
 # Moedas
 with col1:
@@ -213,9 +218,9 @@ with col2:
                 """, unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
-# Ações
+# Índices
 with col3:
-    st.markdown('<p class="subheader">📈 Indices</p>', unsafe_allow_html=True)
+    st.markdown('<p class="subheader">📈 Índices</p>', unsafe_allow_html=True)
     stocks_data = get_stocks()
     if not stocks_data.empty:
         st.markdown('<div class="card-container">', unsafe_allow_html=True)
@@ -224,7 +229,7 @@ with col3:
             st.markdown(
                 f"""
                 <div class="card">
-                    <div class="card-title">{row['Ação']}</div>
+                    <div class="card-title">{row['Índice']}</div>
                     <div class="card-value">{row['Preço']}</div>
                     <div class="card-variation {var_class}">{row['Variação (%)']}%</div>
                 </div>
@@ -234,7 +239,7 @@ with col3:
 # Rodapé
 st.markdown("""
 <div style="text-align: center; font-size: 12px; color: #A9A9A9; margin-top: 20px;">
-    <strong>Fonte:</strong> Moedas: ExchangeRate-API | Commodities e Ações: Yahoo Finance<br>
+    <strong>Fonte:</strong> Moedas: ExchangeRate-API | Commodities e Índices: Yahoo Finance<br>
     <strong>Nota:</strong> Atualização automática a cada 30 segundos. Dados para fins informativos.
 </div>
 """, unsafe_allow_html=True)
