@@ -123,7 +123,7 @@ st_autorefresh(interval=30000, key="marketrefresh")
 st.markdown(f'<p class="timestamp">Última atualização: {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}</p>', unsafe_allow_html=True)
 
 # Funções de dados (com cache)
-@st.cache_data(ttl=30)
+@st.cache_data(ttl=10)
 def get_currency_rates():
     try:
         pairs = [
@@ -137,10 +137,13 @@ def get_currency_rates():
         for pair in pairs:
             pair_data = data[f"{pair.replace('-', '')}"]
             base, quote = pair.split("-")
-            if quote == "USD":  # Para EUR-USD, invertemos a cotação
+            if pair == "USD-BRL":  # Mantém USD/BRL no formato original
+                rates[f"{base}/{quote}"] = float(pair_data["bid"])
+                rates[f"{base}/{quote}_pct"] = float(pair_data["pctChange"])
+            elif base == "USD":  # Para USD/JPY, USD/GBP, etc., inverte para JPY/USD, GBP/USD
                 rates[f"{quote}/{base}"] = 1 / float(pair_data["bid"])
-                rates[f"{quote}/{base}_pct"] = -float(pair_data["pctChange"])  # Inverso da variação
-            else:
+                rates[f"{quote}/{base}_pct"] = -float(pair_data["pctChange"])
+            else:  # Para EUR-USD, já está no formato correto
                 rates[f"{base}/{quote}"] = float(pair_data["bid"])
                 rates[f"{base}/{quote}_pct"] = float(pair_data["pctChange"])
         return pd.DataFrame([
@@ -226,7 +229,7 @@ with col1:
                     <div class="card">
                         <div class="tooltip">
                             <div class="card-title">{row['Par']}</div>
-                            <span class="tooltiptext">Cotação em USD</span>
+                            <span class="tooltiptext">Cotação em {row['Par'].split('/')[1]}</span>
                         </div>
                         <div class="card-value">{row['Cotação']:.4f}</div>
                         <div class="card-variation {var_class}">{row['Variação (%)']:.2f}% {arrow}</div>
