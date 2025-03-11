@@ -20,54 +20,43 @@ def get_stock_data(ticker, period, interval):
     data = stock.history(period=period, interval=interval)
     return data
 
-# Gráfico Intraday
-st.subheader(f"Gráfico Intraday ({interval_label})")
-try:
-    intraday_data = get_stock_data(ticker, period="1d", interval=interval)
-    if not intraday_data.empty:
-        fig_intraday = go.Figure()
-        fig_intraday.add_trace(go.Candlestick(
-            x=intraday_data.index,
-            open=intraday_data['Open'],
-            high=intraday_data['High'],
-            low=intraday_data['Low'],
-            close=intraday_data['Close'],
-            name="OHLC"
-        ))
-        fig_intraday.update_layout(
-            title=f"{ticker} - Intraday ({interval_label})",
-            yaxis_title="Preço",
-            yaxis_side="right",
-            xaxis_title="Horário",
-            template="plotly_dark",
-            height=700,
-            xaxis=dict(
-                    rangeslider=dict(
-                        visible=True,  
-                        thickness=0.03  
-                    ),
-                    rangeselector=dict(
-                        buttons=list([
-                            dict(count=5, label="5", step="minute", stepmode="backward"),
-                            dict(count=15, label="15", step="minute", stepmode="backward"),
-                            dict(count=30, label="30", step="minute", stepmode="backward"),
-                            dict(count=1, label="1h", step="hour", stepmode="backward"),
-                            dict(step="all")  
-                        ])
-                    )
-                )
-        )
-        st.plotly_chart(fig_intraday, use_container_width=True)
-    else:
-        st.warning("Nenhum dado intraday disponível para este ticker.")
-except Exception as e:
-    st.error(f"Erro ao carregar dados intraday: {e}")
+
 
 # Divisão em duas colunas para os gráficos semanal e anual
 col1, col2 = st.columns(2)
 
 # Gráfico Semanal
 with col1:
+    # Gráfico Intraday
+    st.subheader(f"Gráfico Intraday ({interval_label})")
+    try:
+        intraday_data = get_stock_data(ticker, period="1d", interval=interval)
+        if not intraday_data.empty:
+            fig_intraday = go.Figure()
+            fig_intraday.add_trace(go.Candlestick(
+                x=intraday_data.index,
+                open=intraday_data['Open'],
+                high=intraday_data['High'],
+                low=intraday_data['Low'],
+                close=intraday_data['Close'],
+                name="OHLC"
+            ))
+            fig_intraday.update_layout(
+                title=f"Intraday ({interval_label})",
+                yaxis_title="Preço",
+                yaxis_side="right",
+                xaxis_title="Horário",
+                template="plotly_dark",
+                height=700,
+            )
+            st.plotly_chart(fig_intraday, use_container_width=True)
+        else:
+            st.warning("Nenhum dado intraday disponível para este ticker.")
+    except Exception as e:
+        st.error(f"Erro ao carregar dados intraday: {e}")
+
+# Gráfico Anual
+with col2:
     try:
         weekly_data = get_stock_data(ticker, period="1y", interval="1wk")
         if not weekly_data.empty:
@@ -107,10 +96,7 @@ with col1:
             st.warning("Nenhum dado semanal disponível para este ticker.")
 
     except Exception as e:
-        st.error(f"Erro ao carregar dados semanais: {e}")
-
-# Gráfico Anual
-with col2:
+        st.error(f"Erro ao carregar dados semanais: {e}")    
     try:
         yearly_data = get_stock_data(ticker, period="10y", interval="1mo")
         if not yearly_data.empty:
@@ -128,7 +114,7 @@ with col2:
             last_5_years = yearly_data.index[-60:]  # 5 anos * 12 meses = 60 pontos
 
             fig_yearly.update_layout(
-                title="Anual",
+                title="Mensal",
                 title_x=0.4,                
                 yaxis_side="right",               
                 template="plotly_dark",
