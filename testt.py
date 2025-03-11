@@ -413,7 +413,7 @@ with col2:
         with col1:
             st.markdown(
             """
-            <h3 style="text-align: center; font-size: 16px;">↑ Maiores Altas do Dia ↑</h3>
+            <h3 style="text-align: center; font-size: 16px;">↑ Maiores Altas ↑</h3>
             """, 
             unsafe_allow_html=True
         )
@@ -440,7 +440,7 @@ with col2:
         with col2:
             st.markdown(
                 """
-                <h3 style="text-align: center; font-size: 16px;">↓ Maiores Baixas do Dia ↓</h3>
+                <h3 style="text-align: center; font-size: 16px;">↓ Maiores Baixas ↓</h3>
                 """, 
                 unsafe_allow_html=True
             )
