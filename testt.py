@@ -13,7 +13,7 @@ st.markdown("""
         font-size: 36px;
         color: #FFFFFF;
         text-align: center;
-        margin-bottom: 10px;
+        margin-bottom: 20px;
         font-weight: bold;
     }
     .subheader {
@@ -30,31 +30,35 @@ st.markdown("""
         text-align: right;
         margin-bottom: 20px;
     }
-    .stDataFrame {
+    .card-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        padding: 10px;
+    }
+    .card {
         background-color: #2E2E2E;
         border-radius: 10px;
-        padding: 10px;
+        padding: 15px;
+        width: 200px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    }
-    .dataframe th {
-        background: linear-gradient(to right, #3A3A3A, #4A4A4A);
-        color: #FFFFFF !important;
-        border-bottom: 1px solid #555555;
-        font-size: 16px !important;
-        padding: 10px;
         text-align: center;
+        transition: transform 0.2s;
     }
-    .dataframe td {
-        background-color: #2E2E2E !important;
-        color: #FFFFFF !important;
-        border-bottom: 1px solid #444444;
-        font-size: 14px !important;
-        padding: 8px;
-        text-align: center;
+    .card:hover {
+        transform: scale(1.05);
+        background-color: #3E3E3E;
     }
-    .dataframe tr:hover {
-        background-color: #3E3E3E !important;
-        transition: background-color 0.3s;
+    .card-title {
+        font-size: 16px;
+        color: #FFFFFF;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    .card-value {
+        font-size: 18px;
+        color: #00CED1;
+        margin-top: 5px;
     }
     body, .stApp {
         background-color: #1E1E1E;
@@ -131,48 +135,48 @@ with col1:
     st.markdown('<p class="subheader">💱 Moedas</p>', unsafe_allow_html=True)
     currency_data = get_currency_rates()
     if not currency_data.empty:
-        styled_data = currency_data.style.format({"Cotação": "{:.4f}"}).set_properties(**{
-            "background-color": "#2E2E2E",
-            "color": "#FFFFFF",
-            "border": "none",
-            "text-align": "center"
-        }).set_table_styles([
-            {"selector": "th", "props": [("border-bottom", "1px solid #555555")]},
-            {"selector": "td", "props": [("border-bottom", "1px solid #444444")]}
-        ])
-        st.dataframe(styled_data, use_container_width=True)
+        st.markdown('<div class="card-container">', unsafe_allow_html=True)
+        for index, row in currency_data.iterrows():
+            st.markdown(
+                f"""
+                <div class="card">
+                    <div class="card-title">{row['Par']}</div>
+                    <div class="card-value">{row['Cotação']:.4f}</div>
+                </div>
+                """, unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # Commodities
 with col2:
     st.markdown('<p class="subheader">⛽ Commodities</p>', unsafe_allow_html=True)
     commodities_data = get_commodities()
     if not commodities_data.empty:
-        styled_data = commodities_data.style.format({"Preço": "{:.2f}"}).set_properties(**{
-            "background-color": "#2E2E2E",
-            "color": "#FFFFFF",
-            "border": "none",
-            "text-align": "center"
-        }).set_table_styles([
-            {"selector": "th", "props": [("border-bottom", "1px solid #555555")]},
-            {"selector": "td", "props": [("border-bottom", "1px solid #444444")]}
-        ])
-        st.dataframe(styled_data, use_container_width=True)
+        st.markdown('<div class="card-container">', unsafe_allow_html=True)
+        for index, row in commodities_data.iterrows():
+            st.markdown(
+                f"""
+                <div class="card">
+                    <div class="card-title">{row['Commodity']}</div>
+                    <div class="card-value">{row['Preço']}</div>
+                </div>
+                """, unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # Ações
 with col3:
     st.markdown('<p class="subheader">📈 Ações</p>', unsafe_allow_html=True)
     stocks_data = get_stocks()
     if not stocks_data.empty:
-        styled_data = stocks_data.style.format({"Preço": "{:.2f}"}).set_properties(**{
-            "background-color": "#2E2E2E",
-            "color": "#FFFFFF",
-            "border": "none",
-            "text-align": "center"
-        }).set_table_styles([
-            {"selector": "th", "props": [("border-bottom", "1px solid #555555")]},
-            {"selector": "td", "props": [("border-bottom", "1px solid #444444")]}
-        ])
-        st.dataframe(styled_data, use_container_width=True)
+        st.markdown('<div class="card-container">', unsafe_allow_html=True)
+        for index, row in stocks_data.iterrows():
+            st.markdown(
+                f"""
+                <div class="card">
+                    <div class="card-title">{row['Ação']}</div>
+                    <div class="card-value">{row['Preço']}</div>
+                </div>
+                """, unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # Rodapé
 st.markdown("""
