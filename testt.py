@@ -51,7 +51,7 @@ with tab3:
 
     # Entrada do usuário para o ticker da ação
     ticker = st.text_input("Digite o código da ação (ex: AAPL, MSFT, PETR4.SA):", value="AAPL")
-    
+
     # Seleção do tipo de gráfico
     chart_type = st.selectbox("Tipo de gráfico diário:", ["Candlestick", "Linha"], key="daily_chart_type")
     # Função para obter dados da ação
@@ -80,7 +80,7 @@ with tab3:
                     y=daily_data['Close'],
                     mode='lines',
                     name="Fechamento",
-                    line=dict(color='royalblue', width=2)
+                    line=dict(color='royalblue', width=1)
                 ))
             fig_daily.update_layout(
                 title="Diário",
