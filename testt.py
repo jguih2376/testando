@@ -362,7 +362,7 @@ with col2:
                     xref="paper",  # Referência relativa ao papel (0 a 1)
                     yref="y",  # Referência ao eixo Y em valores absolutos
                     text=f"{preco_atual:.2f}",  # Texto com o preço atual formatado
-                    showarrow=False,
+                    showarrow=True,
                     arrowhead=2,
                     ax=-30,  # Deslocamento horizontal da seta
                     ay=0,  # Sem deslocamento vertical
