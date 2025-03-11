@@ -200,7 +200,7 @@ def get_stocks():
     return pd.DataFrame([(k, v["Preço"], v["Variação (%)"]) for k, v in data.items()],
                         columns=["Índice", "Preço", "Variação (%)"])
 
-col1, col2 = st.columns([4,2])
+col1, col2 = st.columns([3,2])
 with col1:
 # Layout com categorias empilhadas verticalmente
 # Moedas
