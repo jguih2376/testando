@@ -48,9 +48,9 @@ try:
                     ),
                     rangeselector=dict(
                         buttons=list([
-                            dict(count=1, label="5", step="minute", stepmode="backward"),
-                            dict(count=1, label="15", step="minute", stepmode="backward"),
-                            dict(count=1, label="30", step="minute", stepmode="backward"),
+                            dict(count=5, label="5", step="minute", stepmode="backward"),
+                            dict(count=15, label="15", step="minute", stepmode="backward"),
+                            dict(count=30, label="30", step="minute", stepmode="backward"),
                             dict(count=1, label="1h", step="hour", stepmode="backward"),
                             dict(step="all")  
                         ])
