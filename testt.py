@@ -8,11 +8,12 @@ import pandas as pd
 import plotly.graph_objects as go
 from datetime import datetime
 
-st.title("🌎 Panorama do Mercado")
+st.set_page_config(page_title="Painel de Cotações", layout="wide")
+
+st.title("🌎 Panorama do Mercado")  
 st.write("Visão geral do mercado atual.")
 
 
-st.set_page_config(page_title="Painel de Cotações", layout="wide")
 # Criando as abas
 tab1, tab2, tab3 = st.tabs(['Panorama', 'TradingView', 'Triple Screen'])
 
