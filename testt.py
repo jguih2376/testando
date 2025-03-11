@@ -62,12 +62,21 @@ try:
         fig_altas.update_layout(showlegend=False)
         st.plotly_chart(fig_altas, use_container_width=True)
 
-        # Cartões estilizados para cada ação
+        # Cartões estilizados para altas
         for _, row in maiores_altas.iterrows():
             st.markdown(
                 f"""
-                <div style="background-color: #e6ffe6; padding: 10px; border-radius: 5px; margin: 5px 0;">
-                    <strong>{row['Ação']}</strong>: <span style="color: green;">{row['Variação (%)']:.2f}%</span>
+                <div style="
+                    background-color: #d4edda; 
+                    padding: 12px; 
+                    border-radius: 8px; 
+                    margin: 8px 0; 
+                    box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
+                    display: flex; 
+                    justify-content: space-between; 
+                    align-items: center;">
+                    <span style="font-weight: bold; font-size: 16px;">{row['Ação']}</span>
+                    <span style="color: #155724; font-size: 16px; font-weight: bold;">{row['Variação (%)']:.2f}%</span>
                 </div>
                 """, 
                 unsafe_allow_html=True
@@ -87,12 +96,21 @@ try:
         fig_baixas.update_layout(showlegend=False)
         st.plotly_chart(fig_baixas, use_container_width=True)
 
-        # Cartões estilizados para cada ação
+        # Cartões estilizados para baixas
         for _, row in maiores_baixas.iterrows():
             st.markdown(
                 f"""
-                <div style="background-color: #ffe6e6; padding: 10px; border-radius: 5px; margin: 5px 0;">
-                    <strong>{row['Ação']}</strong>: <span style="color: red;">{row['Variação (%)']:.2f}%</span>
+                <div style="
+                    background-color: #f8d7da; 
+                    padding: 12px; 
+                    border-radius: 8px; 
+                    margin: 8px 0; 
+                    box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
+                    display: flex; 
+                    justify-content: space-between; 
+                    align-items: center;">
+                    <span style="font-weight: bold; font-size: 16px;">{row['Ação']}</span>
+                    <span style="color: #721c24; font-size: 16px; font-weight: bold;">{row['Variação (%)']:.2f}%</span>
                 </div>
                 """, 
                 unsafe_allow_html=True
