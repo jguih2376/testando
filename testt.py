@@ -114,7 +114,7 @@ with tab3:
     if ticker:
         # Gráfico Diário
         try:
-            daily_data = get_stock_data(ticker, period="6m", interval="1d")
+            daily_data = get_stock_data(ticker, period="0.5y", interval="1d")
             if not daily_data.empty:
                 fig_daily = go.Figure()
                 if chart_type == "Candlestick":
