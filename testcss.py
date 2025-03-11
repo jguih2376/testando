@@ -24,73 +24,77 @@ def carregar_dados(ticker, periodo, intervalo):
         st.error(f"Erro ao carregar dados: {e}")
         return None
 
-# Abas para diferentes períodos
-tab1, tab2, tab3, tab4 = st.tabs(["Intraday", "Diário", "Semanal", "Mensal"])
+# Aba principal combinando Intraday e Diário
+tab1 = st.tabs(["Intraday + Diário", "Semanal", "Mensal"])[0]
 
-# --- Intraday ---
 with tab1:
-    st.subheader("Gráfico Intraday")
-    intervalo_intraday = st.selectbox("Selecione o intervalo (Intraday)", 
-                                     ["5m", "15m", "30m", "1h"], 
-                                     key="intraday_interval")
-    dados_intraday = carregar_dados(ticker, "1d", intervalo_intraday)
+    st.subheader("Gráficos Intraday e Diário")
     
-    if dados_intraday is not None:
-        # Criar figura com apenas o candlestick
-        fig_intraday = go.Figure(data=[go.Candlestick(x=dados_intraday.index,
-                                                    open=dados_intraday['Open'],
-                                                    high=dados_intraday['High'],
-                                                    low=dados_intraday['Low'],
-                                                    close=dados_intraday['Close'])])
+    # Criar duas colunas para exibir os gráficos lado a lado
+    col1, col2 = st.columns(2)
+    
+    # --- Intraday ---
+    with col1:
+        st.subheader("Gráfico Intraday")
+        intervalo_intraday = st.selectbox("Selecione o intervalo (Intraday)", 
+                                        ["5m", "15m", "30m", "1h"], 
+                                        key="intraday_interval")
+        dados_intraday = carregar_dados(ticker, "1d", intervalo_intraday)
         
-        # Configurar layout para remover subgráficos e eixos extras
-        fig_intraday.update_layout(
-            title=f'Intraday - {ticker} ({intervalo_intraday})',
-            yaxis_title='Preço',
-            xaxis_title='Hora',
-            template='plotly_white',
-            # Desativar grade
-            yaxis=dict(showgrid=False),
-            xaxis=dict(showgrid=False),
-            # Desativar eixo y secundário (ex.: para volume)
-            yaxis2=dict(visible=False, overlaying='y', matches=None),
-            # Garantir que não haja subgráficos adicionais
-            showlegend=False,
-            height=600  # Ajustar altura para evitar sobreposições
-        )
-        
-        # Exibir o gráfico
-        st.plotly_chart(fig_intraday, use_container_width=True)
-    else:
-        st.warning("Nenhum dado Intraday disponível.")
-        
+        if dados_intraday is not None:
+            fig_intraday = go.Figure(data=[go.Candlestick(x=dados_intraday.index,
+                                                        open=dados_intraday['Open'],
+                                                        high=dados_intraday['High'],
+                                                        low=dados_intraday['Low'],
+                                                        close=dados_intraday['Close'])])
+            
+            fig_intraday.update_layout(
+                title=f'Intraday - {ticker} ({intervalo_intraday})',
+                yaxis_title='Preço',
+                xaxis_title='Hora',
+                template='plotly_white',
+                yaxis=dict(showgrid=False),
+                xaxis=dict(showgrid=False),
+                yaxis2=dict(visible=False, overlaying='y', matches=None),
+                showlegend=False,
+                height=400
+            )
+            st.plotly_chart(fig_intraday, use_container_width=True)
+        else:
+            st.warning("Nenhum dado Intraday disponível.")
 
-# --- Diário ---
-with tab2:
-    st.subheader("Gráfico Diário")
-    periodo_diario = st.selectbox("Selecione o período (Diário)", 
-                                 ["5d", "15d", "30d", "60d"], 
-                                 key="daily_period")
-    dados_diario = carregar_dados(ticker, periodo_diario, "1d")
-    
-    if dados_diario is not None:
-        fig_diario = go.Figure(data=[go.Candlestick(x=dados_diario.index,
-                                                  open=dados_diario['Open'],
-                                                  high=dados_diario['High'],
-                                                  low=dados_diario['Low'],
-                                                  close=dados_diario['Close'])])
-        fig_diario.update_layout(
-            title=f'Diário - {ticker} ({periodo_diario})',
-            yaxis_title='Preço',
-            xaxis_title='Data',
-            template='plotly_white'
-        )
-        st.plotly_chart(fig_diario, use_container_width=True)
-    else:
-        st.warning("Nenhum dado Diário disponível.")
+    # --- Diário ---
+    with col2:
+        st.subheader("Gráfico Diário")
+        periodo_diario = st.selectbox("Selecione o período (Diário)", 
+                                    ["5d", "15d", "30d", "60d"], 
+                                    key="daily_period")
+        dados_diario = carregar_dados(ticker, periodo_diario, "1d")
+        
+        if dados_diario is not None:
+            fig_diario = go.Figure(data=[go.Candlestick(x=dados_diario.index,
+                                                      open=dados_diario['Open'],
+                                                      high=dados_diario['High'],
+                                                      low=dados_diario['Low'],
+                                                      close=dados_diario['Close'])])
+            
+            fig_diario.update_layout(
+                title=f'Diário - {ticker} ({periodo_diario})',
+                yaxis_title='Preço',
+                xaxis_title='Data',
+                template='plotly_white',
+                yaxis=dict(showgrid=False),
+                xaxis=dict(showgrid=False),
+                yaxis2=dict(visible=False, overlaying='y', matches=None),
+                showlegend=False,
+                height=400
+            )
+            st.plotly_chart(fig_diario, use_container_width=True)
+        else:
+            st.warning("Nenhum dado Diário disponível.")
 
 # --- Semanal ---
-with tab3:
+with st.tabs(["Intraday + Diário", "Semanal", "Mensal"])[1]:
     st.subheader("Gráfico Semanal")
     periodo_semanal = st.selectbox("Selecione o período (Semanal)", 
                                   ["1mo", "3mo", "6mo", "1y"], 
@@ -107,14 +111,19 @@ with tab3:
             title=f'Semanal - {ticker} ({periodo_semanal})',
             yaxis_title='Preço',
             xaxis_title='Data',
-            template='plotly_white'
+            template='plotly_white',
+            yaxis=dict(showgrid=False),
+            xaxis=dict(showgrid=False),
+            yaxis2=dict(visible=False, overlaying='y', matches=None),
+            showlegend=False,
+            height=400
         )
         st.plotly_chart(fig_semanal, use_container_width=True)
     else:
         st.warning("Nenhum dado Semanal disponível.")
 
 # --- Mensal ---
-with tab4:
+with st.tabs(["Intraday + Diário", "Semanal", "Mensal"])[2]:
     st.subheader("Gráfico Mensal")
     periodo_mensal = st.selectbox("Selecione o período (Mensal)", 
                                  ["6mo", "1y", "2y", "5y"], 
@@ -131,7 +140,12 @@ with tab4:
             title=f'Mensal - {ticker} ({periodo_mensal})',
             yaxis_title='Preço',
             xaxis_title='Data',
-            template='plotly_white'
+            template='plotly_white',
+            yaxis=dict(showgrid=False),
+            xaxis=dict(showgrid=False),
+            yaxis2=dict(visible=False, overlaying='y', matches=None),
+            showlegend=False,
+            height=400
         )
         st.plotly_chart(fig_mensal, use_container_width=True)
     else:
