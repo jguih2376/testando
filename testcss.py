@@ -75,7 +75,7 @@ with col1:
                 xaxis=dict(
                     rangeslider=dict(
                         visible=True,  # Exibe o seletor de intervalo
-                        thickness=0.04  # Define a altura do seletor
+                        thickness=0.03  # Define a altura do seletor
                     ),
                     rangeselector=dict(
                         buttons=list([
@@ -114,14 +114,14 @@ with col2:
                 title=f"Anual",
                 title_x=0.5,
                 yaxis_title="Preço",
-                yaxis_side="right",
+                #yaxis_side="right",
                 #xaxis_title="Data",
                 template="plotly_dark",
                 height=450,
                 xaxis=dict(
                     rangeslider=dict(
                         visible=True,  # Exibe o seletor de intervalo
-                        thickness=0.04  # Define a altura do seletor
+                        thickness=0.03  # Define a altura do seletor
                     ),
                     rangeselector=dict(
                         buttons=list([
