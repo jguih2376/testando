@@ -7,7 +7,7 @@ from datetime import datetime
 from streamlit_autorefresh import st_autorefresh
 import plotly.graph_objects as go
 
-# Configuração da página com tema escuro (apenas uma vez)
+# Configuração da página com tema escuro
 st.set_page_config(page_title="Panorama de Mercado", layout="wide", initial_sidebar_state="collapsed")
 st.markdown("""
     <style>
@@ -118,7 +118,7 @@ st.markdown("""
 # Título principal
 st.markdown('<p class="main-title">Panorama de Mercado</p>', unsafe_allow_html=True)
 
-# Atualização automática a cada 10 segundos (ajustado de 10000ms conforme o original)
+# Atualização automática da página a cada 10 segundos
 st_autorefresh(interval=10000, key="marketrefresh")
 
 # Ajustar para o fuso horário UTC-3
@@ -127,8 +127,8 @@ br_time = datetime.now(br_tz)
 # Timestamp
 st.markdown(f'<p class="timestamp">Última atualização: {br_time.strftime("%d/%m/%Y %H:%M:%S")}</p>', unsafe_allow_html=True)
 
-# Funções de dados (com cache)
-@st.cache_data(ttl=10)
+# Funções de dados (com cache ajustado)
+@st.cache_data(ttl=10)  # Moedas: 10 segundos
 def get_currency_rates():
     try:
         pairs = ["USD-BRL", "EUR-USD", "USD-JPY", "USD-GBP", "USD-CAD", "USD-SEK", "USD-CHF"]
@@ -156,7 +156,7 @@ def get_currency_rates():
         st.error(f"Erro ao carregar moedas: {e}")
         return pd.DataFrame()
 
-@st.cache_data(ttl=30)
+@st.cache_data(ttl=300)  # Commodities: 5 minutos
 def get_commodities():
     symbols = {
         "Metais": {'Ouro': 'GC=F', 'Prata': 'SI=F', 'Platinum': 'PL=F', 'Cobre': 'HG=F'},
@@ -181,7 +181,7 @@ def get_commodities():
     return pd.DataFrame([(k, v["Preço"], v["Variação (%)"]) for k, v in data.items()],
                         columns=["Commodity", "Preço", "Variação (%)"])
 
-@st.cache_data(ttl=30)
+@st.cache_data(ttl=300)  # Índices: 5 minutos
 def get_stocks():
     symbols = {'IBOV': '^BVSP', 'EWZ': 'EWZ', 'S&P500': '^GSPC', 'NASDAQ': '^IXIC', 'FTSE100': '^FTSE', 
                'DAX': '^GDAXI', 'CAC40': '^FCHI', 'SSE Composite': '000001.SS', 'Nikkei225': '^N225', 'Merval': '^MERV'}
@@ -202,7 +202,7 @@ def get_stocks():
     return pd.DataFrame([(k, v["Preço"], v["Variação (%)"]) for k, v in data.items()],
                         columns=["Índice", "Preço", "Variação (%)"])
 
-# Função para pegar dados do Ibovespa do dia atual (ações individuais)
+@st.cache_data(ttl=300)  # Ações do IBOV: 5 minutos
 def get_ibov_data():
     acoes = [
         'ALOS3', 'ABEV3', 'ASAI3', 'AURE3', 'AMOB3', 'AZUL4', 'AZZA3', 'B3SA3', 'BBSE3', 'BBDC3', 'BBDC4', 
@@ -229,7 +229,7 @@ def get_ibov_data():
         "Último Preço": data.iloc[-1].values
     })
 
-# Função para obter dados do IBOV
+@st.cache_data(ttl=300)  # Dados do IBOV: 5 minutos
 def get_stock_data(ticker, period, interval):
     stock = yf.Ticker(ticker)
     data = stock.history(period=period, interval=interval)
@@ -369,7 +369,7 @@ with col2:
             fig_intraday.update_layout(
                 yaxis_side="right",
                 template="plotly_dark",
-                height=350,
+                height=700,
             )
             st.plotly_chart(fig_intraday, use_container_width=True)
 
@@ -444,11 +444,11 @@ with col2:
     except Exception as e:
         st.error(f"Erro ao carregar os dados das ações: {e}")
 
-    # Rodapé (dentro da coluna col2)
+    # Rodapé
     st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)
     st.markdown("""
     <div style="text-align: center; font-size: 12px; color: #A9A9A9; margin-top: 20px;">
         <strong>Fonte:</strong> Moedas: AwesomeAPI | Commodities, Índices e Ações: Yahoo Finance<br>
-        <strong>Nota:</strong> Atualização automática a cada 10 segundos. Dados para fins informativos.
+        <strong>Nota:</strong> Moedas atualizadas a cada 10 segundos; demais cotações a cada 5 minutos.
     </div>
     """, unsafe_allow_html=True)
