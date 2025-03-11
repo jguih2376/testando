@@ -460,7 +460,34 @@ with col2:
                     )
                 )
                 st.plotly_chart(fig_intraday, use_container_width=True)
-
+                # Cartão HTML único para Fechamento Anterior e Preço Atual com número no final
+                st.markdown(
+                    f"""
+                    <div style="
+                        background-color: #ffffff; 
+                        padding: 12px; 
+                        border-radius: 8px; 
+                        margin: 8px 0; 
+                        box-shadow: 2px 2px 4px rgba(0,0,0,0.1);">
+                        <div style="
+                            display: flex; 
+                            justify-content: space-between; 
+                            align-items: center; 
+                            margin-bottom: 8px;">
+                            <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Fechamento Anterior</span>
+                            <span style="font-size: 12px; color: black; font-weight: bold; flex: 1; text-align: right;">{fechamento_anterior:.2f}</span>
+                        </div>
+                        <div style="
+                            display: flex; 
+                            justify-content: space-between; 
+                            align-items: center;">
+                            <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Preço Atual</span>
+                            <span style="font-size: 12px; color: black; font-weight: bold; flex: 1; text-align: right;">{preco_atual:.2f}</span>
+                        </div>
+                    </div>
+                    """, 
+                    unsafe_allow_html=True
+                )
             else:
                 st.warning("Nenhum dado disponível para o IBOV.")
         except Exception as e:
