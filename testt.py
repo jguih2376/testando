@@ -57,50 +57,52 @@ with tab3:
         opcao = st.radio('Selecione:', ['Índices', 'Ações', 'Commodities'])
         
         # Seleção do tipo de gráfico dentro do expander
-        chart_type = st.selectbox("Tipo de gráfico:", ["Candlestick", "Linha"], key="chart_type")
+        col1,col2 = st.columns([3,1])
+        with col2:
+            chart_type = st.selectbox("Tipo de gráfico:", ["Candlestick", "Linha"], key="chart_type")
+        with col1:    
+            if opcao == 'Índices':
+                indices = {
+                    'IBOV': '^BVSP',
+                    'S&P500': '^GSPC',     
+                    'NASDAQ': '^IXIC',
+                    'FTSE100': '^FTSE',
+                    'DAX': '^GDAXI',
+                    'CAC40': '^FCHI',
+                    'SSE Composite': '000001.SS',
+                    'Nikkei225': '^N225',
+                    'Merval': '^MERV'
+                }
+                escolha = st.selectbox('Escolha o índice:', list(indices.keys()), index=0)
+                ticker = indices[escolha]
 
-        if opcao == 'Índices':
-            indices = {
-                'IBOV': '^BVSP',
-                'S&P500': '^GSPC',     
-                'NASDAQ': '^IXIC',
-                'FTSE100': '^FTSE',
-                'DAX': '^GDAXI',
-                'CAC40': '^FCHI',
-                'SSE Composite': '000001.SS',
-                'Nikkei225': '^N225',
-                'Merval': '^MERV'
-            }
-            escolha = st.selectbox('Escolha o índice:', list(indices.keys()), index=0)
-            ticker = indices[escolha]
+            elif opcao == 'Commodities':
+                commodities = {
+                    'Ouro': 'GC=F',
+                    'Prata': 'SI=F',
+                    'Platinum': 'PL=F',     
+                    'Cobre': 'HG=F',
+                    'WTI Oil': 'CL=F',
+                    'Brent Oil': 'BZ=F',
+                    'Gasolina': 'RB=F',
+                    'Gás Natural': 'NG=F',
+                    'Gado Vivo': 'LE=F',
+                    'Porcos Magros': 'HE=F',
+                    'Milho': 'ZC=F',
+                    'Soja': 'ZS=F',
+                    'Cacau': 'CC=F',
+                    'Café': 'KC=F'
+                }    
+                escolha = st.selectbox('Escolha o commodity:', list(commodities.keys()))
+                ticker = commodities[escolha]
 
-        elif opcao == 'Commodities':
-            commodities = {
-                'Ouro': 'GC=F',
-                'Prata': 'SI=F',
-                'Platinum': 'PL=F',     
-                'Cobre': 'HG=F',
-                'WTI Oil': 'CL=F',
-                'Brent Oil': 'BZ=F',
-                'Gasolina': 'RB=F',
-                'Gás Natural': 'NG=F',
-                'Gado Vivo': 'LE=F',
-                'Porcos Magros': 'HE=F',
-                'Milho': 'ZC=F',
-                'Soja': 'ZS=F',
-                'Cacau': 'CC=F',
-                'Café': 'KC=F'
-            }    
-            escolha = st.selectbox('Escolha o commodity:', list(commodities.keys()))
-            ticker = commodities[escolha]
-
-        elif opcao == 'Ações':
-            acoes = ["PETR4", "VALE3", "ITUB4", "BBAS3", "BBDC4", "RAIZ4", "PRIO3", "VBBR3", "CSAN3", "UGPA3", "BPAC11", "SANB11",
-                    "GGBR4", "CSNA3", "USIM5", "JBSS3", "ABEV3", "MRFG3", "BRFS3", "BEEF3", "ELET3", "NEOE3", "CPFE3", "ENGI11",
-                    "EQTL3", "SUZB3", "KLBN11", "DTEX3", "RANI3", "MRFG3", "CYRE3", "MRVE3", "EZTC3", "CVCB3", "TRIS3", "WEGE3", "B3SA3"]
-            acoes_dict = {acao: acao + '.SA' for acao in acoes}
-            escolha = st.selectbox('Escolha a ação:', list(acoes_dict.keys()))
-            ticker = acoes_dict[escolha]
+            elif opcao == 'Ações':
+                acoes = ["PETR4", "VALE3", "ITUB4", "BBAS3", "BBDC4", "RAIZ4", "PRIO3", "VBBR3", "CSAN3", "UGPA3", "BPAC11", "SANB11",
+                        "GGBR4", "CSNA3", "USIM5", "JBSS3", "ABEV3", "MRFG3", "BRFS3", "BEEF3", "ELET3", "NEOE3", "CPFE3", "ENGI11",
+                        "EQTL3", "SUZB3", "KLBN11", "DTEX3", "RANI3", "MRFG3", "CYRE3", "MRVE3", "EZTC3", "CVCB3", "TRIS3", "WEGE3", "B3SA3"]
+                acoes_dict = {acao: acao + '.SA' for acao in acoes}
+                escolha = st.selectbox('Escolha a ação:', list(acoes_dict.keys()))
+                ticker = acoes_dict[escolha]
 
     # Função para obter dados da ação
     def get_stock_data(ticker, period, interval):
