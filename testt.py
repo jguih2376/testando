@@ -93,9 +93,13 @@ def get_currency_rates():
         response = requests.get(url)
         data = response.json()
         rates = {
-            "EUR/USD": 1 / data["rates"]["EUR"],
             "USD/BRL": data["rates"]["BRL"],
-            "USD/JPY": data["rates"]["JPY"]
+            "EUR/USD": 1 / data["rates"]["EUR"],  # Invertido para EUR/USD
+            "USD/JPY": data["rates"]["JPY"],
+            "USD/GBP": data["rates"]["GBP"],
+            "USD/CAD": data["rates"]["CAD"],
+            "USD/SEK": data["rates"]["SEK"],
+            "USD/CHF": data["rates"]["CHF"]
         }
         return pd.DataFrame(rates.items(), columns=["Par", "Cotação"])
     except Exception as e:
@@ -153,15 +157,15 @@ def get_stocks():
 # Layout em colunas
 col1, col2, col3 = st.columns(3)
 
-# Moedas (variação estimada simplificada)
+# Moedas
 with col1:
     st.markdown('<p class="subheader">💱 Moedas</p>', unsafe_allow_html=True)
     currency_data = get_currency_rates()
     if not currency_data.empty:
         st.markdown('<div class="card-container">', unsafe_allow_html=True)
         for index, row in currency_data.iterrows():
-            # Variação simplificada (sem histórico real, apenas exemplo)
-            variation = 0.5 if index == 0 else -0.3 if index == 1 else 1.2  # Exemplo fictício
+            # Variação fictícia (para valores reais, use uma API com histórico, como Alpha Vantage)
+            variation = [0.5, -0.3, 1.2, -0.8, 0.9, -0.2, 0.4][index % 7]  # Exemplo fictício
             var_class = "positive" if variation >= 0 else "negative"
             st.markdown(
                 f"""
