@@ -347,7 +347,7 @@ with col2:
                 st.markdown(
                     f"""
                     <div style="
-                        background-color: #d4edda; 
+                        background-color: #ffffff; 
                         padding: 12px; 
                         border-radius: 8px; 
                         margin: 8px 0; 
@@ -386,7 +386,7 @@ with col2:
                             justify-content: space-between; 
                             align-items: center; 
                             margin-bottom: 8px;">
-                            <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Variação do Dia</span>
+                            <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Var. do Dia</span>
                             <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
                             <span style="font-size: 14px; color: {'#155724' if variacao_dia >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_dia >= 0 else '↓'} {abs(variacao_dia):.2f}%</span>
                         </div>
@@ -395,7 +395,7 @@ with col2:
                             justify-content: space-between; 
                             align-items: center; 
                             margin-bottom: 8px;">
-                            <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Variação Semanal</span>
+                            <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Var. Semanal</span>
                             <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
                             <span style="font-size: 14px; color: {'#155724' if variacao_semanal >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_semanal >= 0 else '↓'} {abs(variacao_semanal):.2f}%</span>
                         </div>
@@ -403,7 +403,7 @@ with col2:
                             display: flex; 
                             justify-content: space-between; 
                             align-items: center;">
-                            <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Variação Mensal</span>
+                            <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Var. Mensal</span>
                             <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
                             <span style="font-size: 14px; color: {'#155724' if variacao_mensal >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_mensal >= 0 else '↓'} {abs(variacao_mensal):.2f}%</span>
                         </div>
