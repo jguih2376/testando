@@ -75,7 +75,7 @@ with col1:
                 xaxis=dict(
                     rangeslider=dict(
                         visible=True,  # Exibe o seletor de intervalo
-                        thickness=0.05  # Define a altura do seletor
+                        thickness=0.03  # Define a altura do seletor
                     ),
                     rangeselector=dict(
                         buttons=list([
@@ -83,7 +83,6 @@ with col1:
                             dict(count=3, label="3m", step="month", stepmode="backward"),
                             dict(count=6, label="6m", step="month", stepmode="backward"),
                             dict(count=1, label="YTD", step="year", stepmode="todate"),
-                            dict(count=2, label="2y", step="year", stepmode="backward"),
                             dict(step="all")  # Exibe todos os dados
                         ])
                     )
