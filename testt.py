@@ -115,14 +115,23 @@ with tab3:
             weekly_data = get_stock_data(ticker, period="1y", interval="1wk")
             if not weekly_data.empty:
                 fig_weekly = go.Figure()
-                fig_weekly.add_trace(go.Candlestick(
-                    x=weekly_data.index,
-                    open=weekly_data['Open'],
-                    high=weekly_data['High'],
-                    low=weekly_data['Low'],
-                    close=weekly_data['Close'],
-                    name="OHLC"
-                ))
+                if chart_type == "Candlestick":
+                    fig_weekly.add_trace(go.Candlestick(
+                        x=weekly_data.index,
+                        open=weekly_data['Open'],
+                        high=weekly_data['High'],
+                        low=weekly_data['Low'],
+                        close=weekly_data['Close'],
+                        name="OHLC"
+                    ))
+                else:  # Linha
+                    fig_weekly.add_trace(go.Scatter(
+                        x=fig_weekly.index,
+                        y=fig_weekly['Close'],
+                        mode='lines',
+                        name="Fechamento",
+                        line=dict(color='royalblue', width=1)
+                        ))
                 fig_weekly.update_layout(
                     title="Semanal",
                     title_x=0.4,
@@ -154,14 +163,23 @@ with tab3:
             yearly_data = get_stock_data(ticker, period="10y", interval="1mo")
             if not yearly_data.empty:
                 fig_yearly = go.Figure()
-                fig_yearly.add_trace(go.Candlestick(
-                    x=yearly_data.index,
-                    open=yearly_data['Open'],
-                    high=yearly_data['High'],
-                    low=yearly_data['Low'],
-                    close=yearly_data['Close'],
-                    name="OHLC"
-                ))
+                if chart_type == "Candlestick":                
+                    fig_yearly.add_trace(go.Candlestick(
+                        x=yearly_data.index,
+                        open=yearly_data['Open'],
+                        high=yearly_data['High'],
+                        low=yearly_data['Low'],
+                        close=yearly_data['Close'],
+                        name="OHLC"
+                    ))
+                else:  # Linha
+                    fig_yearly.add_trace(go.Scatter(
+                        x=fig_yearly.index,
+                        y=fig_yearly['Close'],
+                        mode='lines',
+                        name="Fechamento",
+                        line=dict(color='royalblue', width=1)
+                        )) 
                 last_5_years = yearly_data.index[-60:]  # 5 anos * 12 meses
                 fig_yearly.update_layout(
                     title="Mensal",
