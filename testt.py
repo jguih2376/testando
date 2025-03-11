@@ -49,7 +49,12 @@ try:
     col1, col2 = st.columns(2)
 
     with col1:
-        st.subheader("↑ Maiores Altas do Dia")
+        st.markdown(
+        """
+        <h3 style="text-align: center;">↑ Maiores Altas do Dia ↑</h3>
+        """, 
+        unsafe_allow_html=True
+    )
         # Cartões estilizados para altas
         for _, row in maiores_altas.iterrows():
             st.markdown(
@@ -71,6 +76,12 @@ try:
             )
 
     with col2:
+        st.markdown(
+        """
+        <h3 style="text-align: center;">↓ Maiores Baixas do Dia ↓</h3>
+        """, 
+        unsafe_allow_html=True
+    )
         st.subheader("↓ Maiores Baixas do Dia")
         # Cartões estilizados para baixas
         for _, row in maiores_baixas.iterrows():
