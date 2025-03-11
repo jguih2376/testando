@@ -22,7 +22,7 @@ st.markdown("""
         margin-bottom: 10px;
         display: flex;
         align-items: center;
-        justify-content: center; /* Centraliza o título dentro da coluna */
+        justify-content: center;
         gap: 8px;
     }
     .timestamp {
@@ -33,43 +33,20 @@ st.markdown("""
     }
     .card-container {
         display: flex;
-        flex-wrap: nowrap;
-        gap: 8px; /* Espaçamento menor para melhor organização */
+        gap: 8px;
         padding: 8px;
         overflow-x: auto;
-        justify-content: flex-start;
-        scrollbar-width: thin;
-        scrollbar-color: #555555 #2E2E2E;
-    }
-    .card-container::-webkit-scrollbar {
-        height: 6px;
-    }
-    .card-container::-webkit-scrollbar-track {
-        background: #2E2E2E;
-    }
-    .card-container::-webkit-scrollbar-thumb {
-        background: #555555;
-        border-radius: 3px;
-    }
-    .card-container::-webkit-scrollbar-thumb:hover {
-        background: #777777;
     }
     .card {
         background-color: #2E2E2E;
         border-radius: 8px;
         padding: 10px;
-        width: 140px; /* Tamanho ajustado para melhor organização */
+        width: 140px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         text-align: center;
         transition: transform 0.2s;
         flex: 0 0 auto;
         position: relative;
-    }
-    .card.positive {
-        border: 1px solid #32CD32; /* Borda verde para variação positiva */
-    }
-    .card.negative {
-        border: 1px solid #FF4500; /* Borda vermelha para variação negativa */
     }
     .card:hover {
         transform: scale(1.03);
@@ -80,6 +57,9 @@ st.markdown("""
         color: #FFFFFF;
         margin-bottom: 4px;
         font-weight: bold;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .card-value {
         font-size: 15px;
@@ -164,7 +144,6 @@ def get_currency_rates():
 
 @st.cache_data(ttl=30)
 def get_commodities():
-    # Agrupando commodities por categoria
     symbols = {
         "Metais": {
             'Ouro': 'GC=F', 'Prata': 'SI=F', 'Platinum': 'PL=F', 'Cobre': 'HG=F'
@@ -221,22 +200,20 @@ def get_stocks():
     return pd.DataFrame([(k, v["Preço"], v["Variação (%)"]) for k, v in data.items()],
                         columns=["Índice", "Preço", "Variação (%)"])
 
-# Layout em colunas com proporções ajustadas
-col1, col2, col3 = st.columns([1, 2, 1])
-
+# Layout com categorias empilhadas verticalmente
 # Moedas
-with col1:
-    st.markdown('<p class="subheader">💱 Moedas</p>', unsafe_allow_html=True)
-    currency_data = get_currency_rates()
-    if not currency_data.empty:
-        st.markdown('<div class="card-container">', unsafe_allow_html=True)
-        for index, row in currency_data.iterrows():
+st.markdown('<p class="subheader">💱 Moedas</p>', unsafe_allow_html=True)
+currency_data = get_currency_rates()
+if not currency_data.empty:
+    cols = st.columns(min(4, len(currency_data)))  # Máximo de 4 colunas para moedas
+    for idx, (index, row) in enumerate(currency_data.iterrows()):
+        with cols[idx % len(cols)]:
             variation = [0.5, -0.3, 1.2, -0.8, 0.9, -0.2, 0.4][index % 7]  # Exemplo fictício
             var_class = "positive" if variation >= 0 else "negative"
             arrow = "↑" if variation >= 0 else "↓"
             st.markdown(
                 f"""
-                <div class="card {var_class}">
+                <div class="card">
                     <div class="tooltip">
                         <div class="card-title">{row['Par']}</div>
                         <span class="tooltiptext">Cotação em USD</span>
@@ -245,22 +222,21 @@ with col1:
                     <div class="card-variation {var_class}">{variation:.2f}% {arrow}</div>
                 </div>
                 """, unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
 
 # Commodities
-with col2:
-    st.markdown('<p class="subheader">⛽ Commodities</p>', unsafe_allow_html=True)
-    commodities_data = get_commodities()
-    if not commodities_data.empty:
-        st.markdown('<div class="card-container">', unsafe_allow_html=True)
-        for index, row in commodities_data.iterrows():
+st.markdown('<p class="subheader">⛽ Commodities</p>', unsafe_allow_html=True)
+commodities_data = get_commodities()
+if not commodities_data.empty:
+    cols = st.columns(min(6, len(commodities_data) // 2 + 1))  # Máximo de 6 colunas para commodities
+    for idx, (index, row) in enumerate(commodities_data.iterrows()):
+        with cols[idx % len(cols)]:
             var_class = "positive" if float(str(row["Variação (%)"]).replace("N/A", "0")) >= 0 else "negative"
             arrow = "↑" if float(str(row["Variação (%)"]).replace("N/A", "0")) >= 0 else "↓"
             category = row['Commodity'].split('(')[-1].replace(')', '')
             tooltip_text = f"Preço em USD ({category})"
             st.markdown(
                 f"""
-                <div class="card {var_class}">
+                <div class="card">
                     <div class="tooltip">
                         <div class="card-title">{row['Commodity'].split(' (')[0]}</div>
                         <span class="tooltiptext">{tooltip_text}</span>
@@ -269,20 +245,19 @@ with col2:
                     <div class="card-variation {var_class}">{row['Variação (%)']}% {arrow}</div>
                 </div>
                 """, unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
 
 # Índices
-with col3:
-    st.markdown('<p class="subheader">📈 Índices</p>', unsafe_allow_html=True)
-    stocks_data = get_stocks()
-    if not stocks_data.empty:
-        st.markdown('<div class="card-container">', unsafe_allow_html=True)
-        for index, row in stocks_data.iterrows():
+st.markdown('<p class="subheader">📈 Índices</p>', unsafe_allow_html=True)
+stocks_data = get_stocks()
+if not stocks_data.empty:
+    cols = st.columns(min(4, len(stocks_data)))  # Máximo de 4 colunas para índices
+    for idx, (index, row) in enumerate(stocks_data.iterrows()):
+        with cols[idx % len(cols)]:
             var_class = "positive" if float(str(row["Variação (%)"]).replace("N/A", "0")) >= 0 else "negative"
             arrow = "↑" if float(str(row["Variação (%)"]).replace("N/A", "0")) >= 0 else "↓"
             st.markdown(
                 f"""
-                <div class="card {var_class}">
+                <div class="card">
                     <div class="tooltip">
                         <div class="card-title">{row['Índice']}</div>
                         <span class="tooltiptext">Índice de Mercado</span>
@@ -291,7 +266,6 @@ with col3:
                     <div class="card-variation {var_class}">{row['Variação (%)']}% {arrow}</div>
                 </div>
                 """, unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
 
 # Rodapé
 st.markdown("""
