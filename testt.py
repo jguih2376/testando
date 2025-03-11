@@ -78,14 +78,14 @@ try:
         variacao_mensal = ((preco_atual - fechamento_mes_passado) / fechamento_mes_passado) * 100
 
         # Preço atual e fechamento anterior
-        col_metrics1, col_metrics2 = st.columns(2)
+        col_metrics1, col_metrics2,col1 = st.columns([1,1,4])
         with col_metrics1:
-            st.metric("Preço Atual", f"{preco_atual:.2f}")
-        with col_metrics2:
             st.metric("Fechamento Anterior", f"{fechamento_anterior:.2f}")
+        with col_metrics2:
+            st.metric("Preço Atual", f"{preco_atual:.2f}")
 
         # Variação diario, semanal e mensal
-        col_s1, col_metrics3, col_metrics4, col_metrics5, col_s2 = st.columns([2,1,1,1,2])
+        col_metrics3, col_metrics4, col_metrics5, col_s2 = st.columns([1,1,1,3])
         with col_metrics3:
             seta_dia = "↑" if variacao_dia >= 0 else "↓"
             st.metric("Variação do Dia", f"{seta_dia} {abs(variacao_dia):.2f}%", delta_color="normal")
