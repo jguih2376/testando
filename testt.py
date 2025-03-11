@@ -33,10 +33,26 @@ st.markdown("""
     }
     .card-container {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap; /* Impede quebra de linha */
         gap: 15px;
         padding: 10px;
-        justify-content: center;
+        overflow-x: auto; /* Adiciona rolagem horizontal */
+        justify-content: flex-start; /* Alinha à esquerda */
+        scrollbar-width: thin; /* Para navegadores que suportam */
+        scrollbar-color: #555555 #2E2E2E; /* Cor da barra de rolagem */
+    }
+    .card-container::-webkit-scrollbar {
+        height: 8px; /* Altura da barra de rolagem */
+    }
+    .card-container::-webkit-scrollbar-track {
+        background: #2E2E2E; /* Cor do fundo da barra */
+    }
+    .card-container::-webkit-scrollbar-thumb {
+        background: #555555; /* Cor do polegar da barra */
+        border-radius: 4px;
+    }
+    .card-container::-webkit-scrollbar-thumb:hover {
+        background: #777777; /* Cor ao passar o mouse */
     }
     .card {
         background-color: #2E2E2E;
@@ -46,6 +62,7 @@ st.markdown("""
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         text-align: center;
         transition: transform 0.2s;
+        flex: 0 0 auto; /* Impede que o cartão encolha */
     }
     .card:hover {
         transform: scale(1.05);
