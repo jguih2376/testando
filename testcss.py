@@ -68,7 +68,7 @@ with col1:
             fig_weekly.update_layout(
                 title="Semanal",
                 title_x=0.5,  # Centraliza o título
-                yaxis_title="Preço",
+                #yaxis_title="Preço",
                 yaxis_side="right",  # Move a escala de preço para a direita
                 template="plotly_dark",
                 height=450,
@@ -113,8 +113,8 @@ with col2:
             fig_yearly.update_layout(
                 title=f"Anual",
                 title_x=0.5,
-                yaxis_title="Preço",
-                #yaxis_side="right",
+                #yaxis_title="Preço",
+                yaxis_side="right",
                 #xaxis_title="Data",
                 template="plotly_dark",
                 height=450,
