@@ -237,7 +237,7 @@ def get_stock_data(ticker, period, interval):
     return data
 
 # Layout principal
-col1,s, col2 = st.columns([55,1,30])
+col1,s, col2 = st.columns([47,1,30])
 
 with col1:
     # Moedas
@@ -313,15 +313,20 @@ with col1:
 
 
 with col2:
-    st.subheader("IBOV")
-    # Adicionar CSS para reduzir o tamanho da fonte dos st.metric
+with col2:
+    # Adicionar CSS para reduzir o tamanho da fonte do subheader e das métricas
     st.markdown("""
         <style>
         .metric-text {
-            font-size: 12px !important;  /* Reduzido de 14px para 12px */
+            font-size: 10px !important;  /* Reduzido de 12px para 10px */
+        }
+        div[data-testid="stHorizontalBlock"] > div > h2 {
+            font-size: 18px !important;  /* Reduzindo o subheader "IBOV" */
         }
         </style>
         """, unsafe_allow_html=True)
+
+    st.subheader("IBOV")
 
     try:
         # Dados intraday (5 minutos)
