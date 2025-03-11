@@ -5,11 +5,11 @@ import requests
 import plotly.graph_objects as go
 import streamlit.components.v1 as components
 from datetime import datetime
+from streamlit_autorefresh import st_autorefresh
 
 
 
-
-st.set_page_config(page_title="Painel de Cotações", layout="wide")
+st.set_page_config(page_title="Panorama de Mercado", layout="wide", initial_sidebar_state="collapsed")
 
 st.title("🌎 Panorama do Mercado")  
 st.write("Visão geral do mercado atual.")
@@ -22,13 +22,39 @@ tab1, tab2, tab3 = st.tabs(['Panorama', 'TradingView', 'Triple Screen'])
 with tab1:
 
 
+# Configuração da página
+    st.markdown("""
+        <style>
+        .main-title {
+            font-size: 36px;
+            color: #1E90FF;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .subheader {
+            color: #4682B4;
+            font-size: 24px;
+        }
+        .metric-box {
+            background-color: #F0F8FF;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        </style>
+        """, unsafe_allow_html=True)
 
-    # Configuração inicial do Streamlit
-    
-    st.title("Panorama de Mercado - Cotações em Tempo Real")
-    st.write(f"Atualizado em: {datetime.now().strftime('%d/%m/%Y %H:%M')}")
+    # Título estilizado
+    st.markdown('<p class="main-title">Panorama de Mercado em Tempo Real</p>', unsafe_allow_html=True)
 
-    # Função para obter cotação de moedas (usando API gratuita)
+    # Atualização automática (a cada 30 segundos)
+    st_autorefresh(interval=30000, key="marketrefresh")
+
+    # Timestamp
+    st.markdown(f"<small>Última atualização: {datetime.now().strftime('%d/%m/%Y %H:%M')}</small>", unsafe_allow_html=True)
+
+    # Funções de dados (com cache)
+    @st.cache_data(ttl=30)
     def get_currency_rates():
         try:
             url = "https://api.exchangerate-api.com/v4/latest/USD"
@@ -41,10 +67,10 @@ with tab1:
             }
             return pd.DataFrame(rates.items(), columns=["Par", "Cotação"])
         except:
-            st.error("Erro ao carregar cotações de moedas")
+            st.error("Erro ao carregar moedas")
             return pd.DataFrame()
 
-    # Função para obter preços de commodities usando yfinance
+    @st.cache_data(ttl=30)
     def get_commodities():
         symbols = {
             "Petróleo (WTI)": "CL=F",
@@ -61,7 +87,7 @@ with tab1:
                 data[name] = "N/A"
         return pd.DataFrame(data.items(), columns=["Commodity", "Preço"])
 
-    # Função para obter preços de ações
+    @st.cache_data(ttl=30)
     def get_stocks():
         symbols = {
             "Apple": "AAPL",
@@ -78,42 +104,63 @@ with tab1:
                 data[name] = "N/A"
         return pd.DataFrame(data.items(), columns=["Ação", "Preço"])
 
-    # Layout do dashboard usando colunas
+    # Layout em colunas
     col1, col2, col3 = st.columns(3)
 
     # Moedas
     with col1:
-        st.subheader("Cotações de Moedas")
+        st.markdown('<p class="subheader">💱 Moedas</p>', unsafe_allow_html=True)
         currency_data = get_currency_rates()
         if not currency_data.empty:
-            st.dataframe(currency_data.style.format({"Cotação": "{:.4f}"}))
+            for index, row in currency_data.iterrows():
+                st.markdown(
+                    f"""
+                    <div class="metric-box">
+                        <strong>{row['Par']}</strong><br>
+                        {row['Cotação']:.4f}
+                    </div>
+                    """, unsafe_allow_html=True)
+            # Mini gráfico simples
+            st.line_chart(currency_data.set_index("Par")["Cotação"], height=150)
 
     # Commodities
     with col2:
-        st.subheader("Commodities")
+        st.markdown('<p class="subheader">⛽ Commodities</p>', unsafe_allow_html=True)
         commodities_data = get_commodities()
         if not commodities_data.empty:
-            st.dataframe(commodities_data)
+            for index, row in commodities_data.iterrows():
+                st.markdown(
+                    f"""
+                    <div class="metric-box">
+                        <strong>{row['Commodity']}</strong><br>
+                        {row['Preço']}
+                    </div>
+                    """, unsafe_allow_html=True)
+            st.line_chart(commodities_data.set_index("Commodity")["Preço"], height=150)
 
     # Ações
     with col3:
-        st.subheader("Ações")
+        st.markdown('<p class="subheader">📈 Ações</p>', unsafe_allow_html=True)
         stocks_data = get_stocks()
         if not stocks_data.empty:
-            st.dataframe(stocks_data)
+            for index, row in stocks_data.iterrows():
+                st.markdown(
+                    f"""
+                    <div class="metric-box">
+                        <strong>{row['Ação']}</strong><br>
+                        {row['Preço']}
+                    </div>
+                    """, unsafe_allow_html=True)
+            st.line_chart(stocks_data.set_index("Ação")["Preço"], height=150)
 
-    # Botão de atualização
-    if st.button("Atualizar Dados"):
-        st.experimental_rerun()
-
-    # Notas de rodapé
+    # Rodapé
     st.markdown("""
     ---
-    *Fonte:* 
-    - Moedas: ExchangeRate-API
-    - Commodities e Ações: Yahoo Finance
-    *Nota:* Os dados são para fins informativos e podem ter atraso.
-    """)
+    <div style="text-align: center; font-size: 12px;">
+        <strong>Fonte:</strong> Moedas: ExchangeRate-API | Commodities e Ações: Yahoo Finance<br>
+        <strong>Nota:</strong> Atualização automática a cada 30 segundos. Dados para fins informativos.
+    </div>
+    """, unsafe_allow_html=True)
 #"_____________________________________________________________________________________________________________"
 # Aba 2: TradingView
 with tab2:
