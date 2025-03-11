@@ -40,7 +40,22 @@ try:
             yaxis_side="right",
             xaxis_title="Horário",
             template="plotly_dark",
-            height=700
+            height=700,
+            xaxis=dict(
+                    rangeslider=dict(
+                        visible=True,  
+                        thickness=0.03  
+                    ),
+                    rangeselector=dict(
+                        buttons=list([
+                            dict(count=1, label="5", step="minute", stepmode="backward"),
+                            dict(count=1, label="15", step="minute", stepmode="backward"),
+                            dict(count=1, label="30", step="minute", stepmode="backward"),
+                            dict(count=1, label="1h", step="hour", stepmode="backward"),
+                            dict(step="all")  
+                        ])
+                    )
+                )
         )
         st.plotly_chart(fig_intraday, use_container_width=True)
     else:
