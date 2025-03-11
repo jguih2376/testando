@@ -341,7 +341,7 @@ with col2:
             fechamento_mes_passado = monthly_data['Close'].iloc[0]
             variacao_mensal = ((preco_atual - fechamento_mes_passado) / fechamento_mes_passado) * 100
 
-            # Cartões HTML para Fechamento Anterior e Preço Atual
+            # Cartão HTML único para Fechamento Anterior e Preço Atual com número no final
             st.markdown(
                 f"""
                 <div style="
@@ -356,23 +356,21 @@ with col2:
                         align-items: center; 
                         margin-bottom: 8px;">
                         <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Fechamento Anterior</span>
-                        <span style="font-size: 12px; color: black; flex: 1; text-align: center;">{fechamento_anterior:.2f}</span>
-                        <span style="font-size: 14px; color: #155724; font-weight: bold; flex: 1; text-align: right;"></span>
+                        <span style="font-size: 12px; color: black; flex: 1; text-align: right;">{fechamento_anterior:.2f}</span>
                     </div>
                     <div style="
                         display: flex; 
                         justify-content: space-between; 
                         align-items: center;">
                         <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Preço Atual</span>
-                        <span style="font-size: 12px; color: black; flex: 1; text-align: center;">{preco_atual:.2f}</span>
-                        <span style="font-size: 14px; color: #155724; font-weight: bold; flex: 1; text-align: right;"></span>
+                        <span style="font-size: 12px; color: black; flex: 1; text-align: right;">{preco_atual:.2f}</span>
                     </div>
                 </div>
                 """, 
                 unsafe_allow_html=True
             )
 
-            # Todas as variações em um único cartão
+            # Todas as variações em um único cartão (mantido como estava)
             st.markdown(
                 f"""
                 <div style="
