@@ -1,8 +1,10 @@
 import streamlit as st
 import pandas as pd
 import yfinance as yf
+from datetime import datetime
+import pytz
 
-# Função para pegar dados do Ibovespa
+# Função para pegar dados do Ibovespa do dia atual
 def get_ibov_data():
     # Lista de tickers do Ibovespa
     acoes = [
@@ -16,40 +18,49 @@ def get_ibov_data():
         'TIMS3', 'TOTS3', 'UGPA3', 'USIM5', 'VALE3', 'VAMO3', 'VBBR3', 'VIVA3', 'WEGE3', 'YDUQ3'
     ]
     
-    # Adicionando o sufixo '.SA' diretamente na lista de tickers
     tickers = [acao + '.SA' for acao in acoes]
     
-    # Baixando os dados de fechamento do dia
-    data = yf.download(tickers, period="1d")["Close"]
+    # Baixando os dados do dia atual (fechamento até o momento)
+    data = yf.download(tickers, period="1d", interval="1d")["Close"]
     
-    # Calculando a variação percentual (fechamento atual vs anterior)
-    variacao = data.pct_change().iloc[-1] * 100  # Última linha, em %
+    # Pegando o preço de abertura para calcular a variação do dia
+    open_data = yf.download(tickers, period="1d", interval="1d")["Open"]
     
-    # Criando o DataFrame com as ações (sem o '.SA') e suas variações
+    if data.empty or open_data.empty:
+        raise ValueError("Dados insuficientes para calcular a variação do dia.")
+    
+    # Calculando a variação percentual do dia (fechamento vs abertura)
+    variacao = ((data.iloc[-1] - open_data.iloc[-1]) / open_data.iloc[-1]) * 100
+    
     return pd.DataFrame({
         "Ação": [ticker[:-3] for ticker in tickers], 
         "Variação (%)": variacao.values
     })
 
-# Carregando os dados
+# Interface com Streamlit
+st.title("Maiores Altas e Baixas do Ibovespa - Dia Atual")
+# Horário atual em BRT
+brt = pytz.timezone('America/Sao_Paulo')
+data_atual = datetime.now(brt).strftime("%d/%m/%Y %H:%M:%S")
+st.write(f"Data: 11 de Março de 2025 (atualizado até {data_atual} BRT)")
+
 try:
     df = get_ibov_data()
+    
+    # Removendo valores NaN (caso alguma ação não tenha dados)
+    df = df.dropna()
     
     # Filtrando as 5 maiores altas e baixas
     maiores_altas = df.nlargest(5, "Variação (%)")
     maiores_baixas = df.nsmallest(5, "Variação (%)")
-
-    # Interface com Streamlit
-    st.title("Maiores Altas e Baixas do Ibovespa")
-    st.write("Data: 11 de Março de 2025")
-
+    
     st.subheader("5 Maiores Altas do Dia")
     st.dataframe(maiores_altas.style.format({"Variação (%)": "{:.2f}"}))
 
     st.subheader("5 Maiores Baixas do Dia")
     st.dataframe(maiores_baixas.style.format({"Variação (%)": "{:.2f}"}))
+
 except Exception as e:
     st.error(f"Erro ao carregar os dados: {e}")
 
-# Rodapé
-st.write("Fonte: Yahoo Finance via yfinance. Dados podem conter atrasos ou imprecisões.")
+st.write("Fonte: Yahoo Finance via yfinance. Dados refletem o pregão até o momento mais recente.")
