@@ -146,11 +146,9 @@ try:
                     display: flex; 
                     justify-content: space-between; 
                     align-items: center;">
-                    <span style="font-weight: bold; font-size: 16px; color: black;">{row['Ação']}</span>
-                    <span style="font-size: 16px;">
-                        <span style="color: #155724; font-weight: bold;">{row['Variação (%)']:.2f}%</span>
-                        <span style="color: black;"> (R$ {row['Último Preço']:.2f})</span>
-                    </span>
+                    <span style="font-weight: bold; font-size: 16px; color: black; flex: 1; text-align: left;">{row['Ação']}</span>
+                    <span style="font-size: 16px; color: black; flex: 1; text-align: center;">R$ {row['Último Preço']:.2f}</span>
+                    <span style="font-size: 16px; color: #155724; font-weight: bold; flex: 1; text-align: right;">{row['Variação (%)']:.2f}%</span>
                 </div>
                 """, 
                 unsafe_allow_html=True
@@ -175,11 +173,9 @@ try:
                     display: flex; 
                     justify-content: space-between; 
                     align-items: center;">
-                    <span style="font-weight: bold; font-size: 16px; color: black;">{row['Ação']}</span>
-                    <span style="font-size: 16px;">
-                        <span style="color: #721c24; font-weight: bold;">{row['Variação (%)']:.2f}%</span>
-                        <span style="color: black;"> (R$ {row['Último Preço']:.2f})</span>
-                    </span>
+                    <span style="font-weight: bold; font-size: 16px; color: black; flex: 1; text-align: left;">{row['Ação']}</span>
+                    <span style="font-size: 16px; color: black; flex: 1; text-align: center;">R$ {row['Último Preço']:.2f}</span>
+                    <span style="font-size: 16px; color: #721c24; font-weight: bold; flex: 1; text-align: right;">{row['Variação (%)']:.2f}%</span>
                 </div>
                 """, 
                 unsafe_allow_html=True
