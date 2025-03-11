@@ -312,7 +312,7 @@ with col1:
 # Dentro do bloco `with col2:` (substitua apenas essa parte no código completo)
 
 
-with col2:
+
 with col2:
     # Adicionar CSS para reduzir o tamanho da fonte do subheader e das métricas
     st.markdown("""
