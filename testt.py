@@ -365,7 +365,7 @@ with col2:
                             justify-content: space-between; 
                             align-items: center;">
                             <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Preço Atual</span>
-                            <span style="font-size: 12px; color: black; flex: 1; text-align: right;">{preco_atual:.2f}</span>
+                            <span style="font-size: 12px; color: black;  font-weight: bold; flex: 1; text-align: right;">{preco_atual:.2f}</span>
                         </div>
                     </div>
                     """, 
