@@ -43,24 +43,27 @@ with tab1:
                                                     low=dados_intraday['Low'],
                                                     close=dados_intraday['Close'])])
         
-        # Configurar layout para remover elementos indesejados
+        # Configurar layout para remover subgráficos e eixos extras
         fig_intraday.update_layout(
             title=f'Intraday - {ticker} ({intervalo_intraday})',
             yaxis_title='Preço',
             xaxis_title='Hora',
             template='plotly_white',
-            # Remover grade e outros elementos que possam confundir
+            # Desativar grade
             yaxis=dict(showgrid=False),
             xaxis=dict(showgrid=False),
-            # Garantir que não haja múltiplos eixos y
-            yaxis2=None
+            # Desativar eixo y secundário (ex.: para volume)
+            yaxis2=dict(visible=False, overlaying='y', matches=None),
+            # Garantir que não haja subgráficos adicionais
+            showlegend=False,
+            height=600  # Ajustar altura para evitar sobreposições
         )
         
         # Exibir o gráfico
         st.plotly_chart(fig_intraday, use_container_width=True)
     else:
         st.warning("Nenhum dado Intraday disponível.")
-    
+        
 
 # --- Diário ---
 with tab2:
