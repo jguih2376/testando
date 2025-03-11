@@ -37,6 +37,7 @@ try:
         fig_intraday.update_layout(
             title=f"{ticker} - Intraday ({interval_label})",
             yaxis_title="Preço",
+            yaxis_side="right",
             xaxis_title="Horário",
             template="plotly_dark",
             height=700
@@ -52,7 +53,6 @@ col1, col2 = st.columns(2)
 
 # Gráfico Semanal
 with col1:
-    #st.subheader("Gráfico Semanal")
     try:
         weekly_data = get_stock_data(ticker, period="1y", interval="1wk")
         if not weekly_data.empty:
@@ -66,16 +66,33 @@ with col1:
                 name="OHLC"
             ))
             fig_weekly.update_layout(
-                title=f"Semanal",
-                title_x=0.5,
+                title="Semanal",
+                title_x=0.5,  # Centraliza o título
                 yaxis_title="Preço",
-                xaxis_title="Data",
+                yaxis_side="right",  # Move a escala de preço para a direita
                 template="plotly_dark",
-                height=450
+                height=450,
+                xaxis=dict(
+                    rangeslider=dict(
+                        visible=True,  # Exibe o seletor de intervalo
+                        thickness=0.1  # Define a altura do seletor
+                    ),
+                    rangeselector=dict(
+                        buttons=list([
+                            dict(count=1, label="1m", step="month", stepmode="backward"),
+                            dict(count=3, label="3m", step="month", stepmode="backward"),
+                            dict(count=6, label="6m", step="month", stepmode="backward"),
+                            dict(count=1, label="YTD", step="year", stepmode="todate"),
+                            dict(count=1, label="1y", step="year", stepmode="backward"),
+                            dict(step="all")  # Exibe todos os dados
+                        ])
+                    )
+                )
             )
             st.plotly_chart(fig_weekly, use_container_width=True)
         else:
             st.warning("Nenhum dado semanal disponível para este ticker.")
+
     except Exception as e:
         st.error(f"Erro ao carregar dados semanais: {e}")
 
@@ -98,7 +115,8 @@ with col2:
                 title=f"Anual",
                 title_x=0.5,
                 yaxis_title="Preço",
-                xaxis_title="Data",
+                yaxis_side="right",
+                #xaxis_title="Data",
                 template="plotly_dark",
                 height=450
             )
