@@ -80,8 +80,17 @@ with tab3:
                 height=700,
                 xaxis=dict(
                     rangeslider=dict(visible=True, thickness=0.03),
+                    rangeselector=dict(
+                            buttons=list([
+                                dict(count=1, label="1m", step="month", stepmode="backward"),
+                                dict(count=3, label="3m", step="month", stepmode="backward"),
+                                dict(count=6, label="6m", step="month", stepmode="backward"),
+                                dict(count=1, label="YTD", step="year", stepmode="todate"),
+                                dict(step="all")
+                            ])
+                        )
+                    )
                 )
-            )
             st.plotly_chart(fig_daily, use_container_width=True)
         else:
             st.warning("Nenhum dado diário disponível para este ticker.")
