@@ -57,7 +57,7 @@ st.markdown("""
         background-color: #3E3E3E;
     }
     .card-title {
-        font-size: 12px;  /* Reduzido de 13px */
+        font-size: 13px;  
         color: #FFFFFF;
         margin-bottom: 4px;
         font-weight: bold;
@@ -66,12 +66,12 @@ st.markdown("""
         text-overflow: ellipsis;
     }
     .card-value {
-        font-size: 14px;  /* Reduzido de 15px */
+        font-size: 15px;  
         margin-top: 4px;
         color: #E0E0E0;
     }
     .card-variation {
-        font-size: 11px;  /* Reduzido de 12px */
+        font-size: 12px;
         margin-top: 4px;
         display: flex;
         align-items: center;
@@ -348,7 +348,7 @@ with col2:
             variacao_mensal = ((preco_atual - fechamento_mes_passado) / fechamento_mes_passado) * 100
 
             # Preço atual e fechamento anterior
-            col_metrics1, col_metrics2, col1 = st.columns([1, 1, 4])
+            col_metrics1, col_metrics2 = st.columns([1, 1])
             with col_metrics1:
                 st.markdown('<div class="metric-text">', unsafe_allow_html=True)
                 st.metric("Fechamento Anterior", f"{fechamento_anterior:.2f}")
@@ -359,7 +359,7 @@ with col2:
                 st.markdown('</div>', unsafe_allow_html=True)
 
             # Variação diária, semanal e mensal
-            col_metrics3, col_metrics4, col_metrics5, col_s2 = st.columns([1, 1, 1, 3])
+            col_metrics3, col_metrics4, col_metrics5= st.columns([1, 1, 1])
             with col_metrics3:
                 seta_dia = "↑" if variacao_dia >= 0 else "↓"
                 st.markdown('<div class="metric-text">', unsafe_allow_html=True)
@@ -391,7 +391,7 @@ with col2:
             fig_intraday.update_layout(
                 yaxis_side="right",
                 template="plotly_dark",
-                height=300,
+                height=400,
             )
             st.plotly_chart(fig_intraday, use_container_width=True)
 
