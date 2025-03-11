@@ -67,6 +67,7 @@ with col1:
             ))
             fig_weekly.update_layout(
                 title=f"{ticker} - Semanal",
+                title_x=0.5,
                 yaxis_title="Preço",
                 xaxis_title="Data",
                 template="plotly_dark",
@@ -95,6 +96,7 @@ with col2:
             ))
             fig_yearly.update_layout(
                 title=f"{ticker} - Anual",
+                title_x=0.5,
                 yaxis_title="Preço",
                 xaxis_title="Data",
                 template="plotly_dark",
