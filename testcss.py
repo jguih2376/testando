@@ -112,7 +112,7 @@ with col2:
             ))
             fig_yearly.update_layout(
                 title=f"Anual",
-                title_x=0.5,
+                title_x=0.4,
                 #yaxis_title="Preço",
                 yaxis_side="right",
                 #xaxis_title="Data",
