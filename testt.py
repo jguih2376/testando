@@ -2,7 +2,11 @@ import streamlit as st
 import yfinance as yf
 import plotly.graph_objects as go
 import streamlit.components.v1 as components
-
+import streamlit as st
+import yfinance as yf
+import pandas as pd
+import plotly.graph_objects as go
+from datetime import datetime, timedelta
 st.title("🌎 Panorama do Mercado")
 st.write("Visão geral do mercado atual.")
 
@@ -13,6 +17,109 @@ tab1, tab2, tab3 = st.tabs(['Panorama', 'TradingView', 'Triple Screen'])
 with tab1:
     st.write('Aqui está o panorama geral do mercado.')
 
+    # Configuração básica do Streamlit
+    st.set_page_config(page_title="Painel de Cotações", layout="wide")
+
+    # Título do painel
+    st.title("Painel de Cotações de Ações")
+
+    # Sidebar para inputs do usuário
+    st.sidebar.header("Configurações")
+    ticker = st.sidebar.text_input("Digite o símbolo da ação (ex: PETR4.SA, AAPL)", value="PETR4.SA")
+    periodo = st.sidebar.selectbox("Período", ["1d", "5d", "1mo", "3mo", "6mo", "1y"], index=2)
+    intervalo = st.sidebar.selectbox("Intervalo", ["1m", "5m", "15m", "1h", "1d"], index=4)
+
+    # Função para carregar os dados
+    @st.cache_data
+    def carregar_dados(ticker, periodo, intervalo):
+        try:
+            # Baixar dados usando yfinance
+            stock = yf.Ticker(ticker)
+            df = stock.history(period=periodo, interval=intervalo)
+            
+            if df.empty:
+                return None, stock.info
+            return df, stock.info
+        except Exception as e:
+            st.error(f"Erro ao carregar dados: {str(e)}")
+            return None, None
+
+    # Carregar os dados
+    df, info = carregar_dados(ticker, periodo, intervalo)
+
+    # Layout principal
+    if df is not None and info is not None:
+        # Primeira linha: Preço atual e variação
+        col1, col2, col3 = st.columns(3)
+        
+        ultimo_preco = df['Close'].iloc[-1]
+        preco_anterior = df['Close'].iloc[-2]
+        variacao = ((ultimo_preco - preco_anterior) / preco_anterior) * 100
+        
+        with col1:
+            st.metric("Último Preço", f"R$ {ultimo_preco:.2f}")
+        with col2:
+            st.metric("Variação", f"{variacao:.2f}%", 
+                    delta_color="normal" if variacao >= 0 else "inverse")
+        with col3:
+            st.metric("Volume", f"{df['Volume'].iloc[-1]:,}")
+
+        # Gráfico de candlestick
+        fig = go.Figure(data=[go.Candlestick(x=df.index,
+                                            open=df['Open'],
+                                            high=df['High'],
+                                            low=df['Low'],
+                                            close=df['Close'])])
+        
+        fig.update_layout(
+            title=f"Gráfico de {ticker}",
+            yaxis_title="Preço",
+            template="plotly_white",
+            height=600
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+
+        # Informações adicionais
+        st.subheader("Informações da Empresa")
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.write(f"**Nome:** {info.get('longName', 'N/A')}")
+            st.write(f"**Setor:** {info.get('sector', 'N/A')}")
+            st.write(f"**Indústria:** {info.get('industry', 'N/A')}")
+        
+        with col2:
+            st.write(f"**Mercado:** {info.get('exchange', 'N/A')}")
+            st.write(f"**Moeda:** {info.get('currency', 'N/A')}")
+            st.write(f"**Capitalização:** {info.get('marketCap', 'N/A'):,}")
+
+        # Tabela com últimos dados
+        st.subheader("Últimos Dados")
+        st.dataframe(df.tail().style.format({
+            'Open': 'R${:.2f}',
+            'High': 'R${:.2f}',
+            'Low': 'R${:.2f}',
+            'Close': 'R${:.2f}',
+            'Volume': '{:,}'
+        }))
+
+    else:
+        st.warning("Não foi possível carregar os dados. Verifique o símbolo da ação.")
+
+    # Botão de atualização
+    if st.button("Atualizar Dados"):
+        st.cache_data.clear()
+        st.rerun()
+
+    # Rodapé
+    st.sidebar.markdown("---")
+    st.sidebar.write(f"Última atualização: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+
+
+
+    
+#"_____________________________________________________________________________________________________________"
 # Aba 2: TradingView
 with tab2:
     st.write('Monitorando os mercados com o TradingView.')
