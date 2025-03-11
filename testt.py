@@ -430,7 +430,7 @@ with col2:
                         justify-content: space-between; 
                         align-items: center;">
                         <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">{row['Ação']}</span>
-                        <span style="font-size: 14px; color: black; flex: 1; text-align: center;">R$ {row['Último Preço']:.2f}</span>
+                        <span style="font-size: 12px; color: black; flex: 1; text-align: center;">R$ {row['Último Preço']:.2f}</span>
                         <span style="font-size: 14px; color: #155724; font-weight: bold; flex: 1; text-align: right;">{row['Variação (%)']:.2f}%</span>
                     </div>
                     """, 
@@ -457,7 +457,7 @@ with col2:
                         justify-content: space-between; 
                         align-items: center;">
                         <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">{row['Ação']}</span>
-                        <span style="font-size: 14px; color: black; flex: 1; text-align: center;">R$ {row['Último Preço']:.2f}</span>
+                        <span style="font-size: 12px; color: black; flex: 1; text-align: center;">R$ {row['Último Preço']:.2f}</span>
                         <span style="font-size: 14px; color: #721c24; font-weight: bold; flex: 1; text-align: right;">{row['Variação (%)']:.2f}%</span>
                     </div>
                     """, 
