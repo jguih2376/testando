@@ -316,7 +316,7 @@ with col1:
 
 with col2:
     with st.expander('...', expanded=True):
-        st.subheader("IBOV")
+        st.markdown('<p class="subheader">IBOV</p>', unsafe_allow_html=True)
 
         try:
             # Dados intraday (5 minutos)
