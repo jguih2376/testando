@@ -10,12 +10,6 @@ st.title("Sistema de Cotação de Ações")
 # Sidebar para entrada de dados
 st.sidebar.header("Parâmetros")
 ticker = st.sidebar.text_input("Digite o símbolo da ação (ex: AAPL, MSFT, PETR4.SA)", "AAPL")
-periodo = st.sidebar.selectbox("Selecione o período", 
-                              ["1d", "5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "ytd"],
-                              index=5)  # Default: 1 ano
-intervalo = st.sidebar.selectbox("Selecione o intervalo",
-                                ["1m", "5m", "15m", "30m", "1h", "1d", "1wk", "1mo"],
-                                index=5)  # Default: 1 dia
 
 # Função para carregar os dados da ação
 @st.cache_data
@@ -30,50 +24,104 @@ def carregar_dados(ticker, periodo, intervalo):
         st.error(f"Erro ao carregar dados: {e}")
         return None
 
-# Carregar os dados
-dados = carregar_dados(ticker, periodo, intervalo)
+# Abas para diferentes períodos
+tab1, tab2, tab3, tab4 = st.tabs(["Intraday", "Diário", "Semanal", "Mensal"])
 
-# Exibir informações
-if dados is not None:
-    # Informações básicas da ação
-    st.subheader(f"Dados da Ação: {ticker}")
+# --- Intraday ---
+with tab1:
+    st.subheader("Gráfico Intraday")
+    intervalo_intraday = st.selectbox("Selecione o intervalo (Intraday)", 
+                                     ["5m", "15m", "30m", "1h"], 
+                                     key="intraday_interval")
+    dados_intraday = carregar_dados(ticker, "1d", intervalo_intraday)
     
-    # Último preço
-    ultimo_preco = dados['Close'].iloc[-1]
-    preco_anterior = dados['Close'].iloc[-2]
-    variacao = ((ultimo_preco - preco_anterior) / preco_anterior) * 100
-    
-    col1, col2 = st.columns(2)
-    col1.metric("Último Preço", f"${ultimo_preco:.2f}")
-    col2.metric("Variação", f"{variacao:.2f}%", 
-                delta_color="normal" if variacao >= 0 else "inverse")
+    if dados_intraday is not None:
+        fig_intraday = go.Figure(data=[go.Candlestick(x=dados_intraday.index,
+                                                    open=dados_intraday['Open'],
+                                                    high=dados_intraday['High'],
+                                                    low=dados_intraday['Low'],
+                                                    close=dados_intraday['Close'])])
+        fig_intraday.update_layout(
+            title=f'Intraday - {ticker} ({intervalo_intraday})',
+            yaxis_title='Preço',
+            xaxis_title='Hora',
+            template='plotly_white'
+        )
+        st.plotly_chart(fig_intraday, use_container_width=True)
+    else:
+        st.warning("Nenhum dado Intraday disponível.")
 
-    # Gráfico de candlestick
-    fig = go.Figure(data=[go.Candlestick(x=dados.index,
-                                        open=dados['Open'],
-                                        high=dados['High'],
-                                        low=dados['Low'],
-                                        close=dados['Close'])])
+# --- Diário ---
+with tab2:
+    st.subheader("Gráfico Diário")
+    periodo_diario = st.selectbox("Selecione o período (Diário)", 
+                                 ["5d", "15d", "30d", "60d"], 
+                                 key="daily_period")
+    dados_diario = carregar_dados(ticker, periodo_diario, "1d")
     
-    fig.update_layout(
-        title=f'Gráfico de Candlestick - {ticker}',
-        yaxis_title='Preço',
-        xaxis_title='Data',
-        template='plotly_white'
-    )
+    if dados_diario is not None:
+        fig_diario = go.Figure(data=[go.Candlestick(x=dados_diario.index,
+                                                  open=dados_diario['Open'],
+                                                  high=dados_diario['High'],
+                                                  low=dados_diario['Low'],
+                                                  close=dados_diario['Close'])])
+        fig_diario.update_layout(
+            title=f'Diário - {ticker} ({periodo_diario})',
+            yaxis_title='Preço',
+            xaxis_title='Data',
+            template='plotly_white'
+        )
+        st.plotly_chart(fig_diario, use_container_width=True)
+    else:
+        st.warning("Nenhum dado Diário disponível.")
+
+# --- Semanal ---
+with tab3:
+    st.subheader("Gráfico Semanal")
+    periodo_semanal = st.selectbox("Selecione o período (Semanal)", 
+                                  ["1mo", "3mo", "6mo", "1y"], 
+                                  key="weekly_period")
+    dados_semanal = carregar_dados(ticker, periodo_semanal, "1wk")
     
-    st.plotly_chart(fig, use_container_width=True)
+    if dados_semanal is not None:
+        fig_semanal = go.Figure(data=[go.Candlestick(x=dados_semanal.index,
+                                                   open=dados_semanal['Open'],
+                                                   high=dados_semanal['High'],
+                                                   low=dados_semanal['Low'],
+                                                   close=dados_semanal['Close'])])
+        fig_semanal.update_layout(
+            title=f'Semanal - {ticker} ({periodo_semanal})',
+            yaxis_title='Preço',
+            xaxis_title='Data',
+            template='plotly_white'
+        )
+        st.plotly_chart(fig_semanal, use_container_width=True)
+    else:
+        st.warning("Nenhum dado Semanal disponível.")
 
-    # Exibir tabela de dados
-    st.subheader("Histórico Recente")
-    st.dataframe(dados.tail().style.format({'Open': '${:.2f}', 
-                                          'High': '${:.2f}',
-                                          'Low': '${:.2f}',
-                                          'Close': '${:.2f}',
-                                          'Volume': '{:,.0f}'}))
-
-else:
-    st.warning("Nenhum dado disponível. Verifique o símbolo da ação ou os parâmetros.")
+# --- Mensal ---
+with tab4:
+    st.subheader("Gráfico Mensal")
+    periodo_mensal = st.selectbox("Selecione o período (Mensal)", 
+                                 ["6mo", "1y", "2y", "5y"], 
+                                 key="monthly_period")
+    dados_mensal = carregar_dados(ticker, periodo_mensal, "1mo")
+    
+    if dados_mensal is not None:
+        fig_mensal = go.Figure(data=[go.Candlestick(x=dados_mensal.index,
+                                                  open=dados_mensal['Open'],
+                                                  high=dados_mensal['High'],
+                                                  low=dados_mensal['Low'],
+                                                  close=dados_mensal['Close'])])
+        fig_mensal.update_layout(
+            title=f'Mensal - {ticker} ({periodo_mensal})',
+            yaxis_title='Preço',
+            xaxis_title='Data',
+            template='plotly_white'
+        )
+        st.plotly_chart(fig_mensal, use_container_width=True)
+    else:
+        st.warning("Nenhum dado Mensal disponível.")
 
 # Rodapé
 st.sidebar.markdown("---")
