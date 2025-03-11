@@ -75,7 +75,7 @@ with col1:
                 xaxis=dict(
                     rangeslider=dict(
                         visible=True,  # Exibe o seletor de intervalo
-                        thickness=0.01  # Define a altura do seletor
+                        thickness=0.02  # Define a altura do seletor
                     ),
                     rangeselector=dict(
                         buttons=list([
