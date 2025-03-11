@@ -29,10 +29,11 @@ def get_ibov_data():
     variacao = ((data.iloc[-1] - open_data.iloc[-1]) / open_data.iloc[-1]) * 100
     return pd.DataFrame({
         "Ação": [ticker[:-3] for ticker in tickers], 
-        "Variação (%)": variacao.values
+        "Variação (%)": variacao.values,
+        "Último Preço": data.iloc[-1].values  # Adicionando o último preço
     })
 
-# Função para obter dados intraday do IBOV
+# Função para obter dados do IBOV
 def get_stock_data(ticker, period, interval):
     stock = yf.Ticker(ticker)
     data = stock.history(period=period, interval=interval)
@@ -67,25 +68,22 @@ try:
         # Fechamento do dia anterior
         fechamento_anterior = previous_day_data['Close'].iloc[-2]   
 
-
-         # Variações
+        # Variações
         variacao_dia = ((preco_atual - abertura_hoje) / abertura_hoje) * 100
-
         fechamento_semana_passada = weekly_data['Close'].iloc[0]
         variacao_semanal = ((preco_atual - fechamento_semana_passada) / fechamento_semana_passada) * 100
-        
         fechamento_mes_passado = monthly_data['Close'].iloc[0]
         variacao_mensal = ((preco_atual - fechamento_mes_passado) / fechamento_mes_passado) * 100
 
         # Preço atual e fechamento anterior
-        col_metrics1, col_metrics2,col1 = st.columns([1,1,4])
+        col_metrics1, col_metrics2, col1 = st.columns([1, 1, 4])
         with col_metrics1:
             st.metric("Fechamento Anterior", f"{fechamento_anterior:.2f}")
         with col_metrics2:
             st.metric("Preço Atual", f"{preco_atual:.2f}")
 
-        # Variação diario, semanal e mensal
-        col_metrics3, col_metrics4, col_metrics5, col_s2 = st.columns([1,1,1,3])
+        # Variação diária, semanal e mensal
+        col_metrics3, col_metrics4, col_metrics5, col_s2 = st.columns([1, 1, 1, 3])
         with col_metrics3:
             seta_dia = "↑" if variacao_dia >= 0 else "↓"
             st.metric("Variação do Dia", f"{seta_dia} {abs(variacao_dia):.2f}%", delta_color="normal")
@@ -149,7 +147,10 @@ try:
                     justify-content: space-between; 
                     align-items: center;">
                     <span style="font-weight: bold; font-size: 16px; color: black;">{row['Ação']}</span>
-                    <span style="color: #155724; font-size: 16px; font-weight: bold;">{row['Variação (%)']:.2f}%</span>
+                    <span style="font-size: 16px;">
+                        <span style="color: #155724; font-weight: bold;">{row['Variação (%)']:.2f}%</span>
+                        <span style="color: black;"> (R$ {row['Último Preço']:.2f})</span>
+                    </span>
                 </div>
                 """, 
                 unsafe_allow_html=True
@@ -175,7 +176,10 @@ try:
                     justify-content: space-between; 
                     align-items: center;">
                     <span style="font-weight: bold; font-size: 16px; color: black;">{row['Ação']}</span>
-                    <span style="color: #721c24; font-size: 16px; font-weight: bold;">{row['Variação (%)']:.2f}%</span>
+                    <span style="font-size: 16px;">
+                        <span style="color: #721c24; font-weight: bold;">{row['Variação (%)']:.2f}%</span>
+                        <span style="color: black;"> (R$ {row['Último Preço']:.2f})</span>
+                    </span>
                 </div>
                 """, 
                 unsafe_allow_html=True
