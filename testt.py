@@ -22,6 +22,7 @@ st.markdown("""
         margin-bottom: 15px;
         display: flex;
         align-items: center;
+        justify-content: center; /* Centraliza o título dentro da coluna */
         gap: 10px;
     }
     .timestamp {
@@ -94,7 +95,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# Título
+# Título principal
 st.markdown('<p class="main-title">Panorama de Mercado</p>', unsafe_allow_html=True)
 
 # Atualização automática a cada 30 segundos
@@ -174,7 +175,7 @@ def get_stocks():
                         columns=["Ação", "Preço", "Variação (%)"])
 
 # Layout em colunas
-col1, col2, col3 = st.columns([1,1,3])
+col1, col2, col3 = st.columns(3)
 
 # Moedas
 with col1:
