@@ -75,7 +75,7 @@ with col1:
                 xaxis=dict(
                     rangeslider=dict(
                         visible=True,  # Exibe o seletor de intervalo
-                        thickness=0.03  # Define a altura do seletor
+                        thickness=0.04  # Define a altura do seletor
                     ),
                     rangeselector=dict(
                         buttons=list([
@@ -99,7 +99,7 @@ with col1:
 with col2:
     #st.subheader("Gráfico Anual")
     try:
-        yearly_data = get_stock_data(ticker, period="5y", interval="1mo")
+        yearly_data = get_stock_data(ticker, period="10y", interval="1mo")
         if not yearly_data.empty:
             fig_yearly = go.Figure()
             fig_yearly.add_trace(go.Candlestick(
@@ -118,6 +118,21 @@ with col2:
                 #xaxis_title="Data",
                 template="plotly_dark",
                 height=450
+                xaxis=dict(
+                    rangeslider=dict(
+                        visible=True,  # Exibe o seletor de intervalo
+                        thickness=0.04  # Define a altura do seletor
+                    ),
+                    rangeselector=dict(
+                        buttons=list([
+                            dict(count=1, label="1a", step="year", stepmode="backward"),
+                            dict(count=3, label="3a", step="year", stepmode="backward"),
+                            dict(count=5, label="5a", step="yaer", stepmode="backward"),
+                            dict(count=10, label="10a", step="yaer", stepmode="backward"),
+                            dict(step="all")  # Exibe todos os dados
+                        ])
+                    )
+                )
             )
             st.plotly_chart(fig_yearly, use_container_width=False)
         else:
