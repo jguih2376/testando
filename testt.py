@@ -77,7 +77,7 @@ st_autorefresh(interval=30000, key="marketrefresh")
 st.markdown(f'<p class="timestamp">Última atualização: {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}</p>', unsafe_allow_html=True)
 
 # Funções de dados (com cache)
-@st.cache_data(ttl=30)
+@st.cache_data(ttl=10)
 def get_currency_rates():
     try:
         url = "https://api.exchangerate-api.com/v4/latest/USD"
