@@ -4,7 +4,6 @@ import requests
 import pandas as pd
 from datetime import datetime
 from streamlit_autorefresh import st_autorefresh
-import plotly.graph_objects as go
 
 # Configuração da página com tema escuro
 st.set_page_config(page_title="Panorama de Mercado", layout="wide", initial_sidebar_state="collapsed")
@@ -19,17 +18,37 @@ st.markdown("""
     .subheader {
         color: #FFFFFF;
         font-size: 24px;
+        margin-bottom: 10px;
     }
     .timestamp {
         color: #A9A9A9;
         font-size: 14px;
         text-align: right;
+        margin-bottom: 20px;
     }
-    body {
-        background-color: #1E1E1E;
+    .stDataFrame {
+        background-color: #2E2E2E;
+        border-radius: 10px;
+        padding: 10px;
     }
-    .stApp {
+    .dataframe th {
+        background-color: #3A3A3A !important;
+        color: #FFFFFF !important;
+        border: none !important;
+        font-size: 16px !important;
+    }
+    .dataframe td {
+        background-color: #2E2E2E !important;
+        color: #FFFFFF !important;
+        border: none !important;
+        font-size: 14px !important;
+    }
+    .dataframe tr:hover {
+        background-color: #444444 !important;
+    }
+    body, .stApp {
         background-color: #1E1E1E;
+        color: #FFFFFF;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -102,77 +121,43 @@ with col1:
     st.markdown('<p class="subheader">Moedas</p>', unsafe_allow_html=True)
     currency_data = get_currency_rates()
     if not currency_data.empty:
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(
-            x=currency_data["Par"],
-            y=currency_data["Cotação"],
-            mode="lines+markers",
-            line=dict(color="#00CED1", width=2),
-            marker=dict(size=8)
-        ))
-        # Validação e correção do layout
-        fig.update_layout(
-            plot_bgcolor="#2E2E2E",
-            paper_bgcolor="#2E2E2E",
-            font_color="#FFFFFF",
-            height=300,
-            margin=dict(l=50, r=50, t=30, b=30),
-            xaxis=dict(showgrid=False, zeroline=False),
-            yaxis=dict(showgrid=True, gridcolor="#555555")
-        )
-        st.plotly_chart(fig, use_container_width=True)
+        styled_data = currency_data.style.format({"Cotação": "{:.4f}"}).set_properties(**{
+            "background-color": "#2E2E2E",
+            "color": "#FFFFFF",
+            "border": "none",
+            "text-align": "center"
+        })
+        st.dataframe(styled_data, use_container_width=True)
 
 # Commodities
 with col2:
     st.markdown('<p class="subheader">Commodities</p>', unsafe_allow_html=True)
     commodities_data = get_commodities()
     if not commodities_data.empty:
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(
-            x=commodities_data["Commodity"],
-            y=commodities_data["Preço"],
-            mode="lines+markers",
-            line=dict(color="#FF4500", width=2),
-            marker=dict(size=8)
-        ))
-        fig.update_layout(
-            plot_bgcolor="#2E2E2E",
-            paper_bgcolor="#2E2E2E",
-            font_color="#FFFFFF",
-            height=300,
-            margin=dict(l=50, r=50, t=30, b=30),
-            xaxis=dict(showgrid=False, zeroline=False),
-            yaxis=dict(showgrid=True, gridcolor="#555555")
-        )
-        st.plotly_chart(fig, use_container_width=True)
+        styled_data = commodities_data.style.format({"Preço": "{:.2f}"}).set_properties(**{
+            "background-color": "#2E2E2E",
+            "color": "#FFFFFF",
+            "border": "none",
+            "text-align": "center"
+        })
+        st.dataframe(styled_data, use_container_width=True)
 
 # Ações
 with col3:
     st.markdown('<p class="subheader">Ações</p>', unsafe_allow_html=True)
     stocks_data = get_stocks()
     if not stocks_data.empty:
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(
-            x=stocks_data["Ação"],
-            y=stocks_data["Preço"],
-            mode="lines+markers",
-            line=dict(color="#FFFFFF", width=2),
-            marker=dict(size=8)
-        ))
-        fig.update_layout(
-            plot_bgcolor="#2E2E2E",
-            paper_bgcolor="#2E2E2E",
-            font_color="#FFFFFF",
-            height=300,
-            margin=dict(l=50, r=50, t=30, b=30),
-            xaxis=dict(showgrid=False, zeroline=False),
-            yaxis=dict(showgrid=True, gridcolor="#555555")
-        )
-        st.plotly_chart(fig, use_container_width=True)
+        styled_data = stocks_data.style.format({"Preço": "{:.2f}"}).set_properties(**{
+            "background-color": "#2E2E2E",
+            "color": "#FFFFFF",
+            "border": "none",
+            "text-align": "center"
+        })
+        st.dataframe(styled_data, use_container_width=True)
 
 # Rodapé
 st.markdown("""
-<div style="text-align: center; font-size: 12px; color: #A9A9A9;">
+<div style="text-align: center; font-size: 12px; color: #A9A9A9; margin-top: 20px;">
     <strong>Fonte:</strong> Moedas: ExchangeRate-API | Commodities e Ações: Yahoo Finance<br>
     <strong>Nota:</strong> Atualização automática a cada 30 segundos. Dados para fins informativos.
 </div>
