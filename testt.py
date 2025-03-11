@@ -369,7 +369,7 @@ with col2:
             fig_intraday.update_layout(
                 yaxis_side="right",
                 template="plotly_dark",
-                height=700,
+                height=350,
             )
             st.plotly_chart(fig_intraday, use_container_width=True)
 
