@@ -40,12 +40,14 @@ with col1:
             ))
             fig_intraday.update_layout(
                 title=f"Intraday ({interval_label})",
-                yaxis_title="Preço",
                 yaxis_side="right",
-                xaxis_title="Horário",
                 template="plotly_dark",
                 height=700,
-            )
+                xaxis=dict(
+                    rangeslider=dict(
+                        visible=True,  
+                        thickness=0.03),
+            ))
             st.plotly_chart(fig_intraday, use_container_width=True)
         else:
             st.warning("Nenhum dado intraday disponível para este ticker.")
@@ -56,7 +58,7 @@ with col2:
     st.write(" ")
     st.write(" ")
 
-    interval_label = st.radio(
+    interval_label = st.select_slider(
         "",
         list(interval_options.keys()),
         key="interval_label"  # Usamos uma chave para manter o estado
