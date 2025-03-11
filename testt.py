@@ -24,7 +24,7 @@ with tab1:
 
 
     # Configuração inicial do Streamlit
-    st.set_page_config(page_title="Panorama de Mercado", layout="wide")
+    
     st.title("Panorama de Mercado - Cotações em Tempo Real")
     st.write(f"Atualizado em: {datetime.now().strftime('%d/%m/%Y %H:%M')}")
 
