@@ -143,7 +143,6 @@ with tab3:
                         name="Fechamento",
                         line=dict(color='royalblue', width=1)
                     ))
-                last_3_months = daily_data.index[-3:]  # 3 meses
                 fig_daily.update_layout(
                     title="Diário",
                     yaxis_side="right",
