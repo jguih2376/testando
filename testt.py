@@ -123,7 +123,7 @@ st_autorefresh(interval=30000, key="marketrefresh")
 st.markdown(f'<p class="timestamp">Última atualização: {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}</p>', unsafe_allow_html=True)
 
 # Funções de dados (com cache)
-@st.cache_data(ttl=10)  # Reduzido para 10 segundos para atualizações mais frequentes
+@st.cache_data(ttl=30)
 def get_currency_rates():
     try:
         pairs = [
@@ -133,11 +133,9 @@ def get_currency_rates():
         url = "https://economia.awesomeapi.com.br/json/last/" + ",".join(pairs)
         response = requests.get(url)
         data = response.json()
-        st.write("Dados brutos da API:", data)  # Debug: Exibir os dados brutos para verificar
         rates = {}
         for pair in pairs:
-            pair_key = pair.replace('-', '')
-            pair_data = data[pair_key]
+            pair_data = data[f"{pair.replace('-', '')}"]
             base, quote = pair.split("-")
             if quote == "USD":  # Para EUR-USD, invertemos a cotação
                 rates[f"{quote}/{base}"] = 1 / float(pair_data["bid"])
@@ -145,11 +143,10 @@ def get_currency_rates():
             else:
                 rates[f"{base}/{quote}"] = float(pair_data["bid"])
                 rates[f"{base}/{quote}_pct"] = float(pair_data["pctChange"])
-        currency_df = pd.DataFrame([
+        return pd.DataFrame([
             {"Par": k.split("_")[0], "Cotação": v, "Variação (%)": rates[f"{k}_pct"]}
             for k, v in rates.items() if not k.endswith("_pct")
         ])
-        return currency_df
     except Exception as e:
         st.error(f"Erro ao carregar moedas: {e}")
         return pd.DataFrame()
