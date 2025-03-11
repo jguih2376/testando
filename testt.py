@@ -315,125 +315,126 @@ with col1:
 
 
 with col2:
-    st.subheader("IBOV")
+    with st.expander('...', expanded=True):
+        st.markdown('<p class="subheader">IBOV</p>', unsafe_allow_html=True)
 
-    try:
-        # Dados intraday (5 minutos)
-        intraday_data = get_stock_data('^BVSP', period="1d", interval="5m")
-        # Dados do dia anterior para fechamento e diário
-        previous_day_data = get_stock_data('^BVSP', period="2d", interval="1d")
-        # Dados semanal (5 dias úteis)
-        weekly_data = get_stock_data('^BVSP', period="5d", interval="1d")
-        # Dados mensal (1 mês)
-        monthly_data = get_stock_data('^BVSP', period="1mo", interval="1d")
-        
-        if not intraday_data.empty and not previous_day_data.empty and not weekly_data.empty and not monthly_data.empty:
-            # Preço atual (último fechamento intraday)
-            preco_atual = intraday_data['Close'].iloc[-1]
-            # Abertura de hoje (primeiro valor do dia)
-            abertura_hoje = intraday_data['Open'].iloc[0]
-            # Fechamento do dia anterior
-            fechamento_anterior = previous_day_data['Close'].iloc[-2]   
+        try:
+            # Dados intraday (5 minutos)
+            intraday_data = get_stock_data('^BVSP', period="1d", interval="5m")
+            # Dados do dia anterior para fechamento e diário
+            previous_day_data = get_stock_data('^BVSP', period="2d", interval="1d")
+            # Dados semanal (5 dias úteis)
+            weekly_data = get_stock_data('^BVSP', period="5d", interval="1d")
+            # Dados mensal (1 mês)
+            monthly_data = get_stock_data('^BVSP', period="1mo", interval="1d")
+            
+            if not intraday_data.empty and not previous_day_data.empty and not weekly_data.empty and not monthly_data.empty:
+                # Preço atual (último fechamento intraday)
+                preco_atual = intraday_data['Close'].iloc[-1]
+                # Abertura de hoje (primeiro valor do dia)
+                abertura_hoje = intraday_data['Open'].iloc[0]
+                # Fechamento do dia anterior
+                fechamento_anterior = previous_day_data['Close'].iloc[-2]   
 
-            # Variações
-            variacao_dia = ((preco_atual - abertura_hoje) / abertura_hoje) * 100
-            fechamento_semana_passada = weekly_data['Close'].iloc[0]
-            variacao_semanal = ((preco_atual - fechamento_semana_passada) / fechamento_semana_passada) * 100
-            fechamento_mes_passado = monthly_data['Close'].iloc[0]
-            variacao_mensal = ((preco_atual - fechamento_mes_passado) / fechamento_mes_passado) * 100
+                # Variações
+                variacao_dia = ((preco_atual - abertura_hoje) / abertura_hoje) * 100
+                fechamento_semana_passada = weekly_data['Close'].iloc[0]
+                variacao_semanal = ((preco_atual - fechamento_semana_passada) / fechamento_semana_passada) * 100
+                fechamento_mes_passado = monthly_data['Close'].iloc[0]
+                variacao_mensal = ((preco_atual - fechamento_mes_passado) / fechamento_mes_passado) * 100
 
-            # Cartão HTML único para Fechamento Anterior e Preço Atual com fundo branco
-            st.markdown(
-                f"""
-                <div style="
-                    background-color: #ffffff; 
-                    padding: 12px; 
-                    border-radius: 8px; 
-                    margin: 8px 0; 
-                    box-shadow: 2px 2px 4px rgba(0,0,0,0.1);">
+                # Cartão HTML único para Fechamento Anterior e Preço Atual com número no final
+                st.markdown(
+                    f"""
                     <div style="
-                        display: flex; 
-                        justify-content: space-between; 
-                        align-items: center; 
-                        margin-bottom: 8px;">
-                        <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Fechamento Anterior</span>
-                        <span style="font-size: 12px; color: black; flex: 1; text-align: right;">{fechamento_anterior:.2f}</span>
+                        background-color: #d4edda; 
+                        padding: 12px; 
+                        border-radius: 8px; 
+                        margin: 8px 0; 
+                        box-shadow: 2px 2px 4px rgba(0,0,0,0.1);">
+                        <div style="
+                            display: flex; 
+                            justify-content: space-between; 
+                            align-items: center; 
+                            margin-bottom: 8px;">
+                            <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Fechamento Anterior</span>
+                            <span style="font-size: 12px; color: black; flex: 1; text-align: right;">{fechamento_anterior:.2f}</span>
+                        </div>
+                        <div style="
+                            display: flex; 
+                            justify-content: space-between; 
+                            align-items: center;">
+                            <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Preço Atual</span>
+                            <span style="font-size: 12px; color: black; flex: 1; text-align: right;">{preco_atual:.2f}</span>
+                        </div>
                     </div>
-                    <div style="
-                        display: flex; 
-                        justify-content: space-between; 
-                        align-items: center;">
-                        <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Preço Atual</span>
-                        <span style="font-size: 12px; color: black; flex: 1; text-align: right;">{preco_atual:.2f}</span>
-                    </div>
-                </div>
-                """, 
-                unsafe_allow_html=True
-            )
+                    """, 
+                    unsafe_allow_html=True
+                )
 
-            # Todas as variações em um único cartão (mantido como estava)
-            st.markdown(
-                f"""
-                <div style="
-                    background-color: #ffffff; 
-                    padding: 12px; 
-                    border-radius: 8px; 
-                    margin: 8px 0; 
-                    box-shadow: 2px 2px 4px rgba(0,0,0,0.1);">
+                # Todas as variações em um único cartão (mantido como estava)
+                st.markdown(
+                    f"""
                     <div style="
-                        display: flex; 
-                        justify-content: space-between; 
-                        align-items: center; 
-                        margin-bottom: 8px;">
-                        <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Var. do Dia</span>
-                        <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
-                        <span style="font-size: 14px; color: {'#155724' if variacao_dia >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_dia >= 0 else '↓'} {abs(variacao_dia):.2f}%</span>
+                        background-color: #ffffff; 
+                        padding: 12px; 
+                        border-radius: 8px; 
+                        margin: 8px 0; 
+                        box-shadow: 2px 2px 4px rgba(0,0,0,0.1);">
+                        <div style="
+                            display: flex; 
+                            justify-content: space-between; 
+                            align-items: center; 
+                            margin-bottom: 8px;">
+                            <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Variação do Dia</span>
+                            <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
+                            <span style="font-size: 14px; color: {'#155724' if variacao_dia >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_dia >= 0 else '↓'} {abs(variacao_dia):.2f}%</span>
+                        </div>
+                        <div style="
+                            display: flex; 
+                            justify-content: space-between; 
+                            align-items: center; 
+                            margin-bottom: 8px;">
+                            <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Variação Semanal</span>
+                            <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
+                            <span style="font-size: 14px; color: {'#155724' if variacao_semanal >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_semanal >= 0 else '↓'} {abs(variacao_semanal):.2f}%</span>
+                        </div>
+                        <div style="
+                            display: flex; 
+                            justify-content: space-between; 
+                            align-items: center;">
+                            <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Variação Mensal</span>
+                            <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
+                            <span style="font-size: 14px; color: {'#155724' if variacao_mensal >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_mensal >= 0 else '↓'} {abs(variacao_mensal):.2f}%</span>
+                        </div>
                     </div>
-                    <div style="
-                        display: flex; 
-                        justify-content: space-between; 
-                        align-items: center; 
-                        margin-bottom: 8px;">
-                        <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Var. Semanal</span>
-                        <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
-                        <span style="font-size: 14px; color: {'#155724' if variacao_semanal >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_semanal >= 0 else '↓'} {abs(variacao_semanal):.2f}%</span>
-                    </div>
-                    <div style="
-                        display: flex; 
-                        justify-content: space-between; 
-                        align-items: center;">
-                        <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">Var. Mensal</span>
-                        <span style="font-size: 12px; color: black; flex: 1; text-align: center;"></span>
-                        <span style="font-size: 14px; color: {'#155724' if variacao_mensal >= 0 else '#721c24'}; font-weight: bold; flex: 1; text-align: right;">{'↑' if variacao_mensal >= 0 else '↓'} {abs(variacao_mensal):.2f}%</span>
-                    </div>
-                </div>
-                """, 
-                unsafe_allow_html=True
-            )
+                    """, 
+                    unsafe_allow_html=True
+                )
 
-            # Definindo a cor da linha do gráfico com base na variação do dia
-            cor_linha = 'green' if variacao_dia >= 0 else 'red'
+                # Definindo a cor da linha do gráfico com base na variação do dia
+                cor_linha = 'green' if variacao_dia >= 0 else 'red'
 
-            # Gráfico de linha (intraday)
-            fig_intraday = go.Figure()
-            fig_intraday.add_trace(go.Scatter(
-                x=intraday_data.index,
-                y=intraday_data['Close'],
-                mode='lines',
-                name="Fechamento",
-                line=dict(color=cor_linha, width=1)
-            ))
-            fig_intraday.update_layout(
-                yaxis_side="right",
-                template="plotly_dark",
-                height=350,
-            )
-            st.plotly_chart(fig_intraday, use_container_width=True)
+                # Gráfico de linha (intraday)
+                fig_intraday = go.Figure()
+                fig_intraday.add_trace(go.Scatter(
+                    x=intraday_data.index,
+                    y=intraday_data['Close'],
+                    mode='lines',
+                    name="Fechamento",
+                    line=dict(color=cor_linha, width=1)
+                ))
+                fig_intraday.update_layout(
+                    yaxis_side="right",
+                    template="plotly_dark",
+                    height=350,
+                )
+                st.plotly_chart(fig_intraday, use_container_width=True)
 
-        else:
-            st.warning("Nenhum dado disponível para o IBOV.")
-    except Exception as e:
-        st.error(f"Erro ao carregar dados intraday: {e}")
+            else:
+                st.warning("Nenhum dado disponível para o IBOV.")
+        except Exception as e:
+            st.error(f"Erro ao carregar dados intraday: {e}")
 
 
 
