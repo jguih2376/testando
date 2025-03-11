@@ -19,7 +19,7 @@ st.markdown("""
     .subheader {
         color: #FFFFFF;
         font-size: 22px;
-        margin-bottom: 15px; /* Aumentado para mais espaço entre o título da seção e os cartões */
+        margin-bottom: 15px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -47,7 +47,7 @@ st.markdown("""
         transition: transform 0.2s;
         flex: 0 0 auto;
         position: relative;
-        margin-bottom: 15px; /* Adicionado espaçamento vertical entre os cartões */
+        margin-bottom: 15px;
     }
     .card:hover {
         transform: scale(1.03);
@@ -126,19 +126,27 @@ st.markdown(f'<p class="timestamp">Última atualização: {datetime.now().strfti
 @st.cache_data(ttl=30)
 def get_currency_rates():
     try:
-        url = "https://api.exchangerate-api.com/v4/latest/USD"
+        pairs = [
+            "USD-BRL", "EUR-USD", "USD-JPY", "USD-GBP",
+            "USD-CAD", "USD-SEK", "USD-CHF"
+        ]
+        url = "https://economia.awesomeapi.com.br/json/last/" + ",".join(pairs)
         response = requests.get(url)
         data = response.json()
-        rates = {
-            "USD/BRL": data["rates"]["BRL"],
-            "EUR/USD": 1 / data["rates"]["EUR"],
-            "USD/JPY": data["rates"]["JPY"],
-            "USD/GBP": data["rates"]["GBP"],
-            "USD/CAD": data["rates"]["CAD"],
-            "USD/SEK": data["rates"]["SEK"],
-            "USD/CHF": data["rates"]["CHF"]
-        }
-        return pd.DataFrame(rates.items(), columns=["Par", "Cotação"])
+        rates = {}
+        for pair in pairs:
+            pair_data = data[f"{pair.replace('-', '')}"]
+            base, quote = pair.split("-")
+            if quote == "USD":  # Para EUR-USD, invertemos a cotação
+                rates[f"{quote}/{base}"] = 1 / float(pair_data["bid"])
+                rates[f"{quote}/{base}_pct"] = -float(pair_data["pctChange"])  # Inverso da variação
+            else:
+                rates[f"{base}/{quote}"] = float(pair_data["bid"])
+                rates[f"{base}/{quote}_pct"] = float(pair_data["pctChange"])
+        return pd.DataFrame([
+            {"Par": k.split("_")[0], "Cotação": v, "Variação (%)": rates[f"{k}_pct"]}
+            for k, v in rates.items() if not k.endswith("_pct")
+        ])
     except Exception as e:
         st.error(f"Erro ao carregar moedas: {e}")
         return pd.DataFrame()
@@ -176,8 +184,14 @@ def get_commodities():
 
 @st.cache_data(ttl=30)
 def get_stocks():
-    symbols =  {'IBOV': '^BVSP','EWZ':'EWZ', 'S&P500': '^GSPC', 'NASDAQ': '^IXIC', 'FTSE100': '^FTSE', 'DAX': '^GDAXI',
-                'CAC40': '^FCHI', 'SSE Composite': '000001.SS', 'Nikkei225': '^N225', 'Merval': '^MERV'}
+    symbols = {
+        "Apple": "AAPL",
+        "Ibovespa": "^BVSP",
+        "Tesla": "TSLA",
+        "S&P 500": "^GSPC",
+        "Dow Jones": "^DJI",
+        "NASDAQ": "^IXIC"
+    }
     data = {}
     for name, symbol in symbols.items():
         try:
@@ -205,9 +219,8 @@ with col1:
         cols = st.columns(min(4, len(currency_data)))  # Máximo de 4 colunas para moedas
         for idx, (index, row) in enumerate(currency_data.iterrows()):
             with cols[idx % len(cols)]:
-                variation = [0.5, -0.3, 1.2, -0.8, 0.9, -0.2, 0.4][index % 7]  # Exemplo fictício
-                var_class = "positive" if variation >= 0 else "negative"
-                arrow = "↑" if variation >= 0 else "↓"
+                var_class = "positive" if float(row["Variação (%)"]) >= 0 else "negative"
+                arrow = "↑" if float(row["Variação (%)"]) >= 0 else "↓"
                 st.markdown(
                     f"""
                     <div class="card">
@@ -216,33 +229,12 @@ with col1:
                             <span class="tooltiptext">Cotação em USD</span>
                         </div>
                         <div class="card-value">{row['Cotação']:.4f}</div>
-                        <div class="card-variation {var_class}">{variation:.2f}% {arrow}</div>
+                        <div class="card-variation {var_class}">{row['Variação (%)']:.2f}% {arrow}</div>
                     </div>
                     """, unsafe_allow_html=True)
 
-    st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)  # Espaço maior entre seções
+    st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)  # Espaço entre seções
 
-    # Índices
-    st.markdown('<p class="subheader">📈 Índices</p>', unsafe_allow_html=True)
-    stocks_data = get_stocks()
-    if not stocks_data.empty:
-        cols = st.columns(min(4, len(stocks_data)))  # Máximo de 4 colunas para índices
-        for idx, (index, row) in enumerate(stocks_data.iterrows()):
-            with cols[idx % len(cols)]:
-                var_class = "positive" if float(str(row["Variação (%)"]).replace("N/A", "0")) >= 0 else "negative"
-                arrow = "↑" if float(str(row["Variação (%)"]).replace("N/A", "0")) >= 0 else "↓"
-                st.markdown(
-                    f"""
-                    <div class="card">
-                        <div class="tooltip">
-                            <div class="card-title">{row['Índice']}</div>
-                            <span class="tooltiptext">Índice de Mercado</span>
-                        </div>
-                        <div class="card-value">{row['Preço']}</div>
-                        <div class="card-variation {var_class}">{row['Variação (%)']}% {arrow}</div>
-                    </div>
-                    """, unsafe_allow_html=True)
-                
     # Commodities
     st.markdown('<p class="subheader">⛽ Commodities</p>', unsafe_allow_html=True)
     commodities_data = get_commodities()
@@ -266,14 +258,34 @@ with col1:
                     </div>
                     """, unsafe_allow_html=True)
 
-    st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)  # Espaço maior entre seções
+    st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)  # Espaço entre seções
 
+    # Índices
+    st.markdown('<p class="subheader">📈 Índices</p>', unsafe_allow_html=True)
+    stocks_data = get_stocks()
+    if not stocks_data.empty:
+        cols = st.columns(min(4, len(stocks_data)))  # Máximo de 4 colunas para índices
+        for idx, (index, row) in enumerate(stocks_data.iterrows()):
+            with cols[idx % len(cols)]:
+                var_class = "positive" if float(str(row["Variação (%)"]).replace("N/A", "0")) >= 0 else "negative"
+                arrow = "↑" if float(str(row["Variação (%)"]).replace("N/A", "0")) >= 0 else "↓"
+                st.markdown(
+                    f"""
+                    <div class="card">
+                        <div class="tooltip">
+                            <div class="card-title">{row['Índice']}</div>
+                            <span class="tooltiptext">Índice de Mercado</span>
+                        </div>
+                        <div class="card-value">{row['Preço']}</div>
+                        <div class="card-variation {var_class}">{row['Variação (%)']}% {arrow}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
 
     # Rodapé
     st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)  # Espaço antes do rodapé
     st.markdown("""
     <div style="text-align: center; font-size: 12px; color: #A9A9A9; margin-top: 20px;">
-        <strong>Fonte:</strong> Moedas: ExchangeRate-API | Commodities e Índices: Yahoo Finance<br>
+        <strong>Fonte:</strong> Moedas: AwesomeAPI | Commodities e Índices: Yahoo Finance<br>
         <strong>Nota:</strong> Atualização automática a cada 30 segundos. Dados para fins informativos.
     </div>
     """, unsafe_allow_html=True)
