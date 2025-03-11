@@ -52,7 +52,7 @@ col1, col2 = st.columns(2)
 
 # Gráfico Semanal
 with col1:
-    st.subheader("Gráfico Semanal")
+    #st.subheader("Gráfico Semanal")
     try:
         weekly_data = get_stock_data(ticker, period="1y", interval="1wk")
         if not weekly_data.empty:
@@ -66,7 +66,7 @@ with col1:
                 name="OHLC"
             ))
             fig_weekly.update_layout(
-                title=f"{ticker} - Semanal",
+                title=f"Semanal",
                 title_x=0.5,
                 yaxis_title="Preço",
                 xaxis_title="Data",
@@ -81,7 +81,7 @@ with col1:
 
 # Gráfico Anual
 with col2:
-    st.subheader("Gráfico Anual")
+    #st.subheader("Gráfico Anual")
     try:
         yearly_data = get_stock_data(ticker, period="5y", interval="1mo")
         if not yearly_data.empty:
@@ -95,7 +95,7 @@ with col2:
                 name="OHLC"
             ))
             fig_yearly.update_layout(
-                title=f"{ticker} - Anual",
+                title=f"Anual",
                 title_x=0.5,
                 yaxis_title="Preço",
                 xaxis_title="Data",
