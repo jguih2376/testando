@@ -85,7 +85,7 @@ try:
             st.metric("Fechamento Anterior", f"{fechamento_anterior:.2f}")
 
         # Variação diario, semanal e mensal
-        col_metrics3, col_metrics4, col_metrics5 = st.columns(3)
+        col_s1, col_metrics3, col_metrics4, col_metrics5, col_s2 = st.columns([2,1,1,1,2])
         with col_metrics3:
             seta_dia = "↑" if variacao_dia >= 0 else "↓"
             st.metric("Variação do Dia", f"{seta_dia} {abs(variacao_dia):.2f}%", delta_color="normal")
@@ -109,7 +109,6 @@ try:
             line=dict(color=cor_linha, width=1)
         ))
         fig_intraday.update_layout(
-            title="Intraday IBOV (5min)",
             yaxis_side="right",
             template="plotly_dark",
             height=700,
