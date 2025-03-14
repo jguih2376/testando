@@ -10,7 +10,7 @@ def get_ibov_data():
         'BRAP4', 'BBAS3', 'BRKM5', 'BRAV3', 'BRFS3', 'BPAC11', 'CXSE3', 'CRFB3', 'CCRO3', 'CMIG4', 'COGN3', 
         'CPLE6', 'CSAN3', 'CPFE3', 'CMIN3', 'CVCB3', 'CYRE3', 'ELET3', 'ELET6', 'EMBR3', 'ENGI11', 'ENEV3', 
         'EGIE3', 'EQTL3', 'FLRY3', 'GGBR4', 'GOAU4', 'NTCO3', 'HAPV3', 'HYPE3', 'IGTI11', 'IRBR3', 'ISAE4', 
-         'ITUB4', 'JBSS3', 'KLBN11', 'RENT3', 'LREN3', 'LWSA3', 'MGLU3', 'POMO4', 'MRFG3', 'BEEF3', 
+        'ITSA4', 'ITUB4', 'JBSS3', 'KLBN11', 'RENT3', 'LREN3', 'LWSA3', 'MGLU3', 'POMO4', 'MRFG3', 'BEEF3', 
         'MRVE3', 'MULT3', 'PCAR3', 'PETR3', 'PETR4', 'RECV3', 'PRIO3', 'PETZ3', 'PSSA3', 'RADL3', 'RAIZ4', 
         'RDOR3', 'RAIL3', 'SBSP3', 'SANB11', 'STBP3', 'SMTO3', 'CSNA3', 'SLCE3', 'SUZB3', 'TAEE11', 'VIVT3', 
         'TIMS3', 'TOTS3', 'UGPA3', 'USIM5', 'VALE3', 'VAMO3', 'VBBR3', 'VIVA3', 'WEGE3', 'YDUQ3'
@@ -18,12 +18,13 @@ def get_ibov_data():
     
     tickers = [acao + '.SA' for acao in acoes]
     resultados = {"Ação": [], "Variação (%)": [], "Último Preço": []}
+    falhas = []  # Para rastrear tickers que falharam
     
     for ticker in tickers:
         try:
             data = yf.download(ticker, period="2d", interval="1d")["Close"]
             if len(data) < 2:
-                st.warning(f"{ticker[:-3]}: Dados insuficientes para calcular a variação.")
+                falhas.append(f"{ticker[:-3]}: Dados insuficientes")
                 continue
             
             ultimo_preco = data.iloc[-1]
@@ -33,16 +34,24 @@ def get_ibov_data():
             resultados["Variação (%)"].append(variacao)
             resultados["Último Preço"].append(ultimo_preco)
         except Exception as e:
-            st.error(f"Erro ao processar {ticker[:-3]}: {e}")
+            falhas.append(f"{ticker[:-3]}: Erro - {str(e)}")
     
     # Criar DataFrame
     df = pd.DataFrame(resultados)
-    # Converter colunas para numérico, forçando erros a NaN
-    df["Variação (%)"] = pd.to_numeric(df["Variação (%)"], errors='coerce')
-    df["Último Preço"] = pd.to_numeric(df["Último Preço"], errors='coerce')
-    # Arredondar valores para melhor visualização
-    df["Variação (%)"] = df["Variação (%)"].round(2)
-    df["Último Preço"] = df["Último Preço"].round(2)
+    if not df.empty:
+        # Converter colunas para numérico, forçando erros a NaN
+        df["Variação (%)"] = pd.to_numeric(df["Variação (%)"], errors='coerce')
+        df["Último Preço"] = pd.to_numeric(df["Último Preço"], errors='coerce')
+        # Arredondar valores
+        df["Variação (%)"] = df["Variação (%)"].round(2)
+        df["Último Preço"] = df["Último Preço"].round(2)
+    
+    # Exibir falhas no Streamlit
+    if falhas:
+        st.warning("Alguns tickers falharam:")
+        for falha in falhas:
+            st.write(f"- {falha}")
+    
     return df
 
 # Interface do Streamlit
@@ -54,7 +63,7 @@ try:
     df = get_ibov_data().dropna()  # Remove linhas com NaN
     
     if df.empty:
-        st.error("Nenhum dado disponível no momento.")
+        st.error("Nenhum dado disponível no momento. Verifique as mensagens de falha acima.")
     else:
         # Exibir tabela interativa com todos os dados
         st.subheader("Todas as Ações")
