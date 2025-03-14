@@ -1,7 +1,9 @@
+import streamlit as st
 import pandas as pd
 import yfinance as yf
 
-@st.cache_data(ttl=1200)
+# Função para buscar dados com cache
+@st.cache_data(ttl=1200)  # Cache de 20 minutos
 def get_ibov_data():
     acoes = [
         'ALOS3', 'ABEV3', 'ASAI3', 'AURE3', 'AMOB3', 'AZUL4', 'AZZA3', 'B3SA3', 'BBSE3', 'BBDC3', 'BBDC4', 
@@ -19,10 +21,9 @@ def get_ibov_data():
     
     for ticker in tickers:
         try:
-            # Baixar dados individualmente para cada ticker
             data = yf.download(ticker, period="2d", interval="1d")["Close"]
             if len(data) < 2:
-                print(f"{ticker}: Dados insuficientes, pulando.")
+                st.warning(f"{ticker[:-3]}: Dados insuficientes para calcular a variação.")
                 continue
             
             ultimo_preco = data.iloc[-1]
@@ -32,12 +33,38 @@ def get_ibov_data():
             resultados["Variação (%)"].append(variacao)
             resultados["Último Preço"].append(ultimo_preco)
         except Exception as e:
-            print(f"Erro ao processar {ticker}: {e}")
+            st.error(f"Erro ao processar {ticker[:-3]}: {e}")
     
-    # Criar DataFrame a partir dos resultados
+    # Criar DataFrame
     df = pd.DataFrame(resultados)
+    # Arredondar valores para melhor visualização
+    df["Variação (%)"] = df["Variação (%)"].round(2)
+    df["Último Preço"] = df["Último Preço"].round(2)
     return df
 
-# Testar
-df = get_ibov_data()
-print(df)
+# Interface do Streamlit
+st.title("Ações do IBOV - Variação Diária")
+st.write("Dados atualizados a cada 20 minutos.")
+
+# Buscar e exibir os dados
+try:
+    df = get_ibov_data()
+    if df.empty:
+        st.error("Nenhum dado disponível no momento.")
+    else:
+        # Exibir tabela interativa
+        st.dataframe(df, use_container_width=True)
+        
+        # Adicionar opção para baixar os dados como CSV
+        csv = df.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="Baixar dados como CSV",
+            data=csv,
+            file_name="ibov_variacao.csv",
+            mime="text/csv"
+        )
+except Exception as e:
+    st.error(f"Erro ao carregar os dados: {e}")
+
+# Rodapé
+st.write(f"Última atualização: {pd.Timestamp.now().strftime('%d/%m/%Y %H:%M:%S')}")
