@@ -48,11 +48,13 @@ st.write("Dados atualizados a cada 20 minutos.")
 
 # Buscar e exibir os dados
 try:
-    df = get_ibov_data()
+    df = get_ibov_data().dropna()  # Remove linhas com NaN
+    
     if df.empty:
         st.error("Nenhum dado disponível no momento.")
     else:
-        # Exibir tabela interativa
+        # Exibir tabela interativa com todos os dados
+        st.subheader("Todas as Ações")
         st.dataframe(df, use_container_width=True)
         
         # Adicionar opção para baixar os dados como CSV
@@ -63,6 +65,69 @@ try:
             file_name="ibov_variacao.csv",
             mime="text/csv"
         )
+        
+        # Layout em colunas para Maiores Altas e Baixas
+        st.subheader("Destaques do Dia")
+        col1, col2 = st.columns(2)
+        
+        # Maiores Altas
+        maiores_altas = df.nlargest(5, "Variação (%)")
+        with col1:
+            st.markdown(
+                """
+                <h3 style="text-align: center; font-size: 16px;">↑ Maiores Altas ↑</h3>
+                """, 
+                unsafe_allow_html=True
+            )
+            for _, row in maiores_altas.iterrows():
+                st.markdown(
+                    f"""
+                    <div style="
+                        background-color: #d4edda; 
+                        padding: 12px; 
+                        border-radius: 8px; 
+                        margin: 8px 0; 
+                        box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
+                        display: flex; 
+                        justify-content: space-between; 
+                        align-items: center;">
+                        <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">{row['Ação']}</span>
+                        <span style="font-size: 12px; color: black; flex: 1; text-align: center;">R$ {row['Último Preço']:.2f}</span>
+                        <span style="font-size: 14px; color: #155724; font-weight: bold; flex: 1; text-align: right;">{row['Variação (%)']:.2f}%</span>
+                    </div>
+                    """, 
+                    unsafe_allow_html=True
+                )
+        
+        # Maiores Baixas
+        maiores_baixas = df.nsmallest(5, "Variação (%)")
+        with col2:
+            st.markdown(
+                """
+                <h3 style="text-align: center; font-size: 16px;">↓ Maiores Baixas ↓</h3>
+                """, 
+                unsafe_allow_html=True
+            )
+            for _, row in maiores_baixas.iterrows():
+                st.markdown(
+                    f"""
+                    <div style="
+                        background-color: #f8d7da; 
+                        padding: 12px; 
+                        border-radius: 8px; 
+                        margin: 8px 0; 
+                        box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
+                        display: flex; 
+                        justify-content: space-between; 
+                        align-items: center;">
+                        <span style="font-weight: bold; font-size: 14px; color: black; flex: 1; text-align: left;">{row['Ação']}</span>
+                        <span style="font-size: 12px; color: black; flex: 1; text-align: center;">R$ {row['Último Preço']:.2f}</span>
+                        <span style="font-size: 14px; color: #721c24; font-weight: bold; flex: 1; text-align: right;">{row['Variação (%)']:.2f}%</span>
+                    </div>
+                    """, 
+                    unsafe_allow_html=True
+                )
+
 except Exception as e:
     st.error(f"Erro ao carregar os dados: {e}")
 
