@@ -37,6 +37,9 @@ def get_ibov_data():
     
     # Criar DataFrame
     df = pd.DataFrame(resultados)
+    # Converter colunas para numérico, forçando erros a NaN
+    df["Variação (%)"] = pd.to_numeric(df["Variação (%)"], errors='coerce')
+    df["Último Preço"] = pd.to_numeric(df["Último Preço"], errors='coerce')
     # Arredondar valores para melhor visualização
     df["Variação (%)"] = df["Variação (%)"].round(2)
     df["Último Preço"] = df["Último Preço"].round(2)
