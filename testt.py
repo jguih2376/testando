@@ -65,18 +65,21 @@ with col2:
 
     # Exibir o resultado com alinhamento centralizado
     st.markdown(
-        f"""
-        <div style="
-            background-color: #ffffff; 
-            padding: 12px; 
-            border-radius: 8px; 
-            margin: 8px 0; 
-            box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
-            text-align: center;">
-            <span style="font-weight: bold; font-size: 14px; color: black; display: block; margin-bottom: 8px;">Juros Real</span>
-            <span style="font-size: 20px; color: black; font-weight: normal;">{juros_real:.2f}%</span>
-        </div>
-        """, 
-        unsafe_allow_html=True
+    f"""
+    <div style="
+        background-color: #ffffff; 
+        padding: 12px; 
+        border-radius: 8px; 
+        margin: 8px 0; 
+        box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
+        text-align: center; 
+        max-width: 150px; 
+        margin-left: auto; 
+        margin-right: auto;">
+        <span style="font-weight: bold; font-size: 14px; color: black; display: block; margin-bottom: 8px;">Juros Real</span>
+        <span style="font-size: 20px; color: black; font-weight: normal;">{juros_real:.2f}%</span>
+    </div>
+    """, 
+    unsafe_allow_html=True
 )
 
