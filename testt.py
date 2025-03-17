@@ -1,10 +1,11 @@
 import streamlit as st
 import pandas as pd
 import requests
-import yf
+import yfinance as yf
 import pytz
 from datetime import datetime, timedelta
 import plotly.graph_objects as go
+from streamlit_autorefresh import st_autorefresh
 
 # Função para carregar CSS externo (simulado aqui como inline para exemplo)
 def load_css():
