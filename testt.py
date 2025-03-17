@@ -1,13 +1,11 @@
 import streamlit as st
 import pandas as pd
 import requests
-import yfinance as yf
+import yf
 import pytz
 from datetime import datetime, timedelta
 import plotly.graph_objects as go
-from streamlit_autorefresh import st_autorefresh
 
-# Função para carregar CSS externo (simulado aqui como inline para exemplo)
 def load_css():
     st.markdown("""
         <style>
@@ -29,11 +27,18 @@ def load_css():
         </style>
     """, unsafe_allow_html=True)
 
-# Função genérica para renderizar cards
 def render_card(title, value, variation, value_format="{:.2f}", flex_ratios=[1, 1, 1]):
-    bg_color = "#d4edda" if variation >= 0 else "#f8d7da"
-    arrow = "↑" if variation >= 0 else "↓"
-    var_color = "#155724" if variation >= 0 else "#721c24"
+    try:
+        variation_float = float(variation)
+    except (ValueError, TypeError):
+        variation_float = 0.0
+    bg_color = "#d4edda" if variation_float >= 0 else "#f8d7da"
+    arrow = "↑" if variation_float >= 0 else "↓"
+    var_color = "#155724" if variation_float >= 0 else "#721c24"
+    try:
+        value_display = value_format.format(value)
+    except (ValueError, TypeError):
+        value_display = str(value)
     st.markdown(
         f"""
         <div style="
@@ -46,13 +51,12 @@ def render_card(title, value, variation, value_format="{:.2f}", flex_ratios=[1, 
             justify-content: space-between; 
             align-items: center;">
             <span style="font-weight: bold; font-size: 14px; color: black; flex: {flex_ratios[0]}; text-align: left;">{title}</span>
-            <span style="font-size: 12px; color: black; flex: {flex_ratios[1]}; text-align: center;">{value_format.format(value)}</span>
-            <span style="font-size: 14px; color: {var_color}; font-weight: bold; flex: {flex_ratios[2]}; text-align: right;">{arrow} {abs(variation):.2f}%</span>
+            <span style="font-size: 12px; color: black; flex: {flex_ratios[1]}; text-align: center;">{value_display}</span>
+            <span style="font-size: 14px; color: {var_color}; font-weight: bold; flex: {flex_ratios[2]}; text-align: right;">{arrow} {abs(variation_float):.2f}%</span>
         </div>
         """, unsafe_allow_html=True
     )
 
-# Função para exibir cards em colunas
 def display_cards(data, title, emoji, cols_num=3, value_col="Cotação", var_col="Variação (%)", title_col="Par", value_format="{:.2f}"):
     st.markdown(f'<p class="subheader">{emoji} {title}</p>', unsafe_allow_html=True)
     if not data.empty:
@@ -61,7 +65,6 @@ def display_cards(data, title, emoji, cols_num=3, value_col="Cotação", var_col
             with cols[idx % len(cols)]:
                 render_card(row[title_col], row[value_col], row[var_col], value_format)
 
-# Funções de dados otimizadas
 @st.cache_data(ttl=60)
 def get_currency_rates():
     pairs = ["USD-BRL", "EUR-USD", "USD-JPY", "USD-GBP", "USD-CAD", "USD-SEK", "USD-CHF"]
@@ -98,9 +101,9 @@ def get_commodities():
                     variation = ((current_price - prev_price) / prev_price) * 100
                     data[f"{name} ({category})"] = {"Preço": round(current_price, 2), "Variação (%)": round(variation, 2)}
                 else:
-                    data[f"{name} ({category})"] = {"Preço": "N/A", "Variação (%)": "N/A"}
+                    data[f"{name} ({category})"] = {"Preço": 0.0, "Variação (%)": 0.0}
             except Exception:
-                data[f"{name} ({category})"] = {"Preço": "N/A", "Variação (%)": "N/A"}
+                data[f"{name} ({category})"] = {"Preço": 0.0, "Variação (%)": 0.0}
     return pd.DataFrame([(k, v["Preço"], v["Variação (%)"]) for k, v in data.items()],
                        columns=["Commodity", "Preço", "Variação (%)"])
 
@@ -120,9 +123,9 @@ def get_stocks():
                 variation = ((current_price - prev_price) / prev_price) * 100
                 data[name] = {"Preço": round(current_price, 2), "Variação (%)": round(variation, 2)}
             else:
-                data[name] = {"Preço": "N/A", "Variação (%)": "N/A"}
+                data[name] = {"Preço": 0.0, "Variação (%)": 0.0}
         except Exception:
-            data[name] = {"Preço": "N/A", "Variação (%)": "N/A"}
+            data[name] = {"Preço": 0.0, "Variação (%)": 0.0}
     return pd.DataFrame([(k, v["Preço"], v["Variação (%)"]) for k, v in data.items()],
                        columns=["Índice", "Preço", "Variação (%)"])
 
@@ -160,7 +163,6 @@ def get_stock_data(ticker):
     start_date = end_date - timedelta(days=30)
     return yf.download(ticker, start=start_date, end=end_date, interval="1m")
 
-# Função principal
 def app():
     st.title("🌎 Panorama do Mercado")
     st.write("Visão geral do mercado atual.")
@@ -187,7 +189,7 @@ def app():
             with st.expander('...', expanded=True):
                 try:
                     data = get_stock_data('^BVSP')
-                    intraday_data = data.tail(390)  # Aproximadamente 1 dia em minutos
+                    intraday_data = data.tail(390)
                     daily_data = data.resample('1d').last().tail(2)
                     weekly_data = data.resample('1d').last().tail(5)
                     monthly_data = data.resample('1d').last()
