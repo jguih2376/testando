@@ -179,18 +179,22 @@ def app():
                     try:
                         commodity = yf.Ticker(symbol)
                         hist = commodity.history(period="2d")
-                        if len(hist) >= 2:
+                        if hist.empty or len(hist) < 2:
+                            st.warning(f"Dados insuficientes para {name} ({symbol}): {len(hist)} registros retornados.")
+                            data[f"{name} ({category})"] = {"Preço": "N/A", "Variação (%)": "N/A"}
+                        else:
                             current_price = hist["Close"].iloc[-1]
                             prev_price = hist["Close"].iloc[-2]
                             variation = ((current_price - prev_price) / prev_price) * 100
                             data[f"{name} ({category})"] = {"Preço": round(current_price, 2), "Variação (%)": round(variation, 2)}
-                        else:
-                            data[f"{name} ({category})"] = {"Preço": "N/A", "Variação (%)": "N/A"}
                     except Exception as e:
+                        st.error(f"Erro ao carregar {name} ({symbol}): {str(e)}")
                         data[f"{name} ({category})"] = {"Preço": "N/A", "Variação (%)": "N/A"}
-            return pd.DataFrame([(k, v["Preço"], v["Variação (%)"]) for k, v in data.items()],
-                                columns=["Commodity", "Preço", "Variação (%)"])
-
+            df = pd.DataFrame([(k, v["Preço"], v["Variação (%)"]) for k, v in data.items()],
+                            columns=["Commodity", "Preço", "Variação (%)"])
+            if df["Preço"].eq("N/A").all():
+                st.error("Nenhum dado de commodities foi carregado com sucesso.")
+            return df
 
         @st.cache_data(ttl=1200)  # Índices: 20 minutos
         def get_stocks():
