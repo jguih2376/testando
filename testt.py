@@ -41,12 +41,7 @@ with col1:
 
 with col2:
     st.write('')
-    st.write('')
-    st.write('')
-    st.write('')
-    st.write('')
-    st.write('')
-    
+
     # Exibindo o iframe com alinhamento ajustado
     st.markdown("<br><br><br><br><br>", unsafe_allow_html=True)  # Spacing above the box
     combined_code = f"""
