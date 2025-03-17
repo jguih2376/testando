@@ -4,7 +4,7 @@ from bcb import sgs
 
 @st.cache_data
 def get_data():
-    start_date = '2000-01-01'  # Reduzindo o período
+    start_date = '2010-01-01'  # Reduzindo o período
     dolar = sgs.get({'Dólar': 10813}, start=start_date)
     selic = sgs.get({'Selic': 432}, start=start_date)
     ipca = sgs.get({'IPCA': 13522}, start=start_date)
@@ -21,7 +21,7 @@ def create_chart(data, atual, title, yaxis_title, unit):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=data.index, y=data.iloc[:, 0], mode='lines'))
     fig.add_trace(go.Scatter(x=[data.index[-1]], y=[atual], mode='markers', marker=dict(color='red', size=5)))
-    fig.update_layout(title=title, yaxis_title=yaxis_title, showlegend=False, height=400)
+    fig.update_layout(title=title, yaxis_title=yaxis_title, showlegend=False, height=550)
     fig.add_annotation(x=data.index[-1], y=atual, text=f'{atual:.2f}{unit}', showarrow=True,ax=20, ay=-40,bordercolor='yellow')
    
     return fig
