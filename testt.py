@@ -27,56 +27,56 @@ def create_chart(data, atual, title, yaxis_title, unit):
     return fig
 
 
-def app():
-    st.title("🏛️Estatística Monetária")
-    with st.spinner("Carregando dados..."):
-        selic, selic_atual, ipca, ipca_atual, juros_real, dolar, dolar_atual = get_data()
-        
-    col1, col2 = st.columns([5, 1])
-    with col1:
-        st.plotly_chart(create_chart(selic, selic_atual, 'Taxa de Juros SELIC', 'Taxa de Juros (%)', '%'))
-        st.plotly_chart(create_chart(ipca, ipca_atual, 'IPCA Acumulado 12M', 'IPCA acumulado (%)', '%'))
-        st.plotly_chart(create_chart(dolar, dolar_atual, 'Cotação do Dólar', 'Valor em R$', 'R$'))
+
+st.title("🏛️Estatística Monetária")
+with st.spinner("Carregando dados..."):
+    selic, selic_atual, ipca, ipca_atual, juros_real, dolar, dolar_atual = get_data()
+    
+col1, col2 = st.columns([5, 1])
+with col1:
+    st.plotly_chart(create_chart(selic, selic_atual, 'Taxa de Juros SELIC', 'Taxa de Juros (%)', '%'))
+    st.plotly_chart(create_chart(ipca, ipca_atual, 'IPCA Acumulado 12M', 'IPCA acumulado (%)', '%'))
+    st.plotly_chart(create_chart(dolar, dolar_atual, 'Cotação do Dólar', 'Valor em R$', 'R$'))
 
 
-    with col2:
-        st.write('')
-        st.write('')
-        st.write('')
-        st.write('')
-        st.write('')
-        st.write('')
-        
-        # Exibindo o iframe com alinhamento ajustado
-        iframe_code = """
-        <div style="text-align: center; padding: 1px; font-family: sans-serif;">
-            <span style="font-size: 20px; font-weight: bold; display: block; margin-bottom: 8px; color: white;">Mundo</span>
-            <div style="display: flex; justify-content: center;">
-                <iframe frameborder="0" scrolling="no" height="146" width="108" allowtransparency="true" marginwidth="0" marginheight="0" 
-                src="https://sslirates.investing.com/index.php?rows=1&bg1=FFFFFF&bg2=F1F5F8&text_color=333333&enable_border=hide&border_color=0452A1&
-                header_bg=ffffff&header_text=FFFFFF&force_lang=12"></iframe>
-            </div>
+with col2:
+    st.write('')
+    st.write('')
+    st.write('')
+    st.write('')
+    st.write('')
+    st.write('')
+    
+    # Exibindo o iframe com alinhamento ajustado
+    iframe_code = """
+    <div style="text-align: center; padding: 1px; font-family: sans-serif;">
+        <span style="font-size: 20px; font-weight: bold; display: block; margin-bottom: 8px; color: white;">Mundo</span>
+        <div style="display: flex; justify-content: center;">
+            <iframe frameborder="0" scrolling="no" height="146" width="108" allowtransparency="true" marginwidth="0" marginheight="0" 
+            src="https://sslirates.investing.com/index.php?rows=1&bg1=FFFFFF&bg2=F1F5F8&text_color=333333&enable_border=hide&border_color=0452A1&
+            header_bg=ffffff&header_text=FFFFFF&force_lang=12"></iframe>
         </div>
-        """
+    </div>
+    """
 
-        st.components.v1.html(iframe_code, height=180)
+    st.components.v1.html(iframe_code, height=180)
 
-        
+    
 
-        # Exibir o resultado com alinhamento centralizado
-        st.markdown(
-            f"""
-            <div style="
-                background-color: #ffffff; 
-                padding: 12px; 
-                border-radius: 8px; 
-                margin: 8px 0; 
-                box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
-                text-align: center;">
-                <span style="font-weight: bold; font-size: 14px; color: black; display: block; margin-bottom: 8px;">Juros Real</span>
-                <span style="font-size: 35px; color: black; font-weight: normal;">{juros_real:.2f}%</span>
-            </div>
-            """, 
-            unsafe_allow_html=True
+    # Exibir o resultado com alinhamento centralizado
+    st.markdown(
+        f"""
+        <div style="
+            background-color: #ffffff; 
+            padding: 12px; 
+            border-radius: 8px; 
+            margin: 8px 0; 
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
+            text-align: center;">
+            <span style="font-weight: bold; font-size: 14px; color: black; display: block; margin-bottom: 8px;">Juros Real</span>
+            <span style="font-size: 35px; color: black; font-weight: normal;">{juros_real:.2f}%</span>
+        </div>
+        """, 
+        unsafe_allow_html=True
 )
 
