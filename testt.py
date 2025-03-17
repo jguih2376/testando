@@ -4,7 +4,7 @@ from bcb import sgs
 
 @st.cache_data
 def get_data():
-    start_date = '2010-01-01'  # Reduzindo o período
+    start_date = '2000-01-01'  # Reduzindo o período
     dolar = sgs.get({'Dólar': 10813}, start=start_date)
     selic = sgs.get({'Selic': 432}, start=start_date)
     ipca = sgs.get({'IPCA': 13522}, start=start_date)
