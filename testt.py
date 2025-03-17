@@ -129,7 +129,7 @@ def app():
             #color: #FFFFFF;
             #}
 
-        st_autorefresh(interval=10000, key="marketrefresh")
+        st_autorefresh(interval=120000, key="marketrefresh")
 
         # Ajustar para o fuso horário UTC-3
         br_tz = pytz.timezone('America/Sao_Paulo')
@@ -137,7 +137,7 @@ def app():
        
 
 
-        @st.cache_data(ttl=10)  # Moedas: 10 segundos
+        @st.cache_data(ttl=300)  # Moedas: 5 minutos
         def get_currency_rates():
             try:
                 pairs = ["USD-BRL", "EUR-USD", "USD-JPY", "USD-GBP", "USD-CAD", "USD-SEK", "USD-CHF"]
