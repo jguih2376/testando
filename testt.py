@@ -73,7 +73,7 @@ with col2:
         margin: 8px 0; 
         box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
         text-align: center; 
-        max-width: 150px; 
+        max-width: 120px; 
         margin-left: auto; 
         margin-right: auto;">
         <span style="font-weight: bold; font-size: 14px; color: black; display: block; margin-bottom: 8px;">Juros Real</span>
