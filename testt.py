@@ -49,8 +49,15 @@ with col2:
     
     # Exibindo o iframe com alinhamento ajustado
     iframe_code = """
-    <div style="text-align: center; padding: 1px; font-family: sans-serif;">
-        <span style="font-size: 20px; font-weight: bold; display: block; margin-bottom: 8px; color: white;">Mundo</span>
+    <div style="
+        background-color: #ffffff; 
+        padding: 12px; 
+        border-radius: 8px; 
+        margin: 8px 0; 
+        box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
+        text-align: center; 
+        font-family: sans-serif;">
+        <span style="font-size: 20px; font-weight: bold; display: block; margin-bottom: 8px; color: black;">Mundo</span>
         <div style="display: flex; justify-content: center;">
             <iframe frameborder="0" scrolling="no" height="146" width="108" allowtransparency="true" marginwidth="0" marginheight="0" 
             src="https://sslirates.investing.com/index.php?rows=1&bg1=FFFFFF&bg2=F1F5F8&text_color=333333&enable_border=hide&border_color=0452A1&
@@ -58,7 +65,6 @@ with col2:
         </div>
     </div>
     """
-
     st.components.v1.html(iframe_code, height=180)
 
     
