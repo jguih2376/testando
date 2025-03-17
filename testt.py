@@ -48,44 +48,29 @@ with col2:
     st.write('')
     
     # Exibindo o iframe com alinhamento ajustado
-    iframe_code = """
-    <div style="
-        background-color: #ffffff; 
-        padding: 12px; 
-        border-radius: 8px; 
-        margin: 8px 0; 
-        box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
-        text-align: center; 
-        font-family: sans-serif;">
-        <span style="font-size: 20px; font-weight: bold; display: block; margin-bottom: 8px; color: black;">Mundo</span>
-        <div style="display: flex; justify-content: center;">
-            <iframe frameborder="0" scrolling="no" height="146" width="108" allowtransparency="true" marginwidth="0" marginheight="0" 
-            src="https://sslirates.investing.com/index.php?rows=1&bg1=FFFFFF&bg2=F1F5F8&text_color=333333&enable_border=hide&border_color=0452A1&
-            header_bg=ffffff&header_text=FFFFFF&force_lang=12"></iframe>
+    st.markdown("<br><br><br><br><br>", unsafe_allow_html=True)  # Spacing above the box
+    combined_code = f"""
+        <div style="
+            background-color: #ffffff; 
+            padding: 12px; 
+            border-radius: 8px; 
+            margin: 8px 0; 
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
+            text-align: center; 
+            font-family: sans-serif; 
+            max-width: 150px; 
+            margin-left: auto; 
+            margin-right: auto;">
+            <!-- Mundo Section -->
+            <span style="font-size: 20px; font-weight: bold; display: block; margin-bottom: 8px; color: black;">Mundo</span>
+            <div style="display: flex; justify-content: center; margin-bottom: 12px;">
+                <iframe frameborder="0" scrolling="no" height="146" width="108" allowtransparency="true" marginwidth="0" marginheight="0" 
+                src="https://sslirates.investing.com/index.php?rows=1&bg1=FFFFFF&bg2=F1F5F8&text_color=333333&enable_border=hide&border_color=0452A1&
+                header_bg=ffffff&header_text=FFFFFF&force_lang=12"></iframe>
+            </div>
+            <!-- Juros Real Section -->
+            <span style="font-weight: bold; font-size: 14px; color: black; display: block; margin-bottom: 8px;">Juros Real</span>
+            <span style="font-size: 20px; color: black; font-weight: normal;">{juros_real:.2f}%</span>
         </div>
-    </div>
-    """
-    st.components.v1.html(iframe_code, height=180)
-
-    
-
-    # Exibir o resultado com alinhamento centralizado
-    st.markdown(
-    f"""
-    <div style="
-        background-color: #ffffff; 
-        padding: 12px; 
-        border-radius: 8px; 
-        margin: 8px 0; 
-        box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
-        text-align: center; 
-        max-width: 130px; 
-        margin-left: auto; 
-        margin-right: auto;">
-        <span style="font-weight: bold; font-size: 14px; color: black; display: block; margin-bottom: 8px;">Juros Real</span>
-        <span style="font-size: 20px; color: black; font-weight: normal;">{juros_real:.2f}%</span>
-    </div>
-    """, 
-    unsafe_allow_html=True
-)
-
+        """
+    st.components.v1.html(combined_code, height=350)
