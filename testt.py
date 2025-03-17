@@ -74,7 +74,7 @@ with col2:
             box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
             text-align: center;">
             <span style="font-weight: bold; font-size: 14px; color: black; display: block; margin-bottom: 8px;">Juros Real</span>
-            <span style="font-size: 35px; color: black; font-weight: normal;">{juros_real:.2f}%</span>
+            <span style="font-size: 20px; color: black; font-weight: normal;">{juros_real:.2f}%</span>
         </div>
         """, 
         unsafe_allow_html=True
