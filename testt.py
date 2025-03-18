@@ -41,12 +41,12 @@ def create_chart(data, atual, title, yaxis_title, unit):
                             text=f"{atual:.2f}",  # Texto com o preço atual formatado
                             showarrow=True,
                             arrowhead=0,
-                            ax=7,  # Deslocamento horizontal da seta
+                            ax=2,  # Deslocamento horizontal da seta
                             ay=0,  # Sem deslocamento vertical
                             font=dict(size=12, color='#FFFFFF'),
                             bgcolor='rgba(0, 0, 0, 0.5)',  # Fundo semi-transparente para legibilidade
                             bordercolor='#FFFFFF',
-                            #borderwidth=1,
+                            borderwidth=1,
                             xanchor="left",  # Ancorar o texto à esquerda para não invadir o gráfico
                             yanchor="middle"  # Centralizar verticalmente no preço atual
                             )
