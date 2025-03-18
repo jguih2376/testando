@@ -116,9 +116,8 @@ with tab2:
     st.title("IPCA Mensal (Código 433)")
 
     # Definir intervalo de datas usando o formato padrão DD/MM/YYYY
-    start_date = st.date_input("Data inicial (DD/MM/AAAA)", value=pd.to_datetime("2020-01-01"))
-    end_date = st.date_input("Data final (DD/MM/AAAA)", value=pd.to_datetime(datetime.now().strftime('%d-%m-%Y')))
-
+    start_date = st.date_input('Data de início', pd.to_datetime('2020-01-01').date(), format='DD/MM/YYYY')
+    end_date = st.date_input('Data de término', pd.to_datetime('today').date(), format='DD/MM/YYYY')
     # Converter datas para exibição em DD/MM/YYYY
     start_date_str = start_date.strftime('%d/%m/%Y')
     end_date_str = end_date.strftime('%d/%m/%Y')
