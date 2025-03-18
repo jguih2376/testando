@@ -1,7 +1,7 @@
 import streamlit as st
 import plotly.graph_objects as go
 from bcb import sgs
-
+from datetime import datetime
 import pandas as pd
 
 # Função para buscar os dados do Banco Central
@@ -111,38 +111,38 @@ with tab2:
 # Função para buscar os dados do Banco Central
 
 
-    # Configuração do Streamlit
+
+    # Configuração do título do app
     st.title("IPCA Mensal (Código 433)")
 
-    # Definir intervalo de datas
-    start_date = st.date_input("Data inicial", value=pd.to_datetime("2020-01-01"))
-    end_date = st.date_input("Data final", value=pd.Timestamp.today().strftime('%d/%m/%Y'))
+    # Definir intervalo de datas usando o formato padrão DD/MM/YYYY
+    start_date = st.date_input("Data inicial (DD/MM/AAAA)", value=pd.to_datetime("2020-01-01"))
+    end_date = st.date_input("Data final (DD/MM/AAAA)", value=pd.to_datetime(datetime.now().strftime('%Y-%m-%d')))
 
-
-# Converter as strings para objet
-    # Converter datas para o formato DD/MM/YYYY para exibição e uso interno
+    # Converter datas para exibição em DD/MM/YYYY
     start_date_str = start_date.strftime('%d/%m/%Y')
     end_date_str = end_date.strftime('%d/%m/%Y')
 
-    # Para a função fetch_bcb_data, manter o formato YYYY-MM-DD
+    # Converter as datas para uso interno no formato YYYY-MM-DD (necessário para APIs e funções)
     start_date_bcb = start_date.strftime('%Y-%m-%d')
     end_date_bcb = end_date.strftime('%Y-%m-%d')
 
-    # Buscar os dados
+    # Simulação de busca de dados - Ajustar ou substituir por `fetch_bcb_data`
     try:
-        ipca_data = fetch_bcb_data(16122, start_date_bcb, end_date_bcb)
-        
+        # Aqui deveria entrar a função `fetch_bcb_data`
+        ipca_data = fetch_bcb_data(16122, start_date_bcb, end_date_bcb)  # Simulação do código do IPCA
+
         # Renomear a coluna para clareza
         ipca_data.columns = ['IPCA Mensal (%)']
-        
-        # Formatando o índice (datas) para DD/MM/YYYY
+
+        # Atualizar as datas no índice para o formato DD/MM/YYYY
         ipca_data.index = ipca_data.index.strftime('%d/%m/%Y')
-        
+
         # Exibir a tabela no Streamlit
         st.subheader("Tabela de Dados - IPCA Mensal")
         st.dataframe(ipca_data)
-        
-        # Opcional: Download dos dados como CSV
+
+        # Opcional: botão para download como CSV
         csv = ipca_data.to_csv(index=True)
         st.download_button(
             label="Baixar dados como CSV",
@@ -153,7 +153,7 @@ with tab2:
     except Exception as e:
         st.error(f"Erro ao buscar os dados: {e}")
 
-    # Informações adicionais com data formatada
+    # Informações adicionais com formato de datas atualizado
     st.write(f"Dados obtidos do Banco Central do Brasil (SGS) - Código 433: IPCA mensal, em pontos percentuais.")
-    st.write(f"Data atual: {pd.Timestamp.now().strftime('%d/%m/%Y')}")
+    st.write(f"Data atual: {datetime.now().strftime('%d/%m/%Y')}")
     st.write(f"Período selecionado: {start_date_str} a {end_date_str}")
