@@ -62,7 +62,7 @@ with col2:
                 header_bg=ffffff&header_text=FFFFFF&force_lang=12"></iframe>
             </div>
             <!-- Juros Real Section -->
-            <span style="font-weight: bold; font-size: 14px; color: black; display: block; margin-bottom: 8px;">Juros Real</span>
+            <span style="font-weight: bold; font-size: 14px; color: black; display: block; margin-bottom: 8px;">🇧🇷 Juros Real</span>
             <span style="font-size: 20px; color: black; font-weight: normal;">{juros_real:.2f}%</span>
         </div>
         """
