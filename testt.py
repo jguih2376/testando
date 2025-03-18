@@ -5,9 +5,30 @@ from datetime import datetime
 import pandas as pd
 
 # Função para buscar os dados do Banco Central
-def fetch_bcb_data(code, start_date=None, end_date=None):
-    data = sgs.get({'IPCA': code}, start=start_date, end=end_date)
-    return data
+# Função para buscar os dados do BCB usando a biblioteca `bcb`
+def fetch_bcb_data(codigo, start_date, end_date):
+    try:
+        # Obter os dados do SGS do Banco Central
+        dados = sgs.get(codigo, start=start_date, end=end_date)
+        
+        # Verificar se os dados estão vazios
+        if dados.empty:
+            st.warning(f"Nenhum dado encontrado para {indicador_selecionado} no período selecionado.")
+            return None
+
+        # Renomear coluna para o nome do indicador
+        dados.columns = [f"{indicador_selecionado} (%)"]
+        dados.index.name = "Data"
+
+        # Ordenação decrescente e formatação das datas
+        dados = dados.sort_index(ascending=False)
+        dados.index = dados.index.strftime("%d/%m/%Y")  # Formatar índice para DD/MM/YYYY
+
+        return dados
+    except Exception as e:
+        st.error(f"Erro ao buscar os dados: {e}")
+        return None
+    
 
 @st.cache_data
 def get_data():
@@ -61,7 +82,7 @@ def create_chart(data, atual, title, yaxis_title, unit):
     return fig
 
 
-tab1, tab2 = st.tabs(['Historico','IPCA'])
+tab1, tab2,tab3 = st.tabs(['Historico','IPCA','Indicadores'])
 with tab1:
     st.title("🏛️Estatística Monetária")
     with st.spinner("Carregando dados..."):
@@ -113,7 +134,7 @@ with tab2:
 
 
     # Configuração do título do app
-    st.title("Indicadores Econômicos: IPCA, IGP-M e SELIC")
+    st.title("IPCA Mensal (Código 433)")
 
     # Definir intervalo de datas usando o formato padrão DD/MM/YYYY
     start_date = st.date_input('Data de início', pd.to_datetime('2020-01-01').date(), format='DD/MM/YYYY')
@@ -127,53 +148,84 @@ with tab2:
     start_date_bcb = start_date.strftime('%Y-%m-%d')
     end_date_bcb = end_date.strftime('%Y-%m-%d')
 
-    # Dicionário com os códigos e nomes das séries
-    series = {
-        'IPCA Mensal (%)': 433,
-        'IGP-M Mensal (%)': 189,
-        'SELIC Acumulada no Mês (%)': 1178
-    }
-
-    # Caixa de seleção para escolher o indicador
-    selected_indicator = st.selectbox("Selecione o indicador:", list(series.keys()))
-
-    # Busca e exibição dos dados para o indicador selecionado
+    # Busca de dados
     try:
-        # Buscar os dados para o indicador escolhido
-        code = series[selected_indicator]
-        data = fetch_bcb_data(code, start_date_bcb, end_date_bcb, selected_indicator.split(' ')[0])
+        # Usando o código correto 433 para IPCA mensal (não 16122, que parece ser um erro)
+        ipca_data = fetch_bcb_data(433, start_date_bcb, end_date_bcb)
 
-        # Renomear a coluna para o nome completo
-        data.columns = [selected_indicator]
+        # Renomear a coluna para clareza
+        ipca_data.columns = ['IPCA Mensal (%)']
 
-        # Atualizar o nome do índice para "Data"
-        data.index.name = 'Data'
+        # Atualizar o nome do índice de "Date" para "Data"
+        ipca_data.index.name = 'Data'
 
-        # Ordenar a tabela pela ordem das datas (crescente)
-        data = data.sort_index(ascending=True)
+        # Ordenar a tabela do maior para o menor valor de IPCA Mensal (%)
+        ipca_data = ipca_data.sort_index(ascending=False)
 
         # Formatando as datas no índice para DD/MM/YYYY
-        data.index = data.index.strftime('%d/%m/%Y')
+        ipca_data.index = ipca_data.index.strftime('%d/%m/%Y')
 
         # Exibir a tabela no Streamlit
-        st.subheader(f"Tabela de Dados - {selected_indicator}")
-        st.dataframe(data)
+        st.subheader("Tabela de Dados - IPCA Mensal")
+        st.dataframe(ipca_data)
 
-        # Opcional: botão para download como CSV
-        csv = data.to_csv(index=True)
+        #CSV
+        csv = ipca_data.to_csv(index=True)
         st.download_button(
-            label=f"Baixar {selected_indicator} como CSV",
+            label="Baixar dados como CSV",
             data=csv,
-            file_name=f"{selected_indicator.lower().replace(' ', '_')}.csv",
+            file_name="ipca_433.csv",
             mime="text/csv",
         )
     except Exception as e:
-        st.error(f"Erro ao buscar os dados de {selected_indicator}: {e}")
+        st.error(f"Erro ao buscar os dados: {e}")
 
     # Informações adicionais com formato de datas atualizado
-    st.write("Dados obtidos do Banco Central do Brasil (SGS):")
-    st.write("- Código 433: IPCA mensal, em pontos percentuais.")
-    st.write("- Código 189: IGP-M mensal, em pontos percentuais.")
-    st.write("- Código 1178: SELIC acumulada no mês, em pontos percentuais.")
+    st.write(f"Dados obtidos do Banco Central do Brasil (SGS) - Código 433: IPCA mensal, em pontos percentuais.")
     st.write(f"Data atual: {datetime.now().strftime('%d/%m/%Y')}")
     st.write(f"Período selecionado: {start_date_str} a {end_date_str}")
+
+with tab3:
+
+
+    # Dicionário com os indicadores e seus códigos no SGS do Banco Central
+    indicadores = {
+        "IPCA Mensal": 433,
+        "IGP-M Mensal": 189,
+        "Taxa SELIC": 432
+    }
+
+    # Configuração do título do app
+    st.title("Indicadores Econômicos - Banco Central")
+
+    # Seleção do indicador
+    indicador_selecionado = st.selectbox("Escolha o indicador:", list(indicadores.keys()))
+
+    # Definir intervalo de datas
+    start_date = st.date_input("Data de início", pd.to_datetime("2020-01-01").date(), format="DD/MM/YYYY")
+    end_date = st.date_input("Data de término", pd.to_datetime("today").date(), format="DD/MM/YYYY")
+
+
+
+    # Buscar os dados
+    codigo_indicador = indicadores[indicador_selecionado]
+    dados = fetch_bcb_data(codigo_indicador, start_date, end_date)
+
+    # Exibir os dados no Streamlit
+    if dados is not None:
+        st.subheader(f"Tabela de Dados - {indicador_selecionado}")
+        st.dataframe(dados)
+
+        # Criar botão para baixar CSV
+        csv = dados.to_csv(index=True)
+        st.download_button(
+            label="Baixar dados como CSV",
+            data=csv,
+            file_name=f"{indicador_selecionado.lower().replace(' ', '_')}.csv",
+            mime="text/csv",
+        )
+
+    # Informações adicionais
+    st.write(f"Dados obtidos do Banco Central do Brasil (SGS) - Indicador: {indicador_selecionado}")
+    st.write(f"Data atual: {datetime.now().strftime('%d/%m/%Y')}")
+    st.write(f"Período selecionado: {start_date.strftime('%d/%m/%Y')} a {end_date.strftime('%d/%m/%Y')}")
