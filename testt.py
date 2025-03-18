@@ -20,8 +20,22 @@ def get_data():
 
 
 
-def create_chart(data, current_value, title, yaxis_title, unit=""):
 
+
+def create_chart(data, current_value, title, yaxis_title, unit=""):
+    """
+    Create a line chart with a marked current value using Plotly.
+
+    Parameters:
+    - data: pandas DataFrame or Series with time series data
+    - current_value: float or int, the most recent value to highlight
+    - title: str, chart title
+    - yaxis_title: str, label for the y-axis
+    - unit: str, optional unit to append to the current value annotation (default: "")
+    
+    Returns:
+    - fig: Plotly Figure object
+    """
     # Initialize the figure
     fig = go.Figure()
 
@@ -30,8 +44,7 @@ def create_chart(data, current_value, title, yaxis_title, unit=""):
         x=data.index, 
         y=data.iloc[:, 0] if data.ndim > 1 else data,  # Handle both DataFrame and Series
         mode='lines',
-        line=dict(color='#1f77b4'),  # Default blue color for better visibility
-        name='Data'  # Optional: can be shown in legend if needed
+        line=dict(color='#1f77b4'),  # Default blue color
     ))
 
     # Add the current value marker
@@ -39,21 +52,18 @@ def create_chart(data, current_value, title, yaxis_title, unit=""):
         x=[data.index[-1]], 
         y=[current_value], 
         mode='markers', 
-        marker=dict(color='red', size=8),  # Slightly larger marker for emphasis
-        name='Current Value'
+        marker=dict(color='red', size=8),
     ))
 
-    # Update layout with customized styling
+    # Update layout with simplified and corrected parameters
     fig.update_layout(
-        title=dict(text=title, x=0.5, xanchor='center', font=dict(size=16)),  # Centered title
-        yaxis_title=yaxis_title,
-        showlegend=False,  # Keep legend off as in original
+        title=title,  # Simplified to a string
+        showlegend=False,
         height=450,
-        plot_bgcolor='rgba(0, 0, 0, 0)',  # Transparent background
-        paper_bgcolor='rgba(0, 0, 0, 0)',  # Transparent paper
         yaxis=dict(
+            title=yaxis_title,  # Properly nested y-axis title
             side="right",
-            gridcolor='rgba(255, 255, 255, 0.1)',  # Subtle gridlines
+            gridcolor='rgba(255, 255, 255, 0.1)',
             zeroline=False,
             color='#FFFFFF',
             titlefont=dict(size=14),
@@ -68,17 +78,17 @@ def create_chart(data, current_value, title, yaxis_title, unit=""):
 
     # Add annotation for the current value
     fig.add_annotation(
-        x=1,  # Right edge of the chart
-        y=current_value, 
-        xref="paper", 
-        yref="y", 
-        text=f"{current_value:.2f} {unit}".strip(),  # Include unit if provided
+        x=1,
+        y=current_value,
+        xref="paper",
+        yref="y",
+        text=f"{current_value:.2f} {unit}".strip(),
         showarrow=True,
         arrowhead=0,
-        ax=10,  # Slightly increased horizontal offset for clarity
+        ax=10,
         ay=0,
         font=dict(size=12, color='#FFFFFF'),
-        bgcolor='rgba(0, 0, 0, 0.5)',  # Semi-transparent background
+        bgcolor='rgba(0, 0, 0, 0.5)',
         bordercolor='#FFFFFF',
         borderwidth=1,
         xanchor="left",
@@ -86,7 +96,6 @@ def create_chart(data, current_value, title, yaxis_title, unit=""):
     )
 
     return fig
-
 # Example usage:
 # import pandas as pd
 # data = pd.Series([1, 2, 3, 4], index=pd.date_range('2023-01-01', periods=4))
