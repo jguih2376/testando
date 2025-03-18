@@ -22,7 +22,7 @@ def create_chart(data, atual, title, yaxis_title, unit):
     fig.add_trace(go.Scatter(x=data.index, y=data.iloc[:, 0], mode='lines'))
     fig.add_trace(go.Scatter(x=[data.index[-1]], y=[atual], mode='markers', marker=dict(color='red', size=5)))
     fig.update_layout(title=title, yaxis_title=yaxis_title, showlegend=False, height=450)
-    fig.add_annotation(x=data.index[-1], y=atual, text=f'{atual:.2f}{unit}', showarrow=True,ax=20, ay=-40,bordercolor='yellow')
+    fig.add_annotation(x=data.index[-1], y=atual, text=f'{atual:.2f}{unit}', showarrow=False,ax=20, ay=-40,bordercolor='yellow')
    
     return fig
 
@@ -62,7 +62,7 @@ with col2:
                 header_bg=ffffff&header_text=FFFFFF&force_lang=12"></iframe>
             </div>
             <!-- Juros Real Section -->
-            <span style="font-weight: bold; font-size: 14px; color: black; display: block; margin-bottom: 8px;">🇧🇷 Juros Real</span>
+            <span style="font-weight: bold; font-size: 14px; color: black; display: block; margin-bottom: 8px;">Juros Real 🇧🇷</span>
             <span style="font-size: 20px; color: black; font-weight: normal;">{juros_real:.2f}%</span>
         </div>
         """
