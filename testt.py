@@ -22,7 +22,23 @@ def create_chart(data, atual, title, yaxis_title, unit):
     fig.add_trace(go.Scatter(x=data.index, y=data.iloc[:, 0], mode='lines'))
     fig.add_trace(go.Scatter(x=[data.index[-1]], y=[atual], mode='markers', marker=dict(color='red', size=5)))
     fig.update_layout(title=title, yaxis_title=yaxis_title, showlegend=False, height=450)
-    fig.add_annotation(x=data.index[-1], y=atual, text=f'{atual:.2f}{unit}', showarrow=False,ax=20, ay=-40,bordercolor='yellow')
+    fig.add_annotation(
+                            x=1,  # Posição no extremo direito (relativo ao eixo X)
+                            y=preco_atual,  # Posição no valor do preço atual (eixo Y)
+                            xref="paper",  # Referência relativa ao papel (0 a 1)
+                            yref="y",  # Referência ao eixo Y em valores absolutos
+                            text=f"{preco_atual:.2f}",  # Texto com o preço atual formatado
+                            showarrow=True,
+                            arrowhead=0,
+                            ax=7,  # Deslocamento horizontal da seta
+                            ay=0,  # Sem deslocamento vertical
+                            font=dict(size=12, color='#FFFFFF'),
+                            bgcolor='rgba(0, 0, 0, 0.5)',  # Fundo semi-transparente para legibilidade
+                            bordercolor='#FFFFFF',
+                            borderwidth=1,
+                            xanchor="left",  # Ancorar o texto à esquerda para não invadir o gráfico
+                            yanchor="middle"  # Centralizar verticalmente no preço atual
+                            )
    
     return fig
 
