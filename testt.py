@@ -6,19 +6,9 @@ import pandas as pd
 
 # Função para buscar os dados do Banco Central
 def fetch_bcb_data(code, start_date=None, end_date=None):
-    """
-    Busca dados do Banco Central do Brasil usando o código da série temporal.
-    
-    Parâmetros:
-    - code: int, código da série (ex.: 433 para IPCA mensal)
-    - start_date: str, data inicial no formato 'YYYY-MM-DD' (opcional)
-    - end_date: str, data final no formato 'YYYY-MM-DD' (opcional)
-    
-    Retorna:
-    - pandas DataFrame com os dados
-    """
     data = sgs.get({'IPCA': code}, start=start_date, end=end_date)
     return data
+
 @st.cache_data
 def get_data():
     start_date = '2010-01-01'  # Reduzindo o período
@@ -116,19 +106,35 @@ with tab1:
 with tab2:
 
 
+
+
+# Função para buscar os dados do Banco Central
+
+
     # Configuração do Streamlit
     st.title("IPCA Mensal (Código 433)")
 
     # Definir intervalo de datas
     start_date = st.date_input("Data inicial", value=pd.to_datetime("2020-01-01"))
-    end_date = st.date_input("Data final", value=pd.to_datetime("2025-03-18"))
+    end_date = st.date_input("Data final", value=pd.Timestamp.today().date())
+
+    # Converter datas para o formato DD/MM/YYYY para exibição e uso interno
+    start_date_str = start_date.strftime('%d/%m/%Y')
+    end_date_str = end_date.strftime('%d/%m/%Y')
+
+    # Para a função fetch_bcb_data, manter o formato YYYY-MM-DD
+    start_date_bcb = start_date.strftime('%Y-%m-%d')
+    end_date_bcb = end_date.strftime('%Y-%m-%d')
 
     # Buscar os dados
     try:
-        ipca_data = fetch_bcb_data(432, start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'))
+        ipca_data = fetch_bcb_data(433, start_date_bcb, end_date_bcb)
         
         # Renomear a coluna para clareza
         ipca_data.columns = ['IPCA Mensal (%)']
+        
+        # Formatando o índice (datas) para DD/MM/YYYY
+        ipca_data.index = ipca_data.index.strftime('%d/%m/%Y')
         
         # Exibir a tabela no Streamlit
         st.subheader("Tabela de Dados - IPCA Mensal")
@@ -145,6 +151,7 @@ with tab2:
     except Exception as e:
         st.error(f"Erro ao buscar os dados: {e}")
 
-    # Informações adicionais
+    # Informações adicionais com data formatada
     st.write(f"Dados obtidos do Banco Central do Brasil (SGS) - Código 433: IPCA mensal, em pontos percentuais.")
-    st.write(f"Data atual: {pd.Timestamp.now().strftime('%Y-%m-%d')}")
+    st.write(f"Data atual: {pd.Timestamp.now().strftime('%d/%m/%Y')}")
+    st.write(f"Período selecionado: {start_date_str} a {end_date_str}")
