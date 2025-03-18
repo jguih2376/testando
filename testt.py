@@ -46,7 +46,7 @@ def create_chart(data, atual, title, yaxis_title, unit):
                             font=dict(size=12, color='#FFFFFF'),
                             bgcolor='rgba(0, 0, 0, 0.5)',  # Fundo semi-transparente para legibilidade
                             bordercolor='#FFFFFF',
-                            borderwidth=1,
+                            #borderwidth=1,
                             xanchor="left",  # Ancorar o texto à esquerda para não invadir o gráfico
                             yanchor="middle"  # Centralizar verticalmente no preço atual
                             )
@@ -68,7 +68,7 @@ with col1:
 
 with col2:
     # Exibindo o iframe com alinhamento ajustado
-    st.markdown("<br><br><br><br>", unsafe_allow_html=True)  # Spacing above the box
+    st.markdown("<br><br><br>", unsafe_allow_html=True)  # Spacing above the box
     combined_code = f"""
         <div style="
             background-color: #ffffff; 
