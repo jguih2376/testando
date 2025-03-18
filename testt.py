@@ -191,10 +191,10 @@ with tab2:
     st.write(f"Período selecionado: {start_date.strftime('%d/%m/%Y')} a {end_date.strftime('%d/%m/%Y')}")
 
 
-    st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="height: 140px;"></div>', unsafe_allow_html=True)
     st.markdown("""
     <div style="text-align: center; font-size: 14px; color: #A9A9A9; margin-top: 20px;">
-        <strong>Fonte:</strong> Moedas: AwesomeAPI | Commodities, Índices e Ações: Yahoo Finance<br>
-        <strong>Nota:</strong> Moedas atualizadas a cada 5 minutos; demais cotações a cada 20 minutos.
+        <strong>Fonte:</strong> BCB - Banco Central do Brasil<br>
+     
     </div>
     """, unsafe_allow_html=True)
