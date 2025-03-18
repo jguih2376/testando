@@ -139,7 +139,7 @@ with tab2:
         ipca_data.index.name = 'Data'
 
         # Ordenar a tabela do maior para o menor valor de IPCA Mensal (%)
-        ipca_data = ipca_data.sort_index(ascending=True)
+        ipca_data = ipca_data.sort_index(ascending=False)
 
         # Formatando as datas no índice para DD/MM/YYYY
         ipca_data.index = ipca_data.index.strftime('%d/%m/%Y')
