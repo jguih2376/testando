@@ -123,8 +123,8 @@ with tab2:
     end_date_str = end_date.strftime('%d/%m/%Y')
 
     # Para a função fetch_bcb_data, manter o formato YYYY-MM-DD
-    start_date_bcb = start_date.strftime('%Y-%m-%d')
-    end_date_bcb = end_date.strftime('%Y-%m-%d')
+    start_date_bcb = start_date.strftime('%d-%m-%Y')
+    end_date_bcb = end_date.strftime('%d-%m-%Y')
 
     # Buscar os dados
     try:
