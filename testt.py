@@ -113,7 +113,7 @@ with tab2:
 
 
     # Configuração do título do app
-    st.title("IPCA Mensal (Código 433)")
+    st.title("Indicadores Econômicos: IPCA, IGP-M e SELIC")
 
     # Definir intervalo de datas usando o formato padrão DD/MM/YYYY
     start_date = st.date_input('Data de início', pd.to_datetime('2020-01-01').date(), format='DD/MM/YYYY')
@@ -127,39 +127,50 @@ with tab2:
     start_date_bcb = start_date.strftime('%Y-%m-%d')
     end_date_bcb = end_date.strftime('%Y-%m-%d')
 
-    # Busca de dados
-    try:
-        # Usando o código correto 433 para IPCA mensal (não 16122, que parece ser um erro)
-        ipca_data = fetch_bcb_data(433, start_date_bcb, end_date_bcb)
+    # Dicionário com os códigos e nomes das séries
+    series = {
+        'IPCA Mensal (%)': 433,
+        'IGP-M Mensal (%)': 189,
+        'SELIC Acumulada no Mês (%)': 1178
+    }
 
-        # Renomear a coluna para clareza
-        ipca_data.columns = ['IPCA Mensal (%)']
+    # Busca e exibição dos dados
+    for name, code in series.items():
+        try:
+            # Buscar os dados para cada série
+            data = fetch_bcb_data(code, start_date_bcb, end_date_bcb, name.split(' ')[0])  # Nome curto para a API
 
-        # Atualizar o nome do índice de "Date" para "Data"
-        ipca_data.index.name = 'Data'
+            # Renomear a coluna para o nome completo
+            data.columns = [name]
 
-        # Ordenar a tabela do maior para o menor valor de IPCA Mensal (%)
-        ipca_data = ipca_data.sort_index(ascending=False)
+            # Atualizar o nome do índice para "Data"
+            data.index.name = 'Data'
 
-        # Formatando as datas no índice para DD/MM/YYYY
-        ipca_data.index = ipca_data.index.strftime('%d/%m/%Y')
+            # Ordenar a tabela pela ordem das datas (crescente)
+            data = data.sort_index(ascending=True)
 
-        # Exibir a tabela no Streamlit
-        st.subheader("Tabela de Dados - IPCA Mensal")
-        st.dataframe(ipca_data)
+            # Formatando as datas no índice para DD/MM/YYYY
+            data.index = data.index.strftime('%d/%m/%Y')
 
-        #CSV
-        csv = ipca_data.to_csv(index=True)
-        st.download_button(
-            label="Baixar dados como CSV",
-            data=csv,
-            file_name="ipca_433.csv",
-            mime="text/csv",
-        )
-    except Exception as e:
-        st.error(f"Erro ao buscar os dados: {e}")
+            # Exibir a tabela no Streamlit
+            st.subheader(f"Tabela de Dados - {name}")
+            st.dataframe(data)
+
+            # Opcional: botão para download como CSV
+            csv = data.to_csv(index=True)
+            st.download_button(
+                label=f"Baixar {name} como CSV",
+                data=csv,
+                file_name=f"{name.lower().replace(' ', '_')}.csv",
+                mime="text/csv",
+            )
+        except Exception as e:
+            st.error(f"Erro ao buscar os dados de {name}: {e}")
 
     # Informações adicionais com formato de datas atualizado
-    st.write(f"Dados obtidos do Banco Central do Brasil (SGS) - Código 433: IPCA mensal, em pontos percentuais.")
+    st.write("Dados obtidos do Banco Central do Brasil (SGS):")
+    st.write("- Código 433: IPCA mensal, em pontos percentuais.")
+    st.write("- Código 189: IGP-M mensal, em pontos percentuais.")
+    st.write("- Código 1178: SELIC acumulada no mês, em pontos percentuais.")
     st.write(f"Data atual: {datetime.now().strftime('%d/%m/%Y')}")
     st.write(f"Período selecionado: {start_date_str} a {end_date_str}")
