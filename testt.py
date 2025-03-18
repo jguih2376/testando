@@ -82,7 +82,7 @@ def create_chart(data, atual, title, yaxis_title, unit):
     return fig
 
 
-tab1, tab2,tab3 = st.tabs(['Historico','IPCA','Indicadores'])
+tab1, tab2,tab3 = st.tabs(['Historico','Tabelas'])
 with tab1:
     st.title("🏛️Estatística Monetária")
     with st.spinner("Carregando dados..."):
@@ -125,70 +125,6 @@ with tab1:
         st.components.v1.html(combined_code, height=350)
 
 with tab2:
-
-
-
-
-# Função para buscar os dados do Banco Central
-
-
-
-    # Configuração do título do app
-    st.title("IPCA Mensal (Código 433)")
-
-    # Definir intervalo de datas usando o formato padrão DD/MM/YYYY
-    start_date = st.date_input('Data de início', pd.to_datetime('2020-01-01').date(), format='DD/MM/YYYY')
-    end_date = st.date_input('Data de término', pd.to_datetime('today').date(), format='DD/MM/YYYY')
-
-    # Converter datas para exibição em DD/MM/YYYY
-    start_date_str = start_date.strftime('%d/%m/%Y')
-    end_date_str = end_date.strftime('%d/%m/%Y')
-
-    # Converter as datas para uso interno no formato YYYY-MM-DD (necessário para APIs e funções)
-    start_date_bcb = start_date.strftime('%Y-%m-%d')
-    end_date_bcb = end_date.strftime('%Y-%m-%d')
-
-    # Busca de dados
-    try:
-        # Usando o código correto 433 para IPCA mensal (não 16122, que parece ser um erro)
-        ipca_data = fetch_bcb_data(433, start_date_bcb, end_date_bcb)
-
-        # Renomear a coluna para clareza
-        ipca_data.columns = ['IPCA Mensal (%)']
-
-        # Atualizar o nome do índice de "Date" para "Data"
-        ipca_data.index.name = 'Data'
-
-        # Ordenar a tabela do maior para o menor valor de IPCA Mensal (%)
-        ipca_data = ipca_data.sort_index(ascending=False)
-
-        # Formatando as datas no índice para DD/MM/YYYY
-        ipca_data.index = ipca_data.index.strftime('%d/%m/%Y')
-
-        # Exibir a tabela no Streamlit
-        st.subheader("Tabela de Dados - IPCA Mensal")
-        st.dataframe(ipca_data)
-
-        #CSV
-        csv = ipca_data.to_csv(index=True)
-        st.download_button(
-            label="Baixar dados como CSV",
-            data=csv,
-            file_name="ipca_433.csv",
-            mime="text/csv",
-        )
-    except Exception as e:
-        st.error(f"Erro ao buscar os dados: {e}")
-
-    # Informações adicionais com formato de datas atualizado
-    st.write(f"Dados obtidos do Banco Central do Brasil (SGS) - Código 433: IPCA mensal, em pontos percentuais.")
-    st.write(f"Data atual: {datetime.now().strftime('%d/%m/%Y')}")
-    st.write(f"Período selecionado: {start_date_str} a {end_date_str}")
-
-with tab3:
-
-
-
     # Dicionário com os indicadores e seus códigos no SGS do Banco Central
     indicadores = {
         "IPCA Mensal": 433,
