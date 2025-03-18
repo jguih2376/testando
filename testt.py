@@ -200,7 +200,7 @@ with tab3:
     st.title("Indicadores Econômicos - Banco Central")
 
     # Seleção do indicador
-    indicador_selecionado = st.selectbox("Escolha o indicador:", list(indicadores.keys()))
+    indicador_selecionado = st.radio("Escolha o indicador:", list(indicadores.keys()))
 
     # Definir intervalo de datas com keys únicas
     start_date = st.date_input("Data de início", pd.to_datetime("2020-01-01").date(), format="DD/MM/YYYY", key="start_date")
