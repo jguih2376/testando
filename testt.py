@@ -24,10 +24,10 @@ def create_chart(data, atual, title, yaxis_title, unit):
     fig.update_layout(title=title, yaxis_title=yaxis_title, showlegend=False, height=450)
     fig.add_annotation(
                             x=1,  # Posição no extremo direito (relativo ao eixo X)
-                            y=preco_atual,  # Posição no valor do preço atual (eixo Y)
+                            y=atual,  # Posição no valor do preço atual (eixo Y)
                             xref="paper",  # Referência relativa ao papel (0 a 1)
                             yref="y",  # Referência ao eixo Y em valores absolutos
-                            text=f"{preco_atual:.2f}",  # Texto com o preço atual formatado
+                            text=f"{atual:.2f}",  # Texto com o preço atual formatado
                             showarrow=True,
                             arrowhead=0,
                             ax=7,  # Deslocamento horizontal da seta
