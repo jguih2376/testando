@@ -191,7 +191,7 @@ with tab2:
     st.write(f"Período selecionado: {start_date.strftime('%d/%m/%Y')} a {end_date.strftime('%d/%m/%Y')}")
 
 
-    st.markdown('<div style="height: 140px;"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="height: 40px;"></div>', unsafe_allow_html=True)
     st.markdown("""
     <div style="text-align: center; font-size: 14px; color: #A9A9A9; margin-top: 20px;">
         <strong>Fonte:</strong> BCB - Banco Central do Brasil<br>
