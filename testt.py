@@ -128,7 +128,7 @@ with tab2:
 
     # Buscar os dados
     try:
-        ipca_data = fetch_bcb_data(433, start_date_bcb, end_date_bcb)
+        ipca_data = fetch_bcb_data(16122, start_date_bcb, end_date_bcb)
         
         # Renomear a coluna para clareza
         ipca_data.columns = ['IPCA Mensal (%)']
