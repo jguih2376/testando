@@ -130,7 +130,7 @@ with tab2:
     # Busca de dados
     try:
         # Usando o código correto 433 para IPCA mensal (não 16122, que parece ser um erro)
-        ipca_data = fetch_bcb_data(16121, start_date_bcb, end_date_bcb)
+        ipca_data = fetch_bcb_data(13522, start_date_bcb, end_date_bcb)
 
         # Renomear a coluna para clareza
         ipca_data.columns = ['IPCA Mensal (%)']
