@@ -130,7 +130,7 @@ with tab2:
     # Busca de dados
     try:
         # Usando o código correto 433 para IPCA mensal (não 16122, que parece ser um erro)
-        ipca_data = fetch_bcb_data(433, start_date_bcb, end_date_bcb)
+        ipca_data = fetch_bcb_data(7478, start_date_bcb, end_date_bcb)
 
         # Renomear a coluna para clareza
         ipca_data.columns = ['IPCA Mensal (%)']
@@ -148,7 +148,7 @@ with tab2:
         st.subheader("Tabela de Dados - IPCA Mensal")
         st.dataframe(ipca_data)
 
-        # Opcional: botão para download como CSV
+        #CSV
         csv = ipca_data.to_csv(index=True)
         st.download_button(
             label="Baixar dados como CSV",
