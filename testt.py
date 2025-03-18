@@ -116,15 +116,17 @@ with tab2:
 
     # Definir intervalo de datas
     start_date = st.date_input("Data inicial", value=pd.to_datetime("2020-01-01"))
-    end_date = st.date_input("Data final", value=pd.Timestamp.today().date())
+    end_date = st.date_input("Data final", value=pd.Timestamp.today().date().strftime('%d/%m/%Y'))
 
+
+# Converter as strings para objet
     # Converter datas para o formato DD/MM/YYYY para exibição e uso interno
     start_date_str = start_date.strftime('%d/%m/%Y')
     end_date_str = end_date.strftime('%d/%m/%Y')
 
     # Para a função fetch_bcb_data, manter o formato YYYY-MM-DD
-    start_date_bcb = start_date.strftime('%d-%m-%Y')
-    end_date_bcb = end_date.strftime('%d-%m-%Y')
+    start_date_bcb = start_date.strftime('%Y-%m-%d')
+    end_date_bcb = end_date.strftime('%Y-%m-%d')
 
     # Buscar os dados
     try:
