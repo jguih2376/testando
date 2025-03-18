@@ -39,7 +39,7 @@ def create_chart(data, atual, title, yaxis_title, unit):
                             xref="paper",  # Referência relativa ao papel (0 a 1)
                             yref="y",  # Referência ao eixo Y em valores absolutos
                             text=f"{atual:.2f}",  # Texto com o preço atual formatado
-                            showarrow=True,
+                            showarrow=False,
                             arrowhead=0,
                             ax=0,  # Deslocamento horizontal da seta
                             ay=0,  # Sem deslocamento vertical
