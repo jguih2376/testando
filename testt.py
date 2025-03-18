@@ -26,7 +26,8 @@ def create_chart(data, atual, title, yaxis_title, unit):
                                 gridcolor='rgba(255, 255, 255, 0.1)',  # Gridlines sutis
                                 zeroline=False,
                                 color='#FFFFFF'),
-                                height=450)
+                                height=450,
+                                margin=dict(l=40, r=40, t=60, b=40))
     fig.add_annotation(
                             x=1,  # Posição no extremo direito (relativo ao eixo X)
                             y=atual,  # Posição no valor do preço atual (eixo Y)
