@@ -2,6 +2,23 @@ import streamlit as st
 import plotly.graph_objects as go
 from bcb import sgs
 
+import pandas as pd
+
+# Função para buscar os dados do Banco Central
+def fetch_bcb_data(code, start_date=None, end_date=None):
+    """
+    Busca dados do Banco Central do Brasil usando o código da série temporal.
+    
+    Parâmetros:
+    - code: int, código da série (ex.: 433 para IPCA mensal)
+    - start_date: str, data inicial no formato 'YYYY-MM-DD' (opcional)
+    - end_date: str, data final no formato 'YYYY-MM-DD' (opcional)
+    
+    Retorna:
+    - pandas DataFrame com os dados
+    """
+    data = sgs.get({'IPCA': code}, start=start_date, end=end_date)
+    return data
 @st.cache_data
 def get_data():
     start_date = '2010-01-01'  # Reduzindo o período
@@ -54,43 +71,80 @@ def create_chart(data, atual, title, yaxis_title, unit):
     return fig
 
 
+tab1, tab2 = st.tabs(['Historico','IPCA'])
+with tab1:
+    st.title("🏛️Estatística Monetária")
+    with st.spinner("Carregando dados..."):
+        selic, selic_atual, ipca, ipca_atual, juros_real, dolar, dolar_atual = get_data()
+        
+    col1, col2 = st.columns([5, 1])
+    with col1:
+        st.plotly_chart(create_chart(selic, selic_atual, 'Taxa de Juros SELIC', 'Taxa de Juros (%)', '%'))
+        st.plotly_chart(create_chart(ipca, ipca_atual, 'IPCA Acumulado 12M', 'IPCA acumulado (%)', '%'))
+        st.plotly_chart(create_chart(dolar, dolar_atual, 'Cotação do Dólar', 'Valor em R$', 'R$'))
 
-st.title("🏛️Estatística Monetária")
-with st.spinner("Carregando dados..."):
-    selic, selic_atual, ipca, ipca_atual, juros_real, dolar, dolar_atual = get_data()
-    
-col1, col2 = st.columns([5, 1])
-with col1:
-    st.plotly_chart(create_chart(selic, selic_atual, 'Taxa de Juros SELIC', 'Taxa de Juros (%)', '%'))
-    st.plotly_chart(create_chart(ipca, ipca_atual, 'IPCA Acumulado 12M', 'IPCA acumulado (%)', '%'))
-    st.plotly_chart(create_chart(dolar, dolar_atual, 'Cotação do Dólar', 'Valor em R$', 'R$'))
 
-
-with col2:
-    # Exibindo o iframe com alinhamento ajustado
-    st.markdown("<br><br><br>", unsafe_allow_html=True)  # Spacing above the box
-    combined_code = f"""
-        <div style="
-            background-color: #ffffff; 
-            padding: 12px; 
-            border-radius: 8px; 
-            margin: 8px 0; 
-            box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
-            text-align: center; 
-            font-family: sans-serif; 
-            max-width: 150px; 
-            margin-left: auto; 
-            margin-right: auto;">
-            <!-- Mundo Section -->
-            <span style="font-size: 20px; font-weight: bold; display: block; margin-bottom: 8px; color: black;">Mundo</span>
-            <div style="display: flex; justify-content: center; margin-bottom: 12px;">
-                <iframe frameborder="0" scrolling="no" height="146" width="108" allowtransparency="true" marginwidth="0" marginheight="0" 
-                src="https://sslirates.investing.com/index.php?rows=1&bg1=FFFFFF&bg2=F1F5F8&text_color=333333&enable_border=hide&border_color=0452A1&
-                header_bg=ffffff&header_text=FFFFFF&force_lang=12"></iframe>
+    with col2:
+        # Exibindo o iframe com alinhamento ajustado
+        st.markdown("<br><br><br>", unsafe_allow_html=True)  # Spacing above the box
+        combined_code = f"""
+            <div style="
+                background-color: #ffffff; 
+                padding: 12px; 
+                border-radius: 8px; 
+                margin: 8px 0; 
+                box-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
+                text-align: center; 
+                font-family: sans-serif; 
+                max-width: 150px; 
+                margin-left: auto; 
+                margin-right: auto;">
+                <!-- Mundo Section -->
+                <span style="font-size: 20px; font-weight: bold; display: block; margin-bottom: 8px; color: black;">Mundo</span>
+                <div style="display: flex; justify-content: center; margin-bottom: 12px;">
+                    <iframe frameborder="0" scrolling="no" height="146" width="108" allowtransparency="true" marginwidth="0" marginheight="0" 
+                    src="https://sslirates.investing.com/index.php?rows=1&bg1=FFFFFF&bg2=F1F5F8&text_color=333333&enable_border=hide&border_color=0452A1&
+                    header_bg=ffffff&header_text=FFFFFF&force_lang=12"></iframe>
+                </div>
+                <!-- Juros Real Section -->
+                <span style="font-weight: bold; font-size: 14px; color: black; display: block; margin-bottom: 8px;">Juros Real 🇧🇷</span>
+                <span style="font-size: 20px; color: black; font-weight: normal;">{juros_real:.2f}%</span>
             </div>
-            <!-- Juros Real Section -->
-            <span style="font-weight: bold; font-size: 14px; color: black; display: block; margin-bottom: 8px;">Juros Real 🇧🇷</span>
-            <span style="font-size: 20px; color: black; font-weight: normal;">{juros_real:.2f}%</span>
-        </div>
-        """
-    st.components.v1.html(combined_code, height=350)
+            """
+        st.components.v1.html(combined_code, height=350)
+
+with tab2:
+
+
+    # Configuração do Streamlit
+    st.title("IPCA Mensal (Código 433)")
+
+    # Definir intervalo de datas
+    start_date = st.date_input("Data inicial", value=pd.to_datetime("2020-01-01"))
+    end_date = st.date_input("Data final", value=pd.to_datetime("2025-03-18"))
+
+    # Buscar os dados
+    try:
+        ipca_data = fetch_bcb_data(433, start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'))
+        
+        # Renomear a coluna para clareza
+        ipca_data.columns = ['IPCA Mensal (%)']
+        
+        # Exibir a tabela no Streamlit
+        st.subheader("Tabela de Dados - IPCA Mensal")
+        st.dataframe(ipca_data)
+        
+        # Opcional: Download dos dados como CSV
+        csv = ipca_data.to_csv(index=True)
+        st.download_button(
+            label="Baixar dados como CSV",
+            data=csv,
+            file_name="ipca_433.csv",
+            mime="text/csv",
+        )
+    except Exception as e:
+        st.error(f"Erro ao buscar os dados: {e}")
+
+    # Informações adicionais
+    st.write(f"Dados obtidos do Banco Central do Brasil (SGS) - Código 433: IPCA mensal, em pontos percentuais.")
+    st.write(f"Data atual: {pd.Timestamp.now().strftime('%Y-%m-%d')}")
