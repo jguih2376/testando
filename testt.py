@@ -116,7 +116,7 @@ with tab2:
 
     # Definir intervalo de datas
     start_date = st.date_input("Data inicial", value=pd.to_datetime("2020-01-01"))
-    end_date = st.date_input("Data final", value=pd.Timestamp.today().date().strftime('%d/%m/%Y'))
+    end_date = st.date_input("Data final", value=pd.Timestamp.today().strftime('%d/%m/%Y'))
 
 
 # Converter as strings para objet
