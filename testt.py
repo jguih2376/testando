@@ -21,7 +21,12 @@ def create_chart(data, atual, title, yaxis_title, unit):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=data.index, y=data.iloc[:, 0], mode='lines'))
     fig.add_trace(go.Scatter(x=[data.index[-1]], y=[atual], mode='markers', marker=dict(color='red', size=5)))
-    fig.update_layout(title=title, yaxis_title=yaxis_title, showlegend=False, height=450)
+    fig.update_layout(title=title, yaxis_title=yaxis_title, showlegend=False,                            yaxis=dict(
+                                side="right",
+                                gridcolor='rgba(255, 255, 255, 0.1)',  # Gridlines sutis
+                                zeroline=False,
+                                color='#FFFFFF',
+                                height=450))
     fig.add_annotation(
                             x=1,  # Posição no extremo direito (relativo ao eixo X)
                             y=atual,  # Posição no valor do preço atual (eixo Y)
