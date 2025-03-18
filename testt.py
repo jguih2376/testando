@@ -82,7 +82,7 @@ def create_chart(data, atual, title, yaxis_title, unit):
     return fig
 
 
-tab1, tab2,tab3 = st.tabs(['Historico','Tabelas'])
+tab1, tab2 = st.tabs(['Historico','Tabelas'])
 with tab1:
     st.title("🏛️Estatística Monetária")
     with st.spinner("Carregando dados..."):
