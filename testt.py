@@ -134,38 +134,41 @@ with tab2:
         'SELIC Acumulada no Mês (%)': 1178
     }
 
-    # Busca e exibição dos dados
-    for name, code in series.items():
-        try:
-            # Buscar os dados para cada série
-            data = fetch_bcb_data(code, start_date_bcb, end_date_bcb, name.split(' ')[0])  # Nome curto para a API
+    # Caixa de seleção para escolher o indicador
+    selected_indicator = st.selectbox("Selecione o indicador:", list(series.keys()))
 
-            # Renomear a coluna para o nome completo
-            data.columns = [name]
+    # Busca e exibição dos dados para o indicador selecionado
+    try:
+        # Buscar os dados para o indicador escolhido
+        code = series[selected_indicator]
+        data = fetch_bcb_data(code, start_date_bcb, end_date_bcb, selected_indicator.split(' ')[0])
 
-            # Atualizar o nome do índice para "Data"
-            data.index.name = 'Data'
+        # Renomear a coluna para o nome completo
+        data.columns = [selected_indicator]
 
-            # Ordenar a tabela pela ordem das datas (crescente)
-            data = data.sort_index(ascending=True)
+        # Atualizar o nome do índice para "Data"
+        data.index.name = 'Data'
 
-            # Formatando as datas no índice para DD/MM/YYYY
-            data.index = data.index.strftime('%d/%m/%Y')
+        # Ordenar a tabela pela ordem das datas (crescente)
+        data = data.sort_index(ascending=True)
 
-            # Exibir a tabela no Streamlit
-            st.subheader(f"Tabela de Dados - {name}")
-            st.dataframe(data)
+        # Formatando as datas no índice para DD/MM/YYYY
+        data.index = data.index.strftime('%d/%m/%Y')
 
-            # Opcional: botão para download como CSV
-            csv = data.to_csv(index=True)
-            st.download_button(
-                label=f"Baixar {name} como CSV",
-                data=csv,
-                file_name=f"{name.lower().replace(' ', '_')}.csv",
-                mime="text/csv",
-            )
-        except Exception as e:
-            st.error(f"Erro ao buscar os dados de {name}: {e}")
+        # Exibir a tabela no Streamlit
+        st.subheader(f"Tabela de Dados - {selected_indicator}")
+        st.dataframe(data)
+
+        # Opcional: botão para download como CSV
+        csv = data.to_csv(index=True)
+        st.download_button(
+            label=f"Baixar {selected_indicator} como CSV",
+            data=csv,
+            file_name=f"{selected_indicator.lower().replace(' ', '_')}.csv",
+            mime="text/csv",
+        )
+    except Exception as e:
+        st.error(f"Erro ao buscar os dados de {selected_indicator}: {e}")
 
     # Informações adicionais com formato de datas atualizado
     st.write("Dados obtidos do Banco Central do Brasil (SGS):")
