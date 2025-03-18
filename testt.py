@@ -118,6 +118,7 @@ with tab2:
     # Definir intervalo de datas usando o formato padrão DD/MM/YYYY
     start_date = st.date_input('Data de início', pd.to_datetime('2020-01-01').date(), format='DD/MM/YYYY')
     end_date = st.date_input('Data de término', pd.to_datetime('today').date(), format='DD/MM/YYYY')
+
     # Converter datas para exibição em DD/MM/YYYY
     start_date_str = start_date.strftime('%d/%m/%Y')
     end_date_str = end_date.strftime('%d/%m/%Y')
@@ -126,15 +127,21 @@ with tab2:
     start_date_bcb = start_date.strftime('%Y-%m-%d')
     end_date_bcb = end_date.strftime('%Y-%m-%d')
 
-    # Simulação de busca de dados - Ajustar ou substituir por `fetch_bcb_data`
+    # Busca de dados
     try:
-        # Aqui deveria entrar a função `fetch_bcb_data`
-        ipca_data = fetch_bcb_data(16122, start_date_bcb, end_date_bcb)  # Simulação do código do IPCA
+        # Usando o código correto 433 para IPCA mensal (não 16122, que parece ser um erro)
+        ipca_data = fetch_bcb_data(433, start_date_bcb, end_date_bcb)
 
         # Renomear a coluna para clareza
         ipca_data.columns = ['IPCA Mensal (%)']
 
-        # Atualizar as datas no índice para o formato DD/MM/YYYY
+        # Atualizar o nome do índice de "Date" para "Data"
+        ipca_data.index.name = 'Data'
+
+        # Ordenar a tabela do maior para o menor valor de IPCA Mensal (%)
+        ipca_data = ipca_data.sort_values(by='IPCA Mensal (%)', ascending=False)
+
+        # Formatando as datas no índice para DD/MM/YYYY
         ipca_data.index = ipca_data.index.strftime('%d/%m/%Y')
 
         # Exibir a tabela no Streamlit
