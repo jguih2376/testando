@@ -68,7 +68,7 @@ with col1:
 
 with col2:
     # Exibindo o iframe com alinhamento ajustado
-    st.markdown("<br><br>", unsafe_allow_html=True)  # Spacing above the box
+    st.markdown("<br><br><br><br>", unsafe_allow_html=True)  # Spacing above the box
     combined_code = f"""
         <div style="
             background-color: #ffffff; 
