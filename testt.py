@@ -17,25 +17,39 @@ def get_data():
     return selic, selic_atual, ipca, ipca_atual, juros_real, dolar, dolar_atual
 
 @st.cache_resource
-
-
-
+def create_chart(data, atual, title, yaxis_title, unit):
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=data.index, y=data.iloc[:, 0], mode='lines'))
+    fig.add_trace(go.Scatter(x=[data.index[-1]], y=[atual], mode='markers', marker=dict(color='red', size=5)))
+    fig.update_layout(title=title, yaxis_title=yaxis_title, showlegend=False,                            yaxis=dict(
+                                side="right",
+                                gridcolor='rgba(255, 255, 255, 0.1)',  # Gridlines sutis
+                                zeroline=False,
+                                color='#FFFFFF'),
+                                height=450)
+    fig.add_annotation(
+                            x=1,  # Posição no extremo direito (relativo ao eixo X)
+                            y=atual,  # Posição no valor do preço atual (eixo Y)
+                            xref="paper",  # Referência relativa ao papel (0 a 1)
+                            yref="y",  # Referência ao eixo Y em valores absolutos
+                            text=f"{atual:.2f}",  # Texto com o preço atual formatado
+                            showarrow=True,
+                            arrowhead=0,
+                            ax=7,  # Deslocamento horizontal da seta
+                            ay=0,  # Sem deslocamento vertical
+                            font=dict(size=12, color='#FFFFFF'),
+                            bgcolor='rgba(0, 0, 0, 0.5)',  # Fundo semi-transparente para legibilidade
+                            bordercolor='#FFFFFF',
+                            borderwidth=1,
+                            xanchor="left",  # Ancorar o texto à esquerda para não invadir o gráfico
+                            yanchor="middle"  # Centralizar verticalmente no preço atual
+                            )
+   
+    return fig
 
 
 def create_chart(data, current_value, title, yaxis_title, unit=""):
-    """
-    Create a line chart with a marked current value using Plotly.
 
-    Parameters:
-    - data: pandas DataFrame or Series with time series data
-    - current_value: float or int, the most recent value to highlight
-    - title: str, chart title
-    - yaxis_title: str, label for the y-axis
-    - unit: str, optional unit to append to the current value annotation (default: "")
-    
-    Returns:
-    - fig: Plotly Figure object
-    """
     # Initialize the figure
     fig = go.Figure()
 
@@ -44,7 +58,8 @@ def create_chart(data, current_value, title, yaxis_title, unit=""):
         x=data.index, 
         y=data.iloc[:, 0] if data.ndim > 1 else data,  # Handle both DataFrame and Series
         mode='lines',
-        line=dict(color='#1f77b4'),  # Default blue color
+        line=dict(color='#1f77b4'),  # Default blue color for better visibility
+        name='Data'  # Optional: can be shown in legend if needed
     ))
 
     # Add the current value marker
@@ -52,18 +67,21 @@ def create_chart(data, current_value, title, yaxis_title, unit=""):
         x=[data.index[-1]], 
         y=[current_value], 
         mode='markers', 
-        marker=dict(color='red', size=8),
+        marker=dict(color='red', size=8),  # Slightly larger marker for emphasis
+        name='Current Value'
     ))
 
-    # Update layout with simplified and corrected parameters
+    # Update layout with customized styling
     fig.update_layout(
-        title=title,  # Simplified to a string
-        showlegend=False,
+        title=dict(text=title, x=0.5, xanchor='center', font=dict(size=16)),  # Centered title
+        yaxis_title=yaxis_title,
+        showlegend=False,  # Keep legend off as in original
         height=450,
+        plot_bgcolor='rgba(0, 0, 0, 0)',  # Transparent background
+        paper_bgcolor='rgba(0, 0, 0, 0)',  # Transparent paper
         yaxis=dict(
-            title=yaxis_title,  # Properly nested y-axis title
             side="right",
-            gridcolor='rgba(255, 255, 255, 0.1)',
+            gridcolor='rgba(255, 255, 255, 0.1)',  # Subtle gridlines
             zeroline=False,
             color='#FFFFFF',
             titlefont=dict(size=14),
@@ -78,17 +96,17 @@ def create_chart(data, current_value, title, yaxis_title, unit=""):
 
     # Add annotation for the current value
     fig.add_annotation(
-        x=1,
-        y=current_value,
-        xref="paper",
-        yref="y",
-        text=f"{current_value:.2f} {unit}".strip(),
+        x=1,  # Right edge of the chart
+        y=current_value, 
+        xref="paper", 
+        yref="y", 
+        text=f"{current_value:.2f} {unit}".strip(),  # Include unit if provided
         showarrow=True,
         arrowhead=0,
-        ax=10,
+        ax=10,  # Slightly increased horizontal offset for clarity
         ay=0,
         font=dict(size=12, color='#FFFFFF'),
-        bgcolor='rgba(0, 0, 0, 0.5)',
+        bgcolor='rgba(0, 0, 0, 0.5)',  # Semi-transparent background
         bordercolor='#FFFFFF',
         borderwidth=1,
         xanchor="left",
@@ -96,6 +114,7 @@ def create_chart(data, current_value, title, yaxis_title, unit=""):
     )
 
     return fig
+
 # Example usage:
 # import pandas as pd
 # data = pd.Series([1, 2, 3, 4], index=pd.date_range('2023-01-01', periods=4))
