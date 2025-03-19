@@ -1,7 +1,24 @@
 import streamlit as st
 
-# Exemplo de uso de links
-st.title("Exemplo de Links no Streamlit")
+
+st.title("Links de Apoio")
+
+# Link simples com markdown
+st.markdown("Acesse o [Yahoo Finance](https://finance.yahoo.com) para realizar suas buscas.")
+st.markdown("Acesse o [Investing](https://br.investing.com/) para realizar suas buscas.")
+st.markdown("Acesse o [Fundamentus](https://www.fundamentus.com.br/index.php) para realizar suas buscas.")
+st.markdown("Acesse o [Google](https://www.google.com) para realizar suas buscas.")
+st.markdown("Acesse o [Google](https://www.google.com) para realizar suas buscas.")
+
+
+tab1, tab2 = st.tabs(["Links", "Feedback"])
+with tab1:
+    st.header("Links de Apoio")
+    st.markdown("Acesse os links acima para informações financeiras.")
+with tab2:
+    st.header("Feedback")
+    st.text_area("Deixe seu feedback aqui:")
+
 
 # Link simples com markdown
 st.markdown("Acesse o [Google](https://www.google.com) para realizar suas buscas.")
