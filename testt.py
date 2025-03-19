@@ -19,3 +19,7 @@ st.markdown("Acesse o [Google](https://www.google.com) para realizar suas buscas
 # Botão que redireciona para um link
 if st.button("Deixe seu Feedback"):
     st.markdown("[Feedback](https://forms.gle/M3abZwUMnBjBUi1q6)")
+import webbrowser
+
+if st.button("Abrir Yahoo Finance"):
+    webbrowser.open("https://finance.yahoo.com")
