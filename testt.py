@@ -170,13 +170,13 @@ with st.expander('...', expanded=True):
             """
             pdf_bytes = pdfkit.from_string(html_content, False)
 
-            st.download_button(
-                label="Clique aqui se o download não iniciar automaticamente",
-                data=pdf_bytes,
-                file_name="desempenho_relativo.pdf",
-                mime="application/pdf",
-                key="download_pdf"
-            )
+            
+            label="Clique aqui se o download não iniciar automaticamente",
+            data=pdf_bytes,
+            file_name="desempenho_relativo.pdf",
+            mime="application/pdf",
+            key="download_pdf"
+            
             st.markdown(
                 f"""
                 <script>
