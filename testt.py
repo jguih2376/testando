@@ -7,83 +7,82 @@ import streamlit.components.v1 as components
 from streamlit_autorefresh import st_autorefresh
 from datetime import datetime
 import plotly.graph_objects as go
-from weasyprint import HTML
+import pdfkit
 import io
 import base64
+import os
 
-def generate_pdf(currency_data, stocks_data, commodities_data, ibov_data):
+# Função para gerar PDF a partir do HTML renderizado
+def generate_pdf_from_screen():
+    # Como o Streamlit não fornece o HTML completo diretamente, vamos simular salvando o estado atual
+    # Em um ambiente local, você poderia usar Selenium para capturar a tela completa
+    # Aqui, usaremos pdfkit com uma string HTML aproximada do conteúdo visível
+    
+    # Capturar o HTML gerado pelo Streamlit (aproximação)
     html_content = """
     <html>
     <head>
+        <meta charset="UTF-8">
         <style>
-            body { font-family: Arial, sans-serif; }
-            h1 { text-align: center; color: #333; }
-            h2 { color: #555; }
+            body { font-family: Arial, sans-serif; background-color: #1E1E1E; color: #FFFFFF; }
+            h1 { text-align: center; }
+            .subheader { font-size: 22px; text-align: center; }
+            .card { background-color: #2E2E2E; border-radius: 8px; padding: 10px; margin: 8px; text-align: center; }
+            .positive { color: #32CD32; }
+            .negative { color: #FF4500; }
             table { width: 100%; border-collapse: collapse; margin: 20px 0; }
             th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-            th { background-color: #f2f2f2; }
-            .positive { color: #155724; }
-            .negative { color: #721c24; }
+            th { background-color: #f2f2f2; color: #000; }
         </style>
     </head>
     <body>
-        <h1>Panorama do Mercado</h1>
-        <h2>Moedas</h2>
-        <table>
-            <tr><th>Par</th><th>Cotação</th><th>Variação (%)</th></tr>
+        <h1>🌎 Panorama do Mercado</h1>
+        <p>Visão geral do mercado atual.</p>
     """
     
-    for _, row in currency_data.iterrows():
-        var_class = "positive" if float(row["Variação (%)"]) >= 0 else "negative"
-        html_content += f"<tr><td>{row['Par']}</td><td>{row['Cotação']:.4f}</td><td class='{var_class}'>{row['Variação (%)']:.2f}</td></tr>"
-    
-    html_content += """
-        </table>
-        <h2>Índices</h2>
-        <table>
-            <tr><th>Índice</th><th>Preço</th><th>Variação (%)</th></tr>
-    """
-    
-    for _, row in stocks_data.iterrows():
-        var_value = float(str(row["Variação (%)"]).replace("N/A", "0"))
-        var_class = "positive" if var_value >= 0 else "negative"
-        html_content += f"<tr><td>{row['Índice']}</td><td>{row['Preço']}</td><td class='{var_class}'>{var_value:.2f}</td></tr>"
-    
-    html_content += """
-        </table>
-        <h2>Commodities</h2>
-        <table>
-            <tr><th>Commodity</th><th>Preço</th><th>Variação (%)</th></tr>
-    """
-    
-    for _, row in commodities_data.iterrows():
-        var_value = float(str(row["Variação (%)"]).replace("N/A", "0"))
-        var_class = "positive" if var_value >= 0 else "negative"
-        html_content += f"<tr><td>{row['Commodity']}</td><td>{row['Preço']}</td><td class='{var_class}'>{var_value:.2f}</td></tr>"
-    
-    html_content += """
-        </table>
-        <h2>Ações IBOV</h2>
-        <table>
-            <tr><th>Ação</th><th>Último Preço</th><th>Variação (%)</th></tr>
-    """
-    
-    for _, row in ibov_data.iterrows():
+    # Adicionar seções manualmente baseadas nos dados exibidos
+    html_content += '<h2 class="subheader">💱 Moedas</h2><table><tr><th>Par</th><th>Cotação</th><th>Variação (%)</th></tr>'
+    for _, row in st.session_state.get('currency_data', pd.DataFrame()).iterrows():
         var_class = "positive" if row["Variação (%)"] >= 0 else "negative"
-        html_content += f"<tr><td>{row['Ação']}</td><td>{row['Último Preço']:.2f}</td><td class='{var_class}'>{row['Variação (%)']:.2f}</td></tr>"
-    
+        html_content += f'<tr><td>{row["Par"]}</td><td>{row["Cotação"]:.4f}</td><td class="{var_class}">{row["Variação (%)"]:.2f}%</td></tr>'
+    html_content += '</table>'
+
+    html_content += '<h2 class="subheader">📈 Índices</h2><table><tr><th>Índice</th><th>Preço</th><th>Variação (%)</th></tr>'
+    for _, row in st.session_state.get('stocks_data', pd.DataFrame()).iterrows():
+        var_value = float(str(row["Variação (%)"]).replace("N/A", "0"))
+        var_class = "positive" if var_value >= 0 else "negative"
+        html_content += f'<tr><td>{row["Índice"]}</td><td>{row["Preço"]}</td><td class="{var_class}">{var_value:.2f}%</td></tr>'
+    html_content += '</table>'
+
+    html_content += '<h2 class="subheader">⛽ Commodities</h2><table><tr><th>Commodity</th><th>Preço</th><th>Variação (%)</th></tr>'
+    for _, row in st.session_state.get('commodities_data', pd.DataFrame()).iterrows():
+        var_value = float(str(row["Variação (%)"]).replace("N/A", "0"))
+        var_class = "positive" if var_value >= 0 else "negative"
+        html_content += f'<tr><td>{row["Commodity"]}</td><td>{row["Preço"]}</td><td class="{var_class}">{var_value:.2f}%</td></tr>'
+    html_content += '</table>'
+
+    html_content += '<h2>IBOV - Intraday</h2><p>[Gráfico não incluído no PDF]</p>'
+    html_content += '<table><tr><th>Ação</th><th>Último Preço</th><th>Variação (%)</th></tr>'
+    for _, row in st.session_state.get('ibov_data', pd.DataFrame()).iterrows():
+        var_class = "positive" if row["Variação (%)"] >= 0 else "negative"
+        html_content += f'<tr><td>{row["Ação"]}</td><td>{row["Último Preço"]:.2f}</td><td class="{var_class}">{row["Variação (%)"]:.2f}%</td></tr>'
+    html_content += '</table>'
+
+    html_content += f'<p>Última atualização: {st.session_state.get("br_time", datetime.now()).strftime("%d/%m/%Y %H:%M:%S")}</p>'
     html_content += """
-        </table>
     </body>
     </html>
     """
     
-    pdf_file = io.BytesIO()
-    HTML(string=html_content).write_pdf(pdf_file)
-    pdf_file.seek(0)
-    b64 = base64.b64encode(pdf_file.read()).decode()
-    href = f'<a href="data:application/pdf;base64,{b64}" download="panorama_mercado_{datetime.now().strftime("%Y%m%d_%H%M%S")}.pdf">Download PDF</a>'
-    return href
+    try:
+        pdf_file = io.BytesIO()
+        pdfkit.from_string(html_content, pdf_file)
+        pdf_file.seek(0)
+        b64 = base64.b64encode(pdf_file.read()).decode()
+        href = f'<a href="data:application/pdf;base64,{b64}" download="panorama_mercado_{datetime.now().strftime("%Y%m%d_%H%M%S")}.pdf">Download PDF da Tela</a>'
+        return href
+    except Exception as e:
+        return f"<p>Erro ao gerar PDF: {str(e)}</p>"
 
 def app():
     st.title("🌎 Panorama do Mercado")
@@ -91,106 +90,19 @@ def app():
 
     tab1, tab2, tab3 = st.tabs(['Panorama', 'TradingView', 'Triple Screen'])
 
-    with tab1:  # Panorama
+    with tab1:
         st.markdown("""
             <style>
-            .main-title {
-                font-size: 36px;
-                color: #FFFFFF;
-                text-align: center;
-                margin-bottom: 20px;
-                font-weight: bold;
-            }
-            .subheader {
-                color: #FFFFFF;
-                font-size: 22px;
-                margin-bottom: 15px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-            }
-            .timestamp {
-                color: #A9A9A9;
-                font-size: 14px;
-                text-align: right;
-                margin-bottom: 20px;
-            }
-            .card-container {
-                display: flex;
-                gap: 8px;
-                padding: 8px;
-                overflow-x: auto;
-            }
-            .card {
-                background-color: #2E2E2E;
-                border-radius: 8px;
-                padding: 10px;
-                width: 140px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-                text-align: center;
-                transition: transform 0.2s;
-                flex: 0 0 auto;
-                position: relative;
-                margin-bottom: 15px;
-            }
-            .card:hover {
-                transform: scale(1.03);
-                background-color: #3E3E3E;
-            }
-            .card-title {
-                font-size: 13px;  
-                color: #FFFFFF;
-                margin-bottom: 4px;
-                font-weight: bold;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-            .card-value {
-                font-size: 15px;  
-                margin-top: 4px;
-                color: #E0E0E0;
-            }
-            .card-variation {
-                font-size: 12px;
-                margin-top: 4px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 4px;
-            }
-            .positive {
-                color: #32CD32;
-            }
-            .negative {
-                color: #FF4500;
-            }
-            .tooltip {
-                position: relative;
-                display: inline-block;
-                cursor: pointer;
-            }
-            .tooltip .tooltiptext {
-                visibility: hidden;
-                width: 120px;
-                background-color: #555;
-                color: #fff;
-                text-align: center;
-                border-radius: 6px;
-                padding: 5px;
-                position: absolute;
-                z-index: 1;
-                bottom: 125%;
-                left: 50%;
-                margin-left: -60px;
-                opacity: 0;
-                transition: opacity 0.3s;
-            }
-            .tooltip:hover .tooltiptext {
-                visibility: visible;
-                opacity: 1;
-            }
+            .main-title { font-size: 36px; color: #FFFFFF; text-align: center; margin-bottom: 20px; font-weight: bold; }
+            .subheader { color: #FFFFFF; font-size: 22px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+            .timestamp { color: #A9A9A9; font-size: 14px; text-align: right; margin-bottom: 20px; }
+            .card { background-color: #2E2E2E; border-radius: 8px; padding: 10px; width: 140px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); text-align: center; transition: transform 0.2s; flex: 0 0 auto; position: relative; margin-bottom: 15px; }
+            .card:hover { transform: scale(1.03); background-color: #3E3E3E; }
+            .card-title { font-size: 13px; color: #FFFFFF; margin-bottom: 4px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .card-value { font-size: 15px; margin-top: 4px; color: #E0E0E0; }
+            .card-variation { font-size: 12px; margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 4px; }
+            .positive { color: #32CD32; }
+            .negative { color: #FF4500; }
             </style>
             """, unsafe_allow_html=True)
 
@@ -198,6 +110,7 @@ def app():
 
         br_tz = pytz.timezone('America/Sao_Paulo')
         br_time = datetime.now(br_tz)
+        st.session_state['br_time'] = br_time
 
         @st.cache_data(ttl=300)
         def get_currency_rates():
@@ -219,10 +132,12 @@ def app():
                     else:
                         rates[f"{base}/{quote}"] = float(pair_data["bid"])
                         rates[f"{base}/{quote}_pct"] = float(pair_data["pctChange"])
-                return pd.DataFrame([
+                df = pd.DataFrame([
                     {"Par": k.split("_")[0], "Cotação": v, "Variação (%)": rates[f"{k}_pct"]}
                     for k, v in rates.items() if not k.endswith("_pct")
                 ])
+                st.session_state['currency_data'] = df
+                return df
             except Exception as e:
                 st.error(f"Erro ao carregar moedas: {e}")
                 return pd.DataFrame()
@@ -249,13 +164,15 @@ def app():
                             data[f"{name} ({category})"] = {"Preço": "N/A", "Variação (%)": "N/A"}
                     except Exception as e:
                         data[f"{name} ({category})"] = {"Preço": "N/A", "Variação (%)": "N/A"}
-            return pd.DataFrame([(k, v["Preço"], v["Variação (%)"]) for k, v in data.items()],
-                                columns=["Commodity", "Preço", "Variação (%)"])
+            df = pd.DataFrame([(k, v["Preço"], v["Variação (%)"]) for k, v in data.items()],
+                              columns=["Commodity", "Preço", "Variação (%)"])
+            st.session_state['commodities_data'] = df
+            return df
 
         @st.cache_data(ttl=1200)
         def get_stocks():
             symbols = {'IBOV': '^BVSP', 'EWZ': 'EWZ', 'S&P500': '^GSPC', 'NASDAQ': '^IXIC', 'FTSE100': '^FTSE', 
-                    'DAX': '^GDAXI', 'CAC40': '^FCHI', 'SSE Composite': '000001.SS', 'Nikkei225': '^N225', 'Merval': '^MERV'}
+                       'DAX': '^GDAXI', 'CAC40': '^FCHI', 'SSE Composite': '000001.SS', 'Nikkei225': '^N225', 'Merval': '^MERV'}
             data = {}
             for name, symbol in symbols.items():
                 try:
@@ -270,8 +187,10 @@ def app():
                         data[name] = {"Preço": "N/A", "Variação (%)": "N/A"}
                 except Exception as e:
                     data[name] = {"Preço": "N/A", "Variação (%)": "N/A"}
-            return pd.DataFrame([(k, v["Preço"], v["Variação (%)"]) for k, v in data.items()],
-                                columns=["Índice", "Preço", "Variação (%)"])
+            df = pd.DataFrame([(k, v["Preço"], v["Variação (%)"]) for k, v in data.items()],
+                              columns=["Índice", "Preço", "Variação (%)"])
+            st.session_state['stocks_data'] = df
+            return df
 
         @st.cache_data(ttl=1200)
         def get_ibov_data():
@@ -290,11 +209,13 @@ def app():
             if data.shape[0] < 2:
                 raise ValueError("Dados insuficientes para calcular a variação em relação ao dia anterior.")
             variacao = ((data.iloc[-1] - data.iloc[0]) / data.iloc[0]) * 100
-            return pd.DataFrame({
+            df = pd.DataFrame({
                 "Ação": [col[:-3] for col in data.columns],
                 "Variação (%)": variacao.values,
                 "Último Preço": data.iloc[-1].values
             })
+            st.session_state['ibov_data'] = df
+            return df
 
         @st.cache_data(ttl=1200)
         def get_stock_data(ticker, period, interval):
@@ -544,8 +465,8 @@ def app():
         </div>
         """, unsafe_allow_html=True)
 
-        # Botão de download do PDF
-        st.markdown(generate_pdf(currency_data, stocks_data, commodities_data, ibov_data), unsafe_allow_html=True)
+        # Botão para gerar PDF da tela
+        st.markdown(generate_pdf_from_screen(), unsafe_allow_html=True)
 
 if __name__ == "__main__":
     app()
