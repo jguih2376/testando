@@ -13,6 +13,8 @@ from io import BytesIO
 
 def app():
     st.title('📉 Análise Histórica')
+    st.header('📉 Análise Histórica')
+    st.subheader('📉 Análise Histórica')
     tab1, tab2, tab3 = st.tabs(["Triple Screen","Heatmap", "Desempenho"])
     with tab1:
         st.title("Triple Screen")
