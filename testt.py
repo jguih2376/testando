@@ -2,6 +2,9 @@ import streamlit as st
 
 # Título principal
 st.title("Sobre")
+st.subheader("Sobre")
+st.header("Sobre")
+st.write("Sobre")
 
 # Seção: Visão Geral
 st.markdown("""
