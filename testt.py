@@ -13,14 +13,14 @@ oferecendo uma visão ampla e integrada do cenário econômico.
 
 # Seção: Nosso Propósito
 st.markdown("""
-### Nosso Propósito
+# Nosso Propósito
 Criamos o MarketView para tornar a análise financeira mais acessível e eficiente. 
 Com gráficos interativos, tabelas dinâmicas e uma interface otimizada, ajudamos investidores e profissionais a tomarem decisões informadas com base em dados atualizados e de fácil visualização.
 """)
 
 # Seção: Nosso Compromisso
 st.markdown("""
-### Nosso Compromisso
+## Nosso Compromisso
 Estamos sempre aprimorando o MarketView para oferecer a melhor experiência possível. 
 Nossos próximos passos incluem otimizações de desempenho, ampliação da base de dados e novas funcionalidades, como alertas personalizados e integração com outras ferramentas financeiras.
 """)
