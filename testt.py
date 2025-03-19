@@ -14,12 +14,10 @@ st.subheader("Desempenho Relativo dos Ativos")
 def carregar_dados(tickers, data_inicio, data_fim):
     if not tickers:
         return pd.DataFrame()
-
     dados = {}
     for ticker in tickers:
         hist = yf.Ticker(ticker).history(start=data_inicio, end=data_fim)['Close']
         dados[ticker] = hist
-
     return pd.DataFrame(dados).dropna()  
 
 def calcular_performance(dados):
@@ -30,7 +28,6 @@ def calcular_performance(dados):
 def calcular_valorizacao(dados, legenda_dict):
     if dados.empty:
         return pd.DataFrame()
-    
     df_var = pd.DataFrame(index=dados.columns)
     df_var['1 Dia (%)'] = ((dados.iloc[-1] / dados.iloc[-2]) - 1) * 100 if len(dados) > 1 else None
     df_var['1 Semana (%)'] = ((dados.iloc[-1] / dados.iloc[-5]) - 1) * 100 if len(dados) > 5 else None
@@ -110,7 +107,7 @@ with st.expander('...', expanded=True):
         with col3:
             data_fim = st.date_input('Data de término', pd.to_datetime('today').date(), format='DD/MM/YYYY')
         normalizado = st.checkbox("Exibir desempenho percentual", value=True)
-        submit_button = st.form_submit_button(label='Gerar Gráfico')
+        submit_button = st.form_submit_button(label='Gerar Gráfico e PDF')
 
     if submit_button and ticker:
         col1, col2, col3 = st.columns([1, 4, 1])
@@ -124,42 +121,48 @@ with st.expander('...', expanded=True):
             with col2:
                 st.dataframe(df_valorizacao)
 
-            # Botão para gerar PDF
-            if st.button("Gerar PDF"):
-                # Converter o gráfico para imagem (base64)
-                img_bytes = fig.to_image(format="png")
-                img_base64 = base64.b64encode(img_bytes).decode('utf-8')
-                img_html = f'<img src="data:image/png;base64,{img_base64}" style="width:100%;"/>'
+            # Gerar o PDF automaticamente
+            img_bytes = fig.to_image(format="png")
+            img_base64 = base64.b64encode(img_bytes).decode('utf-8')
+            img_html = f'<img src="data:image/png;base64,{img_base64}" style="width:100%;"/>'
+            table_html = df_valorizacao.to_html()
+            html_content = f"""
+            <html>
+            <head><title>Desempenho Relativo dos Ativos</title></head>
+            <body>
+                <h1>Desempenho Relativo dos Ativos</h1>
+                {img_html}
+                <h2>Valorização</h2>
+                {table_html}
+                <p><strong>Fonte:</strong> Yahoo Finance</p>
+            </body>
+            </html>
+            """
+            # Gerar o PDF em memória
+            pdf_bytes = pdfkit.from_string(html_content, False)
 
-                # Converter a tabela para HTML
-                table_html = df_valorizacao.to_html()
-
-                # Criar o HTML completo
-                html_content = f"""
-                <html>
-                <head><title>Desempenho Relativo dos Ativos</title></head>
-                <body>
-                    <h1>Desempenho Relativo dos Ativos</h1>
-                    {img_html}
-                    <h2>Valorização</h2>
-                    {table_html}
-                    <p><strong>Fonte:</strong> Yahoo Finance</p>
-                </body>
-                </html>
-                """
-
-                # Gerar o PDF
-                pdf_file = "desempenho_relativo.pdf"
-                pdfkit.from_string(html_content, pdf_file)
-
-                # Fornecer o download do PDF
-                with open(pdf_file, "rb") as f:
-                    st.download_button(
-                        label="Baixar PDF",
-                        data=f,
-                        file_name="desempenho_relativo.pdf",
-                        mime="application/pdf"
-                    )
+            # Download automático
+            st.download_button(
+                label="Clique aqui se o download não iniciar automaticamente",
+                data=pdf_bytes,
+                file_name="desempenho_relativo.pdf",
+                mime="application/pdf",
+                key="download_pdf"  # Chave única para o botão
+            )
+            # Simular download automático com JavaScript
+            st.markdown(
+                f"""
+                <script>
+                    const link = document.createElement('a');
+                    link.href = 'data:application/pdf;base64,{base64.b64encode(pdf_bytes).decode('utf-8')}';
+                    link.download = 'desempenho_relativo.pdf';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                </script>
+                """,
+                unsafe_allow_html=True
+            )
         else:
             st.warning("Nenhum dado disponível para os tickers selecionados.")
 
