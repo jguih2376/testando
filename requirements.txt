@@ -9,3 +9,4 @@ python-bcb
 streamlit-autorefresh
 pdfkit
 kaleido
+webbrowser
