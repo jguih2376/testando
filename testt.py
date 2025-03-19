@@ -22,7 +22,7 @@ with tab1:
 
     # Seleção do ativo e tipo de gráfico dentro do expander
     with st.expander("Seleção de Ativo", expanded=True):
-        opcao = st.selectbox('Selecione:', ['Índices', 'Ações', 'Commodities'])
+        opcao = st.radio('Selecione:', ['Índices', 'Ações', 'Commodities'])
         
         # Seleção do tipo de gráfico dentro do expander
         col1,col2 = st.columns([3,1])
