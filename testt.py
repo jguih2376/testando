@@ -7,55 +7,55 @@ import pandas as pd
 
 @st.cache_data
 def get_data():
-start_date = '2000-01-01' 
-dolar = sgs.get({'Dólar': 10813}, start=start_date)
-selic = sgs.get({'Selic': 432}, start=start_date)
-ipca = sgs.get({'IPCA': 13522}, start=start_date)
+    start_date = '2000-01-01' 
+    dolar = sgs.get({'Dólar': 10813}, start=start_date)
+    selic = sgs.get({'Selic': 432}, start=start_date)
+    ipca = sgs.get({'IPCA': 13522}, start=start_date)
 
-dolar_atual = dolar.iloc[-1].values[0]
-selic_atual = selic.iloc[-1].values[0]
-ipca_atual = ipca.iloc[-1].values[0]
-juros_real = (((1 + selic_atual/100) / (1 + ipca_atual/100)) - 1) * 100
+    dolar_atual = dolar.iloc[-1].values[0]
+    selic_atual = selic.iloc[-1].values[0]
+    ipca_atual = ipca.iloc[-1].values[0]
+    juros_real = (((1 + selic_atual/100) / (1 + ipca_atual/100)) - 1) * 100
 
-return selic, selic_atual, ipca, ipca_atual, juros_real, dolar, dolar_atual
+    return selic, selic_atual, ipca, ipca_atual, juros_real, dolar, dolar_atual
 
 @st.cache_resource
 def create_chart(data, atual, title, yaxis_title, unit):
-fig = go.Figure()
-fig.add_trace(go.Scatter(x=data.index, y=data.iloc[:, 0], mode='lines'))
-fig.add_trace(go.Scatter(x=[data.index[-1]], y=[atual], mode='markers', marker=dict(color='red', size=5)))
-fig.update_layout(title=title, yaxis_title=yaxis_title, showlegend=False,                           
-                            yaxis=dict(
-                            side="right",
-                            gridcolor='rgba(255, 255, 255, 0.1)',  
-                            zeroline=False,
-                            color='#FFFFFF'),
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=data.index, y=data.iloc[:, 0], mode='lines'))
+    fig.add_trace(go.Scatter(x=[data.index[-1]], y=[atual], mode='markers', marker=dict(color='red', size=5)))
+    fig.update_layout(title=title, yaxis_title=yaxis_title, showlegend=False,                           
+                                yaxis=dict(
+                                side="right",
+                                gridcolor='rgba(255, 255, 255, 0.1)',  
+                                zeroline=False,
+                                color='#FFFFFF'),
 
-                            xaxis=dict(                                
-                            gridcolor='rgba(255, 255, 255, 0.1)',  
-                            zeroline=False,
-                            color='#FFFFFF'
-                        ),
-                            height=450)
-fig.add_annotation(
-                        x=1,  
-                        y=atual,  
-                        xref="paper", 
-                        yref="y",
-                        text=f"{atual:.2f}",  
-                        showarrow=True,
-                        arrowhead=0,
-                        ax=5,  
-                        ay=0,  
-                        font=dict(size=12, color='#FFFFFF'),
-                        bgcolor='rgba(0, 0, 0, 0.5)',  
-                        bordercolor='#FFFFFF',
-                        borderwidth=1,
-                        xanchor="left",  
-                        yanchor="middle"  
-                        )
+                                xaxis=dict(                                
+                                gridcolor='rgba(255, 255, 255, 0.1)',  
+                                zeroline=False,
+                                color='#FFFFFF'
+                            ),
+                                height=450)
+    fig.add_annotation(
+                            x=1,  
+                            y=atual,  
+                            xref="paper", 
+                            yref="y",
+                            text=f"{atual:.2f}",  
+                            showarrow=True,
+                            arrowhead=0,
+                            ax=5,  
+                            ay=0,  
+                            font=dict(size=12, color='#FFFFFF'),
+                            bgcolor='rgba(0, 0, 0, 0.5)',  
+                            bordercolor='#FFFFFF',
+                            borderwidth=1,
+                            xanchor="left",  
+                            yanchor="middle"  
+                            )
 
-return fig
+    return fig
 
 
 st.title("🏛️Estatística Monetária")
